@@ -14,7 +14,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B5937B9423EE0829002EDC2E /* Managed Prefs Builder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Managed Prefs Builder.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5937B9423EE0829002EDC2E /* Managed App Schema Builder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Managed App Schema Builder.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5937B9723EE0829002EDC2E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B5937B9923EE0829002EDC2E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B5937B9B23EE082B002EDC2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -45,7 +45,7 @@
 		B5937B9523EE0829002EDC2E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B5937B9423EE0829002EDC2E /* Managed Prefs Builder.app */,
+				B5937B9423EE0829002EDC2E /* Managed App Schema Builder.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,9 +66,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B5937B9323EE0829002EDC2E /* Managed Prefs Builder */ = {
+		B5937B9323EE0829002EDC2E /* Managed App Schema Builder */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B5937BA423EE082B002EDC2E /* Build configuration list for PBXNativeTarget "Managed Prefs Builder" */;
+			buildConfigurationList = B5937BA423EE082B002EDC2E /* Build configuration list for PBXNativeTarget "Managed App Schema Builder" */;
 			buildPhases = (
 				B5937B9023EE0829002EDC2E /* Sources */,
 				B5937B9123EE0829002EDC2E /* Frameworks */,
@@ -78,9 +78,9 @@
 			);
 			dependencies = (
 			);
-			name = "Managed Prefs Builder";
+			name = "Managed App Schema Builder";
 			productName = "Managed Prefs Builder";
-			productReference = B5937B9423EE0829002EDC2E /* Managed Prefs Builder.app */;
+			productReference = B5937B9423EE0829002EDC2E /* Managed App Schema Builder.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -98,7 +98,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B5937B8F23EE0829002EDC2E /* Build configuration list for PBXProject "Managed Prefs Builder" */;
+			buildConfigurationList = B5937B8F23EE0829002EDC2E /* Build configuration list for PBXProject "Managed App Schema Builder" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -111,7 +111,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B5937B9323EE0829002EDC2E /* Managed Prefs Builder */,
+				B5937B9323EE0829002EDC2E /* Managed App Schema Builder */,
 			);
 		};
 /* End PBXProject section */
@@ -312,7 +312,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B5937B8F23EE0829002EDC2E /* Build configuration list for PBXProject "Managed Prefs Builder" */ = {
+		B5937B8F23EE0829002EDC2E /* Build configuration list for PBXProject "Managed App Schema Builder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B5937BA223EE082B002EDC2E /* Debug */,
@@ -321,7 +321,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B5937BA423EE082B002EDC2E /* Build configuration list for PBXNativeTarget "Managed Prefs Builder" */ = {
+		B5937BA423EE082B002EDC2E /* Build configuration list for PBXNativeTarget "Managed App Schema Builder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B5937BA523EE082B002EDC2E /* Debug */,
