@@ -11,6 +11,7 @@
 		B5937B9A23EE0829002EDC2E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5937B9923EE0829002EDC2E /* ViewController.swift */; };
 		B5937B9C23EE082B002EDC2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5937B9B23EE082B002EDC2E /* Assets.xcassets */; };
 		B5937B9F23EE082B002EDC2E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5937B9D23EE082B002EDC2E /* Main.storyboard */; };
+		B5937BA823F0842B002EDC2E /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5937BA723F0842B002EDC2E /* Alert.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		B5937B9E23EE082B002EDC2E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B5937BA023EE082B002EDC2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B5937BA123EE082B002EDC2E /* Managed_Prefs_Builder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Managed_Prefs_Builder.entitlements; sourceTree = "<group>"; };
+		B5937BA723F0842B002EDC2E /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +55,7 @@
 		B5937B9623EE0829002EDC2E /* Managed Prefs Builder */ = {
 			isa = PBXGroup;
 			children = (
+				B5937BA723F0842B002EDC2E /* Alert.swift */,
 				B5937B9723EE0829002EDC2E /* AppDelegate.swift */,
 				B5937B9923EE0829002EDC2E /* ViewController.swift */,
 				B5937B9B23EE082B002EDC2E /* Assets.xcassets */,
@@ -133,6 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5937BA823F0842B002EDC2E /* Alert.swift in Sources */,
 				B5937B9A23EE0829002EDC2E /* ViewController.swift in Sources */,
 				B5937B9823EE0829002EDC2E /* AppDelegate.swift in Sources */,
 			);
@@ -280,7 +284,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 0.5;
+				MARKETING_VERSION = 0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jamf.pse.Managed-Prefs-Builder";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -302,7 +306,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 0.5;
+				MARKETING_VERSION = 0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jamf.pse.Managed-Prefs-Builder";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

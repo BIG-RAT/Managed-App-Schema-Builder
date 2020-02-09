@@ -10,6 +10,8 @@ import Cocoa
 
 class ViewController: NSViewController {
     
+    let fileManager = FileManager.default
+    
     @IBOutlet weak var preferenceDomain_TextField: NSTextField!
     @IBOutlet weak var preferenceDomainDescr_TextField: NSTextField!
     @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
@@ -97,6 +99,13 @@ class ViewController: NSViewController {
 //            }
 //
 //        }
+    @IBAction func betterAdd_Action(_ sender: Any) {let dialog = NSSavePanel()
+        dialog.beginSheetModal(for: self.view.window!){ result in
+            if result == .OK, let url = dialog.url {
+                print("Got", url)
+            }
+        }
+    }
     
     
     @IBAction func addKey_Action(_ sender: Any) {
@@ -138,6 +147,8 @@ class ViewController: NSViewController {
                 self.keyDescription_TextField.string = ""
                 self.keyType_Button.selectItem(at: 0)
                 self.keyValuePairs[self.keyName]!["valueType"] = "Select Value Type"
+                let keyIndex = self.preferenceKeys_TableArray?.firstIndex(of: self.keyName)
+                self.keys_TableView.selectRowIndexes(.init(integer: keyIndex!), byExtendingSelection: false)
                 // initialize values - end
             }
             
@@ -146,6 +157,22 @@ class ViewController: NSViewController {
 //            self.keys_TableView.editColumn(0, row: theRow, with: nil, select: true)
             
 
+        }
+    }
+    
+    @IBAction func removeKey_Action(_ sender: Any) {
+        DispatchQueue.main.async {
+            let theRow = self.keys_TableView.selectedRow
+            if theRow >= 0 {
+                self.keyName = self.preferenceKeys_TableArray?[theRow] ?? ""
+                self.keyValuePairs.removeValue(forKey: self.keyName)
+                self.preferenceKeys_TableArray?.remove(at: theRow)
+                self.keys_TableView.reloadData()
+                self.keyName = ""
+                self.keyFriendlyName_TextField.stringValue = ""
+                self.keyDescription_TextField.string = ""
+                self.keyType_Button.selectItem(at: 0)
+            }
         }
     }
     
@@ -237,55 +264,85 @@ class ViewController: NSViewController {
     @IBAction func save_Action(_ sender: Any) {
                 
 //                let timeStamp = Time().getCurrent()
+        
+        if keyName != "" {
+            updateKeyValuePair(whichKey: keyName)
+        }
+        
         var keysWritten = 0
         var keyDelimiter = ",\n"
         
-        let downloadsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
+        let downloadsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
 
         if preferenceDomain_TextField.stringValue != "" {
-                        let preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
-        //                let preferenceDomainFile = "prunePackages_\(timeStamp).xml"
-                        let exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
+            var preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
+            var exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
+            
+            let saveDialog = NSSavePanel()
+            saveDialog.canCreateDirectories = true
+            saveDialog.nameFieldStringValue = preferenceDomainFile
+            saveDialog.beginSheetModal(for: self.view.window!){ result in
+                if result == .OK {
+                    preferenceDomainFile = saveDialog.nameFieldStringValue
+                    exportURL            = saveDialog.url!
+                    print("fileName", preferenceDomainFile)
 
+                    do {
+                        try "{\n\t\"title\": \"\(self.preferenceDomain_TextField.stringValue)\",\n\t\"description\": \"\(self.preferenceDomainDescr_TextField.stringValue)\",\n\t\"properties\": {\n".write(to: exportURL, atomically: true, encoding: .utf8)
+                    } catch {
+                        print("failed to write the.")
+                    }
+                    
+                    if let preferenceDomainFileOp = try? FileHandle(forUpdating: exportURL) {
+                         for (key, _) in self.keyValuePairs {
+                            preferenceDomainFileOp.seekToEndOfFile()
+                            keysWritten += 1
+                            if keysWritten == self.keyValuePairs.count {
+                                keyDelimiter = "\n"
+                            }
+        //                                     let text = "\t{\"id\": \"\(String(describing: keyValuePairs[key]!["id"]!))\", \"name\": \"\(key)\"},\n"
+                            let text = """
+                            \t\t"\(key)": {
+                            \t\t\t"title": "\(String(describing: self.keyValuePairs[key]!["title"]!))",
+                            \t\t\t"description": "\(String(describing: self.keyValuePairs[key]!["description"]!))",
+                            \t\t\t"property_order": \(keysWritten),
+                            \t\t\t"anyOf": [
+                            \t\t\t\t{"type": "null", "title": "Not Configured"},
+                            \t\t\t\t{
+                            \t\t\t\t\t"title": "Configured",
+                            \t\t\t\t\t"type": "\(String(describing: self.keyValuePairs[key]!["valueType"]!))"
+                            \t\t\t\t}
+                            \t\t\t]
+                            \t\t}\(keyDelimiter)
+                            """
+                            preferenceDomainFileOp.write(text.data(using: String.Encoding.utf8)!)
+                            
+                         }   // for (key, _) in packagesDict - end
+                        preferenceDomainFileOp.seekToEndOfFile()
+                        preferenceDomainFileOp.write("\t}\n}".data(using: String.Encoding.utf8)!)
+                        preferenceDomainFileOp.closeFile()
+                        
                         do {
-                            try "{\n\t\"title\": \"\(preferenceDomain_TextField.stringValue)\",\n\t\"description\": \"\(preferenceDomainDescr_TextField.stringValue)\",\n\t\"properties\": {\n".write(to: exportURL, atomically: true, encoding: .utf8)
+                            let manifest = try String(contentsOf: exportURL)
+        //                    print("manifest: \(manifest)")
+                            // copy manifest to clipboard - start
+                            let clipboard = NSPasteboard.general
+                            clipboard.clearContents()
+                            clipboard.setString(manifest, forType: .string)
+                            // copy manifest to clipboard - end
                         } catch {
-                            print("failed to write the.")
+                            print("file not found.")
                         }
                         
-                        if let preferenceDomainFileOp = try? FileHandle(forUpdating: exportURL) {
-                             for (key, _) in keyValuePairs {
-                                preferenceDomainFileOp.seekToEndOfFile()
-                                keysWritten += 1
-                                if keysWritten == keyValuePairs.count {
-                                    keyDelimiter = "\n"
-                                }
-//                                     let text = "\t{\"id\": \"\(String(describing: keyValuePairs[key]!["id"]!))\", \"name\": \"\(key)\"},\n"
-                                let text = """
-                                \t\t"\(key)": {
-                                \t\t\t"title": "\(String(describing: keyValuePairs[key]!["title"]!))",
-                                \t\t\t"description": "\(String(describing: keyValuePairs[key]!["description"]!))",
-                                \t\t\t"property_order": \(keysWritten),
-                                \t\t\t"anyOf": [
-                                \t\t\t\t{"type": "null", "title": "Not Configured"},
-                                \t\t\t\t{
-                                \t\t\t\t\t"title": "Configured",
-                                \t\t\t\t\t"type": "\(String(describing: keyValuePairs[key]!["valueType"]!))"
-                                \t\t\t\t}
-                                \t\t\t]
-                                \t\t}\(keyDelimiter)
-                                """
-                                preferenceDomainFileOp.write(text.data(using: String.Encoding.utf8)!)
-                                
-                             }   // for (key, _) in packagesDict - end
-                            preferenceDomainFileOp.seekToEndOfFile()
-                            preferenceDomainFileOp.write("\t}\n}".data(using: String.Encoding.utf8)!)
-                            preferenceDomainFileOp.closeFile()
-                        }
-                    } else {
-                        // preference domain required
-                        print("preference domain required")
-                    }   // if preferenceDomain_TextField != "" - end
+                    }
+                }
+            }
+        } else {
+            // preference domain required
+            print("preference domain required")
+            Alert().display(header: "Attention", message: "You must supply a preference domain.")
+
+        }   // if preferenceDomain_TextField != "" - end
                     
                     
     }
