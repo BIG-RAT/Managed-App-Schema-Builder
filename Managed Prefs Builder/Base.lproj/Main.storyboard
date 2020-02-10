@@ -778,7 +778,7 @@
                                             <tableColumns>
                                                 <tableColumn editable="NO" width="285" minWidth="40" maxWidth="1000" id="xgZ-LF-xuu">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Key Name">
-                                                        <font key="font" metaFont="menu" size="11"/>
+                                                        <font key="font" metaFont="label" size="11"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
@@ -966,20 +966,12 @@ DQ
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Isk-ba-bh6">
                                 <rect key="frame" x="728" y="381" width="80" height="32"/>
-                                <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uDj-pq-rQb">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hjC-cQ-qSO">
-                                <rect key="frame" x="286" y="18" width="24" height="24"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="smallSquare" title="Add_Key" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Fv-Ss-DqP">
+                                <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uDj-pq-rQb">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="betterAdd_Action:" target="XfG-lQ-9wD" id="fS3-HP-1qH"/>
+                                    <action selector="importFile_Button:" target="XfG-lQ-9wD" id="quR-t5-eVS"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1025,7 +1017,6 @@ DQ
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="betterAdd_Action" destination="hjC-cQ-qSO" id="5If-jn-KI8"/>
                         <outlet property="keyDescription_TextField" destination="cnN-Bt-mh1" id="BBA-9V-Ofc"/>
                         <outlet property="keyFriendlyName_TextField" destination="nUd-oe-exL" id="DUA-TQ-lAH"/>
                         <outlet property="keyType_Button" destination="AKA-4V-G9B" id="aiS-w2-4iY"/>

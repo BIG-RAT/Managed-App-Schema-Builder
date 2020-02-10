@@ -30,83 +30,74 @@ class ViewController: NSViewController {
     var keyValuePairs = [String:[String:Any]]()
     
         
-//        @IBAction func selectFile_Button(_ sender: NSButton) {
-//
-//            let path = selectFile()
-////            var lines = [String]()
-//            var json: Any?
-////            summary_TextField.font = NSFont.init(name: "Monaco", size: 10.0)
-//
-////            self.summary_TextField.string = ""
-//
-//            if (path != "") {
-//                //    var err = NSError?()
-//                print("path: \(path)")
-//                do {
-//                    let fileUrl = URL(fileURLWithPath: path)
-//                    // Getting data from JSON file using the file URL
-//                    let data = try Data(contentsOf: fileUrl, options: .mappedIfSafe)
-//                    json = try? JSONSerialization.jsonObject(with: data)
-//                    let manifestJson = json as? [String: Any]
-////                    for (key, _) in manifestJson! {
-////                        print("key: \(key)")
-////                    }
-//                    let properties = manifestJson!["properties"] as! [String:Any]
-//                    keysArray.removeAll()
-//                    for (domain, _) in properties {
-//                        print("domain: \(domain)")
-////                        keys_Button.addItem(withTitle: domain)
-//                        keysArray.append(domain)
-//                        keysDict[domain] = properties[domain] as? [String : Any]
-////                        description_TextView.string = keysDict[domain]!["description"] as! String
-//                    }
-//                    keysArray.sort()
-//                    keys_Button.addItems(withTitles: keysArray)
-//                    if keysArray.count > 0 {
-//                        preferenceKeys_TableArray = keysArray
-//                        keys_TableView.reloadData()
-//                    }
-////                    print("\(json)")
-//                } catch {
-//                    print("couldn't reach json file")
-//                }
-//
-//                do {
-//                    let text = try String(contentsOfFile: path)
-//                    //let text = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: &err)
-//
-//                    if (text != "") {
-////                        lines = text.components(separatedBy: "\n")
-//
-//    //                    for line in lines {
-//    //                        print(line)
-//    //                    }
-//                        DispatchQueue.main.async {
-////                            let trimmedSummary = ParseSummary().parse(fileArray: lines)
-////                            for summaryLine in trimmedSummary {
-////                                self.summary_TextField.string = self.summary_TextField.string + summaryLine
-////                            }
-//
-//                        }
-//                    } else {
-//                        print("cancelled")
-//                    }
-//                } catch {
-//                    print("unable to read file")
-////                    self.summary_TextField.string = "Unable to read file."
-////                    self.summary_TextField.string = "Try to resave the summary with a plain text editor."
-//                }
-//            }
-//
-//        }
-    @IBAction func betterAdd_Action(_ sender: Any) {let dialog = NSSavePanel()
-        dialog.beginSheetModal(for: self.view.window!){ result in
-            if result == .OK, let url = dialog.url {
-                print("Got", url)
+    @IBAction func importFile_Button(_ sender: NSButton) {
+
+            var json: Any?
+            // filetypes that are selectable
+            let fileTypeArray: Array = ["json"]
+            
+//            let defaultPath: String = NSHomeDirectory() + "/Desktop"
+            //let defaultPath: String = "/Users"
+            //let pathURL = NSURL(fileURLWithPath: defaultPath.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!, isDirectory: true)
+//            var importPathUrl = NSURL(fileURLWithPath: defaultPath, isDirectory: false)
+
+            var importPathUrl = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+        
+        
+            let importDialog: NSOpenPanel        = NSOpenPanel()
+            importDialog.canChooseDirectories    = false
+            importDialog.allowsMultipleSelection = false
+            importDialog.resolvesAliases         = true
+            importDialog.allowedFileTypes        = fileTypeArray
+            importDialog.directoryURL            = importPathUrl
+            importDialog.beginSheetModal(for: self.view.window!){ result in
+            if result == .OK {
+                importPathUrl = importDialog.url!
+            
+                    //    var err = NSError?()
+                    print("path: \(importPathUrl)")
+                    var rawKeyValuePairs = [String: Any]()
+                    do {
+                        self.keyValuePairs.removeAll()
+//                        let fileUrl = URL(fileURLWithPath: path)
+                        // Getting data from JSON file using the file URL
+                        let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
+                        json = try? JSONSerialization.jsonObject(with: data)
+                        let manifestJson = json as? [String: Any]
+                        
+                        self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
+                        self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
+                        let properties = manifestJson!["properties"] as! [String: [String: Any]]
+                        self.keysArray.removeAll()
+                        self.keyValuePairs.removeAll()
+                        for (prefKey, _) in properties {
+                            self.keysArray.append(prefKey)
+                            rawKeyValuePairs = properties[prefKey]!
+
+                            self.keyValuePairs[prefKey] = [:]
+                            self.keyValuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
+                            self.keyValuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
+                            let anyOf = rawKeyValuePairs["anyOf"] as! [[String: String]]
+                            if anyOf.count > 1 {
+                                self.keyValuePairs[prefKey]!["valueType"] = anyOf[1]["type"]
+                            } else {
+                                self.keyValuePairs[prefKey]!["valueType"] = "Select Value Type"
+                            }
+                        }
+                        self.keysArray.sort()
+
+                        if self.keysArray.count > 0 {
+                            self.preferenceKeys_TableArray = self.keysArray
+                            self.keys_TableView.reloadData()
+                        }
+        //                    print("\(json)")
+                    } catch {
+                        print("couldn't reach json file")
+                    }
             }
         }
     }
-    
+
     
     @IBAction func addKey_Action(_ sender: Any) {
         
@@ -117,9 +108,8 @@ class ViewController: NSViewController {
         DispatchQueue.main.async {
             
             let dialog: NSAlert = NSAlert()
-            dialog.messageText = "Add new preference key"
-            dialog.informativeText = "New key name"
-            dialog.alertStyle = NSAlert.Style.warning
+            dialog.messageText = "Add new preference key:"
+            dialog.alertStyle = NSAlert.Style.informational
 
             let newKey = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
             newKey.stringValue = ""
@@ -128,30 +118,44 @@ class ViewController: NSViewController {
             dialog.addButton(withTitle: "Cancel")
             
             dialog.accessoryView = newKey
-            let response: NSApplication.ModalResponse = dialog.runModal()
+            newKey.becomeFirstResponder()
             
-            print("keyName: \(newKey.stringValue)")
+            dialog.beginSheetModal(for: self.view.window!){ result in
+                if result == NSApplication.ModalResponse.alertFirstButtonReturn {
 
-            if (response == NSApplication.ModalResponse.alertFirstButtonReturn) {
-//                self.preferenceKeys_TableArray?.append(newKey.stringValue)
-                self.keyName = newKey.stringValue
-                self.keysArray.append(self.keyName)
-                self.keysArray.sort()
-                self.preferenceKeys_TableArray = self.keysArray
-                self.keys_TableView.reloadData()
-                self.keyValuePairs[self.keyName] = [:]
-                // initialize values - start
-                self.keyValuePairs[self.keyName]!["title"] = self.keyName
-                self.keyFriendlyName_TextField.stringValue = self.keyName
-                self.keyValuePairs[self.keyName]!["description"] = ""
-                self.keyDescription_TextField.string = ""
-                self.keyType_Button.selectItem(at: 0)
-                self.keyValuePairs[self.keyName]!["valueType"] = "Select Value Type"
-                let keyIndex = self.preferenceKeys_TableArray?.firstIndex(of: self.keyName)
-                self.keys_TableView.selectRowIndexes(.init(integer: keyIndex!), byExtendingSelection: false)
-                // initialize values - end
-            }
-            
+                    print("keyName: \(newKey.stringValue)")
+                    if newKey.stringValue != "" {
+                        self.keyName = newKey.stringValue
+                        // see if key already exists - start
+                        if let _ = self.keysArray.firstIndex(of: self.keyName) {
+                            Alert().display(header: "Attention", message: "Key already exists.")
+                            self.keyName = ""
+                            return
+                        } else {
+                            print("new key")
+                            self.keysArray.append(self.keyName)
+                            self.keysArray.sort()
+                            self.preferenceKeys_TableArray = self.keysArray
+                            
+                            self.keys_TableView.reloadData()
+                            self.keyValuePairs[self.keyName] = [:]
+                            // initialize values - start
+                            self.keyValuePairs[self.keyName]!["title"] = self.keyName
+                            self.keyFriendlyName_TextField.stringValue = self.keyName
+                            self.keyValuePairs[self.keyName]!["description"] = ""
+                            self.keyDescription_TextField.string = ""
+                            self.keyType_Button.selectItem(at: 0)
+                            self.keyValuePairs[self.keyName]!["valueType"] = "Select Value Type"
+                            let keyIndex = self.preferenceKeys_TableArray?.firstIndex(of: self.keyName)
+                            self.keys_TableView.selectRowIndexes(.init(integer: keyIndex!), byExtendingSelection: false)
+                            // initialize values - end
+                        }
+                        // see if key already exists - end
+                    }
+                } else {
+                    print("cancelled add key")
+                }
+            } // added with modal
             
 //            Add to edit existing key name?
 //            self.keys_TableView.editColumn(0, row: theRow, with: nil, select: true)
@@ -166,7 +170,9 @@ class ViewController: NSViewController {
             if theRow >= 0 {
                 self.keyName = self.preferenceKeys_TableArray?[theRow] ?? ""
                 self.keyValuePairs.removeValue(forKey: self.keyName)
-                self.preferenceKeys_TableArray?.remove(at: theRow)
+                self.keysArray.remove(at: theRow)
+                self.preferenceKeys_TableArray = self.keysArray
+//                self.preferenceKeys_TableArray?.remove(at: theRow)
                 self.keys_TableView.reloadData()
                 self.keyName = ""
                 self.keyFriendlyName_TextField.stringValue = ""
@@ -210,7 +216,6 @@ class ViewController: NSViewController {
         
     }
     
-    
     func updateKeyValuePair(whichKey: String) {
     
         print("updating friendly name (title) for key \(keyName)")
@@ -222,44 +227,6 @@ class ViewController: NSViewController {
         print("updating data type for key \(keyName) with value \(keyType_Button.titleOfSelectedItem!)")
         keyValuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
     }
-    
-    func selectFile() -> String  {
-        
-        let fileTypeArray: Array = ["json"]
-        
-        let defaultPath: String = NSHomeDirectory() + "/Desktop"
-        //let defaultPath: String = "/Users"
-        //let pathURL = NSURL(fileURLWithPath: defaultPath.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!, isDirectory: true)
-        let pathURL = NSURL(fileURLWithPath: defaultPath, isDirectory: false)
-        
-            let myFileDialog: NSOpenPanel        = NSOpenPanel()
-            myFileDialog.canChooseDirectories    = false
-            myFileDialog.allowsMultipleSelection = false
-            myFileDialog.resolvesAliases         = true
-            myFileDialog.allowedFileTypes        = fileTypeArray
-            myFileDialog.directoryURL            = pathURL as URL
-            
-            myFileDialog.runModal()
-            
-            // Get the path to the file chosen in the NSOpenPanel
-            let filePath = myFileDialog.url?.path
-            
-            // Make sure that a path was chosen
-            if (filePath != nil) {
-                return filePath!
-                //        var err = NSError?()
-                //        do {
-                //            //let dataFile = try String(contentsOfFile: filePath!)
-                //            return filePath!
-                //        } catch {
-                //            print("cancelled")
-                //            // something
-                //        }
-                //let text = String(contentsOfFile: filePath!, encoding: NSUTF8StringEncoding, error: &err)
-            }
-            //return selectedFile
-            return ""
-    }   // func selectFile() -> String - end
 
     @IBAction func save_Action(_ sender: Any) {
                 
@@ -391,9 +358,6 @@ extension ViewController: NSTableViewDelegate {
         guard let item = preferenceKeys_TableArray?[row] else {
             return nil
         }
-        
-        print("item: \(item)")
-        
         
         if tableColumn == object_TableView.tableColumns[0] {
             text = "\(item)"
