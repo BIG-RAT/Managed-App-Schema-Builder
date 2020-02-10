@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  Managed Prefs Builder
+//  Managed App Schema Builder
 //
 //  Created by Leslie Helou on 2/7/20.
 //  Copyright © 2020 Leslie Helou. All rights reserved.
@@ -35,14 +35,8 @@ class ViewController: NSViewController {
             var json: Any?
             // filetypes that are selectable
             let fileTypeArray: Array = ["json"]
-            
-//            let defaultPath: String = NSHomeDirectory() + "/Desktop"
-            //let defaultPath: String = "/Users"
-            //let pathURL = NSURL(fileURLWithPath: defaultPath.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!, isDirectory: true)
-//            var importPathUrl = NSURL(fileURLWithPath: defaultPath, isDirectory: false)
 
             var importPathUrl = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
-        
         
             let importDialog: NSOpenPanel        = NSOpenPanel()
             importDialog.canChooseDirectories    = false
@@ -53,47 +47,46 @@ class ViewController: NSViewController {
             importDialog.beginSheetModal(for: self.view.window!){ result in
             if result == .OK {
                 importPathUrl = importDialog.url!
-            
-                    //    var err = NSError?()
-                    print("path: \(importPathUrl)")
-                    var rawKeyValuePairs = [String: Any]()
-                    do {
-                        self.keyValuePairs.removeAll()
-//                        let fileUrl = URL(fileURLWithPath: path)
-                        // Getting data from JSON file using the file URL
-                        let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
-                        json = try? JSONSerialization.jsonObject(with: data)
-                        let manifestJson = json as? [String: Any]
-                        
-                        self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
-                        self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
-                        let properties = manifestJson!["properties"] as! [String: [String: Any]]
-                        self.keysArray.removeAll()
-                        self.keyValuePairs.removeAll()
-                        for (prefKey, _) in properties {
-                            self.keysArray.append(prefKey)
-                            rawKeyValuePairs = properties[prefKey]!
+        
+                print("path: \(importPathUrl)")
+                var rawKeyValuePairs = [String: Any]()
+                do {
+                    self.keyValuePairs.removeAll()
 
-                            self.keyValuePairs[prefKey] = [:]
-                            self.keyValuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
-                            self.keyValuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
-                            let anyOf = rawKeyValuePairs["anyOf"] as! [[String: String]]
-                            if anyOf.count > 1 {
-                                self.keyValuePairs[prefKey]!["valueType"] = anyOf[1]["type"]
-                            } else {
-                                self.keyValuePairs[prefKey]!["valueType"] = "Select Value Type"
-                            }
-                        }
-                        self.keysArray.sort()
+                    // Getting data from JSON file using the file URL
+                    let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
+                    json = try? JSONSerialization.jsonObject(with: data)
+                    let manifestJson = json as? [String: Any]
+                    
+                    self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
+                    self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
+                    let properties = manifestJson!["properties"] as! [String: [String: Any]]
+                    self.keysArray.removeAll()
+                    self.keyValuePairs.removeAll()
+                    for (prefKey, _) in properties {
+                        self.keysArray.append(prefKey)
+                        rawKeyValuePairs = properties[prefKey]!
 
-                        if self.keysArray.count > 0 {
-                            self.preferenceKeys_TableArray = self.keysArray
-                            self.keys_TableView.reloadData()
+                        self.keyValuePairs[prefKey] = [:]
+                        self.keyValuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
+                        self.keyValuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
+                        let anyOf = rawKeyValuePairs["anyOf"] as! [[String: String]]
+                        if anyOf.count > 1 {
+                            self.keyValuePairs[prefKey]!["valueType"] = anyOf[1]["type"]
+                        } else {
+                            self.keyValuePairs[prefKey]!["valueType"] = "Select Value Type"
                         }
-        //                    print("\(json)")
-                    } catch {
-                        print("couldn't reach json file")
                     }
+                    self.keysArray.sort()
+
+                    if self.keysArray.count > 0 {
+                        self.preferenceKeys_TableArray = self.keysArray
+                        self.keys_TableView.reloadData()
+                    }
+    //                    print("\(json)")
+                } catch {
+                    print("couldn't reach json file")
+                }
             }
         }
     }
@@ -172,7 +165,7 @@ class ViewController: NSViewController {
                 self.keyValuePairs.removeValue(forKey: self.keyName)
                 self.keysArray.remove(at: theRow)
                 self.preferenceKeys_TableArray = self.keysArray
-//                self.preferenceKeys_TableArray?.remove(at: theRow)
+
                 self.keys_TableView.reloadData()
                 self.keyName = ""
                 self.keyFriendlyName_TextField.stringValue = ""

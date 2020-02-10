@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  Managed Prefs Builder
+//  Managed App Schema Builder
 //
 //  Created by Leslie Helou on 2/7/20.
 //  Copyright © 2020 Leslie Helou. All rights reserved.
