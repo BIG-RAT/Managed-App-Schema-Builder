@@ -93,13 +93,20 @@ class ViewController: NSViewController {
                             self.keyValuePairs[prefKey]!["valueType"] = readKeyType
                             if readKeyType == "integer", anyOf[1]["options"] != nil {
                                 self.keyValuePairs[prefKey]!["valueType"] = "integer (from list)"
+                                // get list of choices
                                 let readOptions = anyOf[1]["options"]! as! [String:[String]]
                                 var readEnumTitles = "\(String(describing: readOptions["enum_titles"]!))"
                                 readEnumTitles = readEnumTitles.replacingOccurrences(of: "[", with: "")
                                 readEnumTitles = readEnumTitles.replacingOccurrences(of: "]", with: "")
                                 readEnumTitles = readEnumTitles.replacingOccurrences(of: "\"", with: "")
                                 self.keyValuePairs[prefKey]!["enum_titles"] = readEnumTitles
-                                print("integer (from list)")
+                                
+                                // get integer values
+                                let readEnumArray = anyOf[1]["enum"] as! [Int]
+                                var readEnum = "\(String(describing: readEnumArray))"
+                                readEnum = readEnum.replacingOccurrences(of: "[", with: "")
+                                readEnum = readEnum.replacingOccurrences(of: "]", with: "")
+                                self.keyValuePairs[prefKey]!["enum"] = readEnum
                             }
                         } else {
                             self.keyValuePairs[prefKey]!["valueType"] = "Select Value Type"
@@ -121,6 +128,14 @@ class ViewController: NSViewController {
 
     
     @IBAction func addKey_Action(_ sender: Any) {
+        
+        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
+        print("current tab: \(currentTab)")
+        
+        if currentTab == "valueTypeDefs" {
+            Alert().display(header: "Attention", message: "Click 'OK' or 'Cancel' before adding a new key.")
+            return
+        }
         
         if keyName != "" {
             updateKeyValuePair(whichKey: keyName)
@@ -267,17 +282,18 @@ class ViewController: NSViewController {
         keyValuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
         
         if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" {
-            enum_titlesString = ""
-            enumString       = ""
-            enum_titlesString = enum_titles_TextView.string.replacingOccurrences(of: ", ", with: ",")
-            let enum_titleArray = enum_titlesString.split(separator: ",")
-            enum_titlesString = "\(enum_titleArray)"
+//            enum_titlesString = ""
+//            enumString        = ""
+//            enum_titlesString = enum_titles_TextView.string.replacingOccurrences(of: ", ", with: ",")
+//            let enum_titleArray = enum_titlesString.split(separator: ",")
+//            enum_titlesString = "\(enum_titleArray)"
             print("updating enum_title for key \(keyName)")
-            keyValuePairs[keyName]!["enum_titles"] = "\(enum_titlesString)"
+            keyValuePairs[keyName]!["enum_titles"] = "\(enum_titles_TextView.string)"
             
             enumString = enum_TextField.stringValue
             print("updating enum for key \(keyName)")
-            keyValuePairs[keyName]!["enum"] = "[\(enumString)]"
+//            keyValuePairs[keyName]!["enum"] = "[\(enumString)]"
+            keyValuePairs[keyName]!["enum"] = "\(enum_TextField.stringValue)"
         }
     }
 
@@ -332,12 +348,19 @@ class ViewController: NSViewController {
                                                     }
                                 """
                             case "integer (from list)":
+                                self.enum_titlesString = ""
+//                                self.enumString        = ""
+                                // convert string of enum_titles to array
+                                self.enum_titlesString = (self.keyValuePairs[key]!["enum_titles"]! as! String).replacingOccurrences(of: ", ", with: ",")
+                                let enum_titleArray = self.enum_titlesString.split(separator: ",")
+                                // convert string of enum to array
+                                self.enumString = (self.keyValuePairs[key]!["enum"]! as! String)
                                 keyTypeItems = """
                                 "integer",
                                                     "options": {
-                                                        "enum_titles": \(String(describing: self.keyValuePairs[key]!["enum_titles"]!))
+                                                        "enum_titles": \(enum_titleArray)
                                                     },
-                                                    "enum": \(String(describing: self.keyValuePairs[key]!["enum"]!))
+                                                    "enum": [\(self.keyValuePairs[key]!["enum"]! as! String)]
                                 """
                             default:
                                 keyTypeItems = """
@@ -403,10 +426,21 @@ class ViewController: NSViewController {
         }
         self.keys_TabView.selectTabViewItem(at: 1)
     }
-    @IBAction func showMainKeyTab(_ sender: Any) {
-        self.keys_TabView.selectTabViewItem(at: 0)
-        cancel_Button.isHidden = false
-        save_Button.isHidden = false
+    @IBAction func showMainKeyTab(_ sender: NSButton) {
+        if sender.title == "Cancel" {
+            enum_titles_TextView.string = ""
+            enum_TextField.stringValue  = ""
+        }
+        // verify enum_titles and enum have the same number of values
+        let enum_titlesArray = enum_titles_TextView.string.split(separator: ",")
+        let enumArray        = enum_TextField.stringValue.split(separator: ",")
+        if enum_titlesArray.count == enumArray.count {
+            self.keys_TabView.selectTabViewItem(at: 0)
+            cancel_Button.isHidden = false
+            save_Button.isHidden = false
+        } else {
+            Alert().display(header: "Attention", message: "Comma seperated list of options and integer list must have the same number of values.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of integers: \(enumArray.count)")
+        }
     }
     
     
