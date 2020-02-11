@@ -1,4 +1,4 @@
-# Managed-App-Schema-Builder
+# Managed App Schema Builder
 Creates JSON file that can be used to set application preferences
 
 ![alt text](./images/pruneApp.png "Prune")
