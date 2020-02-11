@@ -130,7 +130,6 @@ class ViewController: NSViewController {
     @IBAction func addKey_Action(_ sender: Any) {
         
         let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
-        print("current tab: \(currentTab)")
         
         if currentTab == "valueTypeDefs" {
             Alert().display(header: "Attention", message: "Click 'OK' or 'Cancel' before adding a new key.")
@@ -224,7 +223,9 @@ class ViewController: NSViewController {
     
     @IBAction func selectKeyName(_ sender: Any) {
         
-        if keyName != "" && save_Button.title == "main" {
+        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
+        
+        if keyName != "" && currentTab == "main" {
             updateKeyValuePair(whichKey: keyName)
         } else {
             keys_TabView.selectTabViewItem(at: 0)
@@ -288,18 +289,24 @@ class ViewController: NSViewController {
 //            let enum_titleArray = enum_titlesString.split(separator: ",")
 //            enum_titlesString = "\(enum_titleArray)"
             print("updating enum_title for key \(keyName)")
-            keyValuePairs[keyName]!["enum_titles"] = "\(enum_titles_TextView.string)"
+            keyValuePairs[keyName]!["enum_titles"] = "\(enum_titles_TextView.string)".replacingOccurrences(of: "\"", with: "")
             
             enumString = enum_TextField.stringValue
             print("updating enum for key \(keyName)")
 //            keyValuePairs[keyName]!["enum"] = "[\(enumString)]"
-            keyValuePairs[keyName]!["enum"] = "\(enum_TextField.stringValue)"
+            keyValuePairs[keyName]!["enum"] = "\(enum_TextField.stringValue)".replacingOccurrences(of: "\"", with: "")
         }
     }
 
     @IBAction func save_Action(_ sender: Any) {
                 
 //                let timeStamp = Time().getCurrent()
+        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
+        
+        if currentTab == "valueTypeDefs" {
+            Alert().display(header: "Attention", message: "Click 'OK' or 'Cancel' before saving.")
+            return
+        }
         
         if keyName != "" {
             updateKeyValuePair(whichKey: keyName)
@@ -426,10 +433,15 @@ class ViewController: NSViewController {
         }
         self.keys_TabView.selectTabViewItem(at: 1)
     }
+    
     @IBAction func showMainKeyTab(_ sender: NSButton) {
         if sender.title == "Cancel" {
-            enum_titles_TextView.string = ""
-            enum_TextField.stringValue  = ""
+            self.keys_TabView.selectTabViewItem(at: 0)
+            cancel_Button.isHidden = false
+            save_Button.isHidden = false
+            enum_titles_TextView.string = keyValuePairs[keyName]!["enum_titles"] as! String
+            enum_TextField.stringValue  = keyValuePairs[keyName]!["enum"] as! String
+            return
         }
         // verify enum_titles and enum have the same number of values
         let enum_titlesArray = enum_titles_TextView.string.split(separator: ",")
