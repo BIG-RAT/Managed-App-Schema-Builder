@@ -12,15 +12,31 @@ class ViewController: NSViewController {
     
     let fileManager = FileManager.default
     
+    @IBOutlet weak var keys_TabView: NSTabView!
+    
     @IBOutlet weak var preferenceDomain_TextField: NSTextField!
     @IBOutlet weak var preferenceDomainDescr_TextField: NSTextField!
     @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
     @IBOutlet weak var keyDescription_TextField: NSTextView!
     
     @IBOutlet weak var keyType_Button: NSPopUpButton!
+    @IBOutlet weak var save_Button: NSButton!
+    @IBOutlet weak var cancel_Button: NSButton!
     
     @IBOutlet weak var keys_TableView: NSTableView!
     var preferenceKeys_TableArray: [String]?
+    
+    // advanced key tab - start
+    @IBOutlet weak var advKeyName_TextField: NSTextField!
+    @IBOutlet weak var advIntegerList_Label: NSTextField!
+    @IBOutlet weak var advIntegerList_TextField: NSTextField!
+    
+    @IBOutlet var enum_titles_TextView: NSTextView!
+    @IBOutlet weak var enum_TextField: NSTextField!
+    
+    var enum_titlesString = ""
+    var enumString       = ""
+    // advanced key tab - end
     
     var keysArray = [String]()
     
@@ -47,8 +63,9 @@ class ViewController: NSViewController {
             importDialog.beginSheetModal(for: self.view.window!){ result in
             if result == .OK {
                 importPathUrl = importDialog.url!
+                
+                self.keys_TabView.selectTabViewItem(at: 0)
         
-                print("path: \(importPathUrl)")
                 var rawKeyValuePairs = [String: Any]()
                 do {
                     self.keyValuePairs.removeAll()
@@ -70,9 +87,20 @@ class ViewController: NSViewController {
                         self.keyValuePairs[prefKey] = [:]
                         self.keyValuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
                         self.keyValuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
-                        let anyOf = rawKeyValuePairs["anyOf"] as! [[String: String]]
+                        let anyOf = rawKeyValuePairs["anyOf"] as! [[String: Any]]
                         if anyOf.count > 1 {
-                            self.keyValuePairs[prefKey]!["valueType"] = anyOf[1]["type"]
+                            let readKeyType = anyOf[1]["type"] as! String
+                            self.keyValuePairs[prefKey]!["valueType"] = readKeyType
+                            if readKeyType == "integer", anyOf[1]["options"] != nil {
+                                self.keyValuePairs[prefKey]!["valueType"] = "integer (from list)"
+                                let readOptions = anyOf[1]["options"]! as! [String:[String]]
+                                var readEnumTitles = "\(String(describing: readOptions["enum_titles"]!))"
+                                readEnumTitles = readEnumTitles.replacingOccurrences(of: "[", with: "")
+                                readEnumTitles = readEnumTitles.replacingOccurrences(of: "]", with: "")
+                                readEnumTitles = readEnumTitles.replacingOccurrences(of: "\"", with: "")
+                                self.keyValuePairs[prefKey]!["enum_titles"] = readEnumTitles
+                                print("integer (from list)")
+                            }
                         } else {
                             self.keyValuePairs[prefKey]!["valueType"] = "Select Value Type"
                         }
@@ -137,6 +165,10 @@ class ViewController: NSViewController {
                             self.keyFriendlyName_TextField.stringValue = self.keyName
                             self.keyValuePairs[self.keyName]!["description"] = ""
                             self.keyDescription_TextField.string = ""
+                            self.keyValuePairs[self.keyName]!["enum_titles"] = ""
+                            self.enum_titles_TextView.string = ""
+                            self.keyValuePairs[self.keyName]!["enum"] = ""
+                            self.enum_TextField.stringValue = ""
                             self.keyType_Button.selectItem(at: 0)
                             self.keyValuePairs[self.keyName]!["valueType"] = "Select Value Type"
                             let keyIndex = self.preferenceKeys_TableArray?.firstIndex(of: self.keyName)
@@ -177,8 +209,10 @@ class ViewController: NSViewController {
     
     @IBAction func selectKeyName(_ sender: Any) {
         
-        if keyName != "" {
+        if keyName != "" && save_Button.title == "main" {
             updateKeyValuePair(whichKey: keyName)
+        } else {
+            keys_TabView.selectTabViewItem(at: 0)
         }
         
         let theRow = keys_TableView.selectedRow
@@ -205,6 +239,18 @@ class ViewController: NSViewController {
             if keyValuePairs[keyName]!["valueType"] as! String != "Select Value Type" {
                 keyType_Button.selectItem(withTitle: "\(String(describing: keyValuePairs[keyName]!["valueType"]!))")
             }
+            
+            if (keyValuePairs[keyName]!["enum_titles"] != nil) {
+                enum_titles_TextView.string = keyValuePairs[keyName]!["enum_titles"]! as! String
+            } else {
+                enum_titles_TextView.string = ""
+            }
+            
+            if (keyValuePairs[keyName]!["enum"] != nil) {
+                enum_TextField.stringValue = keyValuePairs[keyName]!["enum"]! as! String
+            } else {
+                enum_TextField.stringValue = ""
+            }
         }   // if keyName != ""
         
     }
@@ -219,6 +265,20 @@ class ViewController: NSViewController {
 
         print("updating data type for key \(keyName) with value \(keyType_Button.titleOfSelectedItem!)")
         keyValuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
+        
+        if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" {
+            enum_titlesString = ""
+            enumString       = ""
+            enum_titlesString = enum_titles_TextView.string.replacingOccurrences(of: ", ", with: ",")
+            let enum_titleArray = enum_titlesString.split(separator: ",")
+            enum_titlesString = "\(enum_titleArray)"
+            print("updating enum_title for key \(keyName)")
+            keyValuePairs[keyName]!["enum_titles"] = "\(enum_titlesString)"
+            
+            enumString = enum_TextField.stringValue
+            print("updating enum for key \(keyName)")
+            keyValuePairs[keyName]!["enum"] = "[\(enumString)]"
+        }
     }
 
     @IBAction func save_Action(_ sender: Any) {
@@ -261,19 +321,42 @@ class ViewController: NSViewController {
                                 keyDelimiter = "\n"
                             }
         //                                     let text = "\t{\"id\": \"\(String(describing: keyValuePairs[key]!["id"]!))\", \"name\": \"\(key)\"},\n"
+                            var keyTypeItems = "\(String(describing: self.keyValuePairs[key]!["valueType"]!))"
+                            switch keyTypeItems {
+                            case "array":
+                                keyTypeItems = """
+                                "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "title": "Entries"
+                                                    }
+                                """
+                            case "integer (from list)":
+                                keyTypeItems = """
+                                "integer",
+                                                    "options": {
+                                                        "enum_titles": \(String(describing: self.keyValuePairs[key]!["enum_titles"]!))
+                                                    },
+                                                    "enum": \(String(describing: self.keyValuePairs[key]!["enum"]!))
+                                """
+                            default:
+                                keyTypeItems = """
+                                "\(keyTypeItems)"
+                                """
+                            }
                             let text = """
-                            \t\t"\(key)": {
-                            \t\t\t"title": "\(String(describing: self.keyValuePairs[key]!["title"]!))",
-                            \t\t\t"description": "\(String(describing: self.keyValuePairs[key]!["description"]!))",
-                            \t\t\t"property_order": \(keysWritten),
-                            \t\t\t"anyOf": [
-                            \t\t\t\t{"type": "null", "title": "Not Configured"},
-                            \t\t\t\t{
-                            \t\t\t\t\t"title": "Configured",
-                            \t\t\t\t\t"type": "\(String(describing: self.keyValuePairs[key]!["valueType"]!))"
-                            \t\t\t\t}
-                            \t\t\t]
-                            \t\t}\(keyDelimiter)
+                                    "\(key)": {
+                                        "title": "\(String(describing: self.keyValuePairs[key]!["title"]!))",
+                                        "description": "\(String(describing: self.keyValuePairs[key]!["description"]!))",
+                                        "property_order": \(keysWritten),
+                                        "anyOf": [
+                                            {"type": "null", "title": "Not Configured"},
+                                            {
+                                                "title": "Configured",
+                                                "type": \(String(describing: keyTypeItems))
+                                            }
+                                        ]
+                                    }\(keyDelimiter)
                             """
                             preferenceDomainFileOp.write(text.data(using: String.Encoding.utf8)!)
                             
@@ -303,9 +386,31 @@ class ViewController: NSViewController {
             Alert().display(header: "Attention", message: "You must supply a preference domain.")
 
         }   // if preferenceDomain_TextField != "" - end
-                    
-                    
+    }   // @IBAction func save_Action - end
+    
+    // valueType actions - start
+    @IBAction func showAdvKeyTab(_ sender: Any) {
+        cancel_Button.isHidden = true
+        save_Button.isHidden = true
+        let advKeyType = keyType_Button.titleOfSelectedItem!
+        advKeyName_TextField.stringValue = "Key Type: \(String(describing: advKeyType))"
+        if advKeyType == "array" {
+            advIntegerList_Label.isHidden     = true
+            advIntegerList_TextField.isHidden = true
+        } else {
+            advIntegerList_Label.isHidden     = false
+            advIntegerList_TextField.isHidden = false
+        }
+        self.keys_TabView.selectTabViewItem(at: 1)
     }
+    @IBAction func showMainKeyTab(_ sender: Any) {
+        self.keys_TabView.selectTabViewItem(at: 0)
+        cancel_Button.isHidden = false
+        save_Button.isHidden = false
+    }
+    
+    
+    // valueType actions - end
     
     override func viewDidLoad() {
         super.viewDidLoad()
