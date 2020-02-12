@@ -1036,7 +1036,7 @@ DQ
                                                     <rect key="frame" x="0.0" y="107" width="512" height="81"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BhS-y9-lnJ">
                                                         <rect key="frame" x="1" y="1" width="510" height="79"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="YLT-Dq-tK9">
                                                                 <rect key="frame" x="0.0" y="0.0" width="510" height="79"/>
@@ -1143,7 +1143,7 @@ DQ
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Isk-ba-bh6">
-                                <rect key="frame" x="788" y="358" width="80" height="32"/>
+                                <rect key="frame" x="788" y="360" width="80" height="32"/>
                                 <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uDj-pq-rQb">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1162,12 +1162,12 @@ DQ
                             <constraint firstItem="eHK-xg-FKb" firstAttribute="leading" secondItem="TVZ-kd-KHp" secondAttribute="trailing" constant="40" id="H0N-Yc-aTF"/>
                             <constraint firstAttribute="bottom" secondItem="ORS-jH-3XI" secondAttribute="bottom" constant="20" id="Iv6-Mo-AHj"/>
                             <constraint firstItem="ICL-nr-Qpl" firstAttribute="top" secondItem="6HR-SU-cPn" secondAttribute="bottom" constant="2" id="Jdf-iv-l65"/>
-                            <constraint firstItem="TVZ-kd-KHp" firstAttribute="top" secondItem="Isk-ba-bh6" secondAttribute="bottom" constant="-25" id="Kis-TL-E5I"/>
+                            <constraint firstItem="TVZ-kd-KHp" firstAttribute="top" secondItem="Isk-ba-bh6" secondAttribute="bottom" constant="-23" id="Kis-TL-E5I"/>
                             <constraint firstItem="zE1-Vt-mvy" firstAttribute="leading" secondItem="ORS-jH-3XI" secondAttribute="trailing" constant="11" id="PaO-El-0WZ"/>
                             <constraint firstItem="zE1-Vt-mvy" firstAttribute="trailing" secondItem="DEa-5P-dMx" secondAttribute="trailing" id="Pm7-vx-V8f"/>
                             <constraint firstAttribute="trailing" secondItem="DEa-5P-dMx" secondAttribute="trailing" constant="20" id="SN4-N8-t3h"/>
                             <constraint firstItem="Isk-ba-bh6" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="794" id="TaF-Ik-5DM"/>
-                            <constraint firstItem="Isk-ba-bh6" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="29" id="UIN-z9-DRR"/>
+                            <constraint firstItem="Isk-ba-bh6" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="27" id="UIN-z9-DRR"/>
                             <constraint firstItem="XbU-wV-1KH" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="350" id="Usl-Ps-LJu"/>
                             <constraint firstAttribute="bottom" secondItem="PVh-P7-5PZ" secondAttribute="bottom" constant="20" id="X1z-zO-OWr"/>
                             <constraint firstAttribute="trailing" secondItem="XbU-wV-1KH" secondAttribute="trailing" constant="20" id="Z3t-Ag-xVh"/>

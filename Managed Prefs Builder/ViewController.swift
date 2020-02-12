@@ -378,7 +378,7 @@ class ViewController: NSViewController {
                                     "\(key)": {
                                         "title": "\(String(describing: self.keyValuePairs[key]!["title"]!))",
                                         "description": "\(String(describing: self.keyValuePairs[key]!["description"]!))",
-                                        "property_order": \(keysWritten),
+                                        "property_order": \(keysWritten*5),
                                         "anyOf": [
                                             {"type": "null", "title": "Not Configured"},
                                             {
