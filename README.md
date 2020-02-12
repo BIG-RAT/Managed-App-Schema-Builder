@@ -2,7 +2,7 @@
 Creates JSON file that can be used to set application preferences
 
 ![alt text](./images/App.png "Managed App Schema Builder")
-Download: [Managed App Schema Builder](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/current/Managed-App-Schema-Builder.zip)
+Download: [Managed App Schema Builder](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/current/Managed.App.Schema.Builder.zip)
 
 Starting with Jamf Pro v10.19 you are able to create a custome schema, in the form of a JSON, to create a template for setting application preferences within the Application & Custom Settings payload (Computer Configuration Profiles).
 
