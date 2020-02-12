@@ -14,7 +14,7 @@ Starting with Jamf Pro v10.19 you are able up upload a JSON file to create a tem
 * Modify the Key Fiendly Name if desired.  This is what is displayed for the key within the Jamf Pro GUI.
 * Provide (optional) a description of what the key does, what it applies to.  Perhaps descript the format of the data entered.
 * Select the key type from the drop down menu.
-* For integer (from list), additional information ca be entered.
+* For 'integer (from list)', additional information can be entered.
 	* Comma seperated list of options.  These will be items selectable from a menu. Quotes are not required when entering a menu choice and the choice cannot contain a comma in it.
 	* Comma seperated list of integers.  This will be the integer value corresponding to the menu choice.
 		<img src="./images/integerFromList.png" alt="integer (from list)" width="512" height="261">
