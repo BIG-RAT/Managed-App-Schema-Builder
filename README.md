@@ -23,5 +23,6 @@ Starting with Jamf Pro v10.19 you are able to create a custome schema, in the fo
 Once all the keys and values have been set click 'Save'.  The contents of the saved file will be copied to the clipboard.  This can then be pasted into the Schema field in the Jamf Pro server.
 
 The saved JSON file can later be imported and modify.  Add/Update/Remove keys or change the description.
+___
 
-#### Important:
+Thanks @talkingmoose for all the help!
