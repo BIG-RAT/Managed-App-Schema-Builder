@@ -17,7 +17,7 @@ Starting with Jamf Pro v10.19 you are able up upload a JSON file to create a tem
 * For integer (from list), additional information ca be entered.
 	* Comma seperated list of options.  These will be items selectable from a menu. Quotes are not required when entering a menu choice and the choice cannot contain a comma in it.
 	* Comma seperated list of integers.  This will be the integer value corresponding to the menu choice.
-	<img src="./images/integerFromList.png" alt="integer (from list)" width="512" height="261">
+		<img src="./images/integerFromList.png" alt="integer (from list)" width="512" height="261">
 
 
 Once all the keys and values have been set click 'Save'.  The contents of the saved file will be copied to the clipboard.  This can then be pasted into the Schema field in the Jamf Pro server.
