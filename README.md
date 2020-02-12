@@ -21,6 +21,6 @@ Starting with Jamf Pro v10.19 you are able up upload a JSON file to create a tem
 
 Once all the keys and values have been set click 'Save'.  The contents of the saved file will be copied to the clipboard.  This can then be pasted into the Schema field in the Jamf Pro server.
 
-The saved JSON file can later be imported and updated.  Add/Update/Remove keys of change the description.
+The saved JSON file can later be imported and modify.  Add/Update/Remove keys of change the description.
 
 #### Important:
