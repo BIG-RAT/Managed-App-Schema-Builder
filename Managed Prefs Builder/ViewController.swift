@@ -29,9 +29,10 @@ class ViewController: NSViewController {
     // advanced key tab - start
     @IBOutlet weak var advKeyName_TextField: NSTextField!
     @IBOutlet weak var advIntegerList_Label: NSTextField!
-    @IBOutlet weak var advIntegerList_TextField: NSTextField!
+//    @IBOutlet weak var advIntegerList_TextField: NSTextField!
     
     @IBOutlet var enum_titles_TextView: NSTextView!
+    @IBOutlet var enum_TextView: NSTextView!
     @IBOutlet weak var enum_TextField: NSTextField!
     
     var enum_titlesString = ""
@@ -182,7 +183,7 @@ class ViewController: NSViewController {
                             self.keyValuePairs[self.keyName]!["enum_titles"] = ""
                             self.enum_titles_TextView.string = ""
                             self.keyValuePairs[self.keyName]!["enum"] = ""
-                            self.enum_TextField.stringValue = ""
+                            self.enum_TextView.string = ""
                             self.keyType_Button.selectItem(at: 0)
                             self.keyValuePairs[self.keyName]!["valueType"] = "Select Value Type"
                             let keyIndex = self.preferenceKeys_TableArray?.firstIndex(of: self.keyName)
@@ -263,9 +264,9 @@ class ViewController: NSViewController {
             }
             
             if (keyValuePairs[keyName]!["enum"] != nil) {
-                enum_TextField.stringValue = keyValuePairs[keyName]!["enum"]! as! String
+                enum_TextView.string = keyValuePairs[keyName]!["enum"]! as! String
             } else {
-                enum_TextField.stringValue = ""
+                enum_TextView.string = ""
             }
         }   // if keyName != ""
         
@@ -291,10 +292,10 @@ class ViewController: NSViewController {
             print("updating enum_title for key \(keyName)")
             keyValuePairs[keyName]!["enum_titles"] = "\(enum_titles_TextView.string)".replacingOccurrences(of: "\"", with: "")
             
-            enumString = enum_TextField.stringValue
+            enumString = enum_TextView.string
             print("updating enum for key \(keyName)")
 //            keyValuePairs[keyName]!["enum"] = "[\(enumString)]"
-            keyValuePairs[keyName]!["enum"] = "\(enum_TextField.stringValue)".replacingOccurrences(of: "\"", with: "")
+            keyValuePairs[keyName]!["enum"] = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
         }
     }
 
@@ -424,13 +425,13 @@ class ViewController: NSViewController {
         save_Button.isHidden = true
         let advKeyType = keyType_Button.titleOfSelectedItem!
         advKeyName_TextField.stringValue = "Key Type: \(String(describing: advKeyType))"
-        if advKeyType == "array" {
-            advIntegerList_Label.isHidden     = true
-            advIntegerList_TextField.isHidden = true
-        } else {
-            advIntegerList_Label.isHidden     = false
-            advIntegerList_TextField.isHidden = false
-        }
+//        if advKeyType == "array" {
+//            advIntegerList_Label.isHidden     = true
+//            advIntegerList_TextField.isHidden = true
+//        } else {
+//            advIntegerList_Label.isHidden     = false
+//            advIntegerList_TextField.isHidden = false
+//        }
         self.keys_TabView.selectTabViewItem(at: 1)
     }
     
@@ -439,24 +440,33 @@ class ViewController: NSViewController {
             self.keys_TabView.selectTabViewItem(at: 0)
             cancel_Button.isHidden = false
             save_Button.isHidden = false
-            enum_titles_TextView.string = keyValuePairs[keyName]!["enum_titles"] as! String
-            enum_TextField.stringValue  = keyValuePairs[keyName]!["enum"] as! String
+            if let _ = keyValuePairs[keyName]?["enum_titles"] {
+                enum_titles_TextView.string = keyValuePairs[keyName]!["enum_titles"] as! String
+            } else {
+                enum_titles_TextView.string = ""
+            }
+            if let _ = keyValuePairs[keyName]?["enum"] {
+                enum_TextView.string  = keyValuePairs[keyName]!["enum"] as! String
+            } else {
+                enum_TextView.string = ""
+            }
             return
         }
         // verify enum_titles and enum have the same number of values
         let enum_titlesArray = enum_titles_TextView.string.split(separator: ",")
-        let enumArray        = enum_TextField.stringValue.split(separator: ",")
+        let enumArray        = enum_TextView.string.split(separator: ",")
         if enum_titlesArray.count == enumArray.count {
             self.keys_TabView.selectTabViewItem(at: 0)
             cancel_Button.isHidden = false
             save_Button.isHidden = false
         } else {
-            Alert().display(header: "Attention", message: "Comma seperated list of options and integer list must have the same number of values.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of integers: \(enumArray.count)")
+            Alert().display(header: "Attention", message: "Number of items defined in list of options and number of items defined in the value list must be equal.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of values: \(enumArray.count)")
         }
     }
-    
-    
     // valueType actions - end
+    
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
