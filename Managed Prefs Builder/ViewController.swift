@@ -38,6 +38,7 @@ class ViewController: NSViewController {
     var enum_titlesString = ""
     var enumString       = ""
     var enumValues       = ""   // values written to file for enum
+    var readEnumArray    = [Any]()
     // advanced key tab - end
     
     var keysArray = [String]()
@@ -105,10 +106,15 @@ class ViewController: NSViewController {
                                 preferenceKeys.valuePairs[prefKey]!["enum_titles"] = readEnumTitles
                                 
                                 // get associated values
-                                let readEnumArray = anyOf[1]["enum"] as! [Int]
-                                var readEnum = "\(String(describing: readEnumArray))"
+                                if readKeyType == "integer" {
+                                    self.readEnumArray = anyOf[1]["enum"] as! [Int]
+                                } else {
+                                    self.readEnumArray = anyOf[1]["enum"] as! [String]
+                                }
+                                var readEnum = "\(String(describing: self.readEnumArray))"
                                 readEnum = readEnum.replacingOccurrences(of: "[", with: "")
                                 readEnum = readEnum.replacingOccurrences(of: "]", with: "")
+                                readEnum = readEnumTitles.replacingOccurrences(of: "\"", with: "")
                                 preferenceKeys.valuePairs[prefKey]!["enum"] = readEnum
                             }
                         } else {
@@ -358,9 +364,9 @@ class ViewController: NSViewController {
     @IBAction func save_Action(_ sender: Any) {
                 
 //                let timeStamp = Time().getCurrent()
-        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
+        tab.current = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
         
-        if currentTab == "valueTypeDefs" {
+        if tab.current == "valueTypeDefs" {
             Alert().display(header: "Attention", message: "Click 'OK' or 'Cancel' before saving.")
             return
         }

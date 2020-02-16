@@ -13,6 +13,6 @@ struct preferenceKeys {
     static var valuePairs = [String:[String:Any]]()
 }
 
-//struct preference {
-//    static var valuePairs: [String:[String:Any]]!
-//}
+struct tab {
+    static var current = ""
+}
