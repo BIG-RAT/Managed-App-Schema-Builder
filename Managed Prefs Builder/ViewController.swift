@@ -76,7 +76,6 @@ class ViewController: NSViewController {
                     let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
                     json = try? JSONSerialization.jsonObject(with: data)
                     let manifestJson = json as? [String: Any]
-                    print("manifestJson: \(manifestJson)")
                     
                     self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
                     self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
