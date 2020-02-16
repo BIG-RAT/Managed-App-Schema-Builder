@@ -24,7 +24,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var cancel_Button: NSButton!
     
     @IBOutlet weak var keys_TableView: NSTableView!
-    var preferenceKeys_TableArray: [String]?
+//    var preferenceKeys_TableArray: [String]?
     
     // advanced key tab - start
     @IBOutlet weak var advKeyName_TextField: NSTextField!
@@ -44,7 +44,7 @@ class ViewController: NSViewController {
     var valueType = ""
     var keyName   = ""
     
-    var keyValuePairs = [String:[String:Any]]()
+//    var keyValuePairs = [String:[String:Any]]()
     
         
     @IBAction func importFile_Button(_ sender: NSButton) {
@@ -69,7 +69,7 @@ class ViewController: NSViewController {
         
                 var rawKeyValuePairs = [String: Any]()
                 do {
-                    self.keyValuePairs.removeAll()
+                    preferenceKeys.valuePairs.removeAll()
 
                     // Getting data from JSON file using the file URL
                     let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
@@ -80,43 +80,44 @@ class ViewController: NSViewController {
                     self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
                     let properties = manifestJson!["properties"] as! [String: [String: Any]]
                     self.keysArray.removeAll()
-                    self.keyValuePairs.removeAll()
+                    preferenceKeys.valuePairs.removeAll()
                     for (prefKey, _) in properties {
                         self.keysArray.append(prefKey)
                         rawKeyValuePairs = properties[prefKey]!
 
-                        self.keyValuePairs[prefKey] = [:]
-                        self.keyValuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
-                        self.keyValuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
+                        preferenceKeys.valuePairs[prefKey] = [:]
+                        preferenceKeys.valuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
+                        preferenceKeys.valuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
                         let anyOf = rawKeyValuePairs["anyOf"] as! [[String: Any]]
                         if anyOf.count > 1 {
                             let readKeyType = anyOf[1]["type"] as! String
-                            self.keyValuePairs[prefKey]!["valueType"] = readKeyType
-                            if readKeyType == "integer", anyOf[1]["options"] != nil {
-                                self.keyValuePairs[prefKey]!["valueType"] = "integer (from list)"
+                            preferenceKeys.valuePairs[prefKey]!["valueType"] = readKeyType
+                            if readKeyType == "integer" || readKeyType == "array", anyOf[1]["options"] != nil {
+                                preferenceKeys.valuePairs[prefKey]!["valueType"] = (anyOf[1]["type"] as! String == "integer") ? "integer (from list)":"array (from list)"
+//                                preferenceKeys.valuePairs[prefKey]!["valueType"] = "integer (from list)"
                                 // get list of choices
                                 let readOptions = anyOf[1]["options"]! as! [String:[String]]
                                 var readEnumTitles = "\(String(describing: readOptions["enum_titles"]!))"
                                 readEnumTitles = readEnumTitles.replacingOccurrences(of: "[", with: "")
                                 readEnumTitles = readEnumTitles.replacingOccurrences(of: "]", with: "")
                                 readEnumTitles = readEnumTitles.replacingOccurrences(of: "\"", with: "")
-                                self.keyValuePairs[prefKey]!["enum_titles"] = readEnumTitles
+                                preferenceKeys.valuePairs[prefKey]!["enum_titles"] = readEnumTitles
                                 
-                                // get integer values
+                                // get associated values
                                 let readEnumArray = anyOf[1]["enum"] as! [Int]
                                 var readEnum = "\(String(describing: readEnumArray))"
                                 readEnum = readEnum.replacingOccurrences(of: "[", with: "")
                                 readEnum = readEnum.replacingOccurrences(of: "]", with: "")
-                                self.keyValuePairs[prefKey]!["enum"] = readEnum
+                                preferenceKeys.valuePairs[prefKey]!["enum"] = readEnum
                             }
                         } else {
-                            self.keyValuePairs[prefKey]!["valueType"] = "Select Value Type"
+                            preferenceKeys.valuePairs[prefKey]!["valueType"] = "Select Value Type"
                         }
                     }
                     self.keysArray.sort()
 
                     if self.keysArray.count > 0 {
-                        self.preferenceKeys_TableArray = self.keysArray
+                        preferenceKeys.tableArray = self.keysArray
                         self.keys_TableView.reloadData()
                     }
     //                    print("\(json)")
@@ -171,22 +172,22 @@ class ViewController: NSViewController {
                             print("new key")
                             self.keysArray.append(self.keyName)
                             self.keysArray.sort()
-                            self.preferenceKeys_TableArray = self.keysArray
+                            preferenceKeys.tableArray = self.keysArray
                             
                             self.keys_TableView.reloadData()
-                            self.keyValuePairs[self.keyName] = [:]
+                            preferenceKeys.valuePairs[self.keyName] = [:]
                             // initialize values - start
-                            self.keyValuePairs[self.keyName]!["title"] = self.keyName
+                            preferenceKeys.valuePairs[self.keyName]!["title"] = self.keyName
                             self.keyFriendlyName_TextField.stringValue = self.keyName
-                            self.keyValuePairs[self.keyName]!["description"] = ""
+                            preferenceKeys.valuePairs[self.keyName]!["description"] = ""
                             self.keyDescription_TextField.string = ""
-                            self.keyValuePairs[self.keyName]!["enum_titles"] = ""
+                            preferenceKeys.valuePairs[self.keyName]!["enum_titles"] = ""
                             self.enum_titles_TextView.string = ""
-                            self.keyValuePairs[self.keyName]!["enum"] = ""
+                            preferenceKeys.valuePairs[self.keyName]!["enum"] = ""
                             self.enum_TextView.string = ""
                             self.keyType_Button.selectItem(at: 0)
-                            self.keyValuePairs[self.keyName]!["valueType"] = "Select Value Type"
-                            let keyIndex = self.preferenceKeys_TableArray?.firstIndex(of: self.keyName)
+                            preferenceKeys.valuePairs[self.keyName]!["valueType"] = "Select Value Type"
+                            let keyIndex = preferenceKeys.tableArray?.firstIndex(of: self.keyName)
                             self.keys_TableView.selectRowIndexes(.init(integer: keyIndex!), byExtendingSelection: false)
                             // initialize values - end
                         }
@@ -208,10 +209,10 @@ class ViewController: NSViewController {
         DispatchQueue.main.async {
             let theRow = self.keys_TableView.selectedRow
             if theRow >= 0 {
-                self.keyName = self.preferenceKeys_TableArray?[theRow] ?? ""
-                self.keyValuePairs.removeValue(forKey: self.keyName)
+                self.keyName = preferenceKeys.tableArray?[theRow] ?? ""
+                preferenceKeys.valuePairs.removeValue(forKey: self.keyName)
                 self.keysArray.remove(at: theRow)
-                self.preferenceKeys_TableArray = self.keysArray
+                preferenceKeys.tableArray = self.keysArray
 
                 self.keys_TableView.reloadData()
                 self.keyName = ""
@@ -223,80 +224,132 @@ class ViewController: NSViewController {
     }
     
     @IBAction func selectKeyName(_ sender: Any) {
-        
+
+//        print("[updateView] selected row: \(rowSelected)")
         let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
-        
+
         if keyName != "" && currentTab == "main" {
             updateKeyValuePair(whichKey: keyName)
         } else {
             keys_TabView.selectTabViewItem(at: 0)
         }
         
-        let theRow = keys_TableView.selectedRow
-        if theRow >= 0 {
-            keyName = preferenceKeys_TableArray?[theRow] ?? ""
-        } else {
-            keyName = ""
-        }
-        
-        if keyName != "" {
-            if let _ = keyValuePairs[keyName]!["title"] {
-//                keyTitle = try! keyValuePairs[keyName]!["title"] as! String
-                keyFriendlyName_TextField.stringValue = keyValuePairs[keyName]!["title"] as! String
-            } else {
-                keyFriendlyName_TextField.stringValue = ""
-            }
+        let rowSelected = keys_TableView.selectedRow
+                if rowSelected >= 0 {
+                    keyName = preferenceKeys.tableArray?[rowSelected] ?? ""
+                } else {
+                    keyName = ""
+                }
+                
+                if keyName != "" {
+                    if let _ = preferenceKeys.valuePairs[keyName]!["title"] {
+        //                keyTitle = try! preferenceKeys.valuePairs[keyName]!["title"] as! String
+                        keyFriendlyName_TextField.stringValue = preferenceKeys.valuePairs[keyName]!["title"] as! String
+                    } else {
+                        keyFriendlyName_TextField.stringValue = ""
+                    }
 
-            if let _ = keyValuePairs[keyName]!["description"] {
-                keyDescription_TextField.string = keyValuePairs[keyName]!["description"] as! String
-            } else {
-                keyDescription_TextField.string = ""
-            }
+                    if let _ = preferenceKeys.valuePairs[keyName]!["description"] {
+                        keyDescription_TextField.string = preferenceKeys.valuePairs[keyName]!["description"] as! String
+                    } else {
+                        keyDescription_TextField.string = ""
+                    }
 
-            if keyValuePairs[keyName]!["valueType"] as! String != "Select Value Type" {
-                keyType_Button.selectItem(withTitle: "\(String(describing: keyValuePairs[keyName]!["valueType"]!))")
-            }
-            
-            if (keyValuePairs[keyName]!["enum_titles"] != nil) {
-                enum_titles_TextView.string = keyValuePairs[keyName]!["enum_titles"]! as! String
-            } else {
-                enum_titles_TextView.string = ""
-            }
-            
-            if (keyValuePairs[keyName]!["enum"] != nil) {
-                enum_TextView.string = keyValuePairs[keyName]!["enum"]! as! String
-            } else {
-                enum_TextView.string = ""
-            }
-        }   // if keyName != ""
-        
+                    if preferenceKeys.valuePairs[keyName]!["valueType"] as! String != "Select Value Type" {
+                        keyType_Button.selectItem(withTitle: "\(String(describing: preferenceKeys.valuePairs[keyName]!["valueType"]!))")
+                    }
+                    
+                    if (preferenceKeys.valuePairs[keyName]!["enum_titles"] != nil) {
+                        enum_titles_TextView.string = preferenceKeys.valuePairs[keyName]!["enum_titles"]! as! String
+                    } else {
+                        enum_titles_TextView.string = ""
+                    }
+                    
+                    if (preferenceKeys.valuePairs[keyName]!["enum"] != nil) {
+                        enum_TextView.string = preferenceKeys.valuePairs[keyName]!["enum"]! as! String
+                    } else {
+                        enum_TextView.string = ""
+                    }
+                }   // if keyName != ""
+                
     }
     
     func updateKeyValuePair(whichKey: String) {
     
         print("updating friendly name (title) for key \(keyName)")
-        keyValuePairs[keyName]!["title"] = "\(keyFriendlyName_TextField.stringValue)"
+        preferenceKeys.valuePairs[keyName]!["title"] = "\(keyFriendlyName_TextField.stringValue)"
     
         print("updating description for key \(keyName)")
-        keyValuePairs[keyName]!["description"] = "\(keyDescription_TextField.string)"
+        preferenceKeys.valuePairs[keyName]!["description"] = "\(keyDescription_TextField.string)"
 
         print("updating data type for key \(keyName) with value \(keyType_Button.titleOfSelectedItem!)")
-        keyValuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
+        preferenceKeys.valuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
         
-        if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" {
+        if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" || "\(keyType_Button.titleOfSelectedItem!)" == "array (from list)"{
 //            enum_titlesString = ""
 //            enumString        = ""
 //            enum_titlesString = enum_titles_TextView.string.replacingOccurrences(of: ", ", with: ",")
 //            let enum_titleArray = enum_titlesString.split(separator: ",")
 //            enum_titlesString = "\(enum_titleArray)"
             print("updating enum_title for key \(keyName)")
-            keyValuePairs[keyName]!["enum_titles"] = "\(enum_titles_TextView.string)".replacingOccurrences(of: "\"", with: "")
+            preferenceKeys.valuePairs[keyName]!["enum_titles"] = "\(enum_titles_TextView.string)".replacingOccurrences(of: "\"", with: "")
             
             enumString = enum_TextView.string
             print("updating enum for key \(keyName)")
-//            keyValuePairs[keyName]!["enum"] = "[\(enumString)]"
-            keyValuePairs[keyName]!["enum"] = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
+//            preferenceKeys.valuePairs[keyName]!["enum"] = "[\(enumString)]"
+            preferenceKeys.valuePairs[keyName]!["enum"] = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
         }
+    }
+    
+    func updateView(rowSelected: Int) {
+        print("[updateView] selected row: \(rowSelected)")
+//        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
+//
+//        if keyName != "" && currentTab == "main" {
+//            updateKeyValuePair(whichKey: keyName)
+//        } else {
+//            keys_TabView.selectTabViewItem(at: 0)
+//        }
+        
+        if rowSelected >= 0 {
+            keyName = preferenceKeys.tableArray?[rowSelected] ?? ""
+        } else {
+            keyName = ""
+        }
+        print("selected key: \(keyName)")
+        print("preferenceKeys.valuePairs[\(keyName)]!: \(preferenceKeys.valuePairs[keyName]!["title"] as! String)")
+        
+        if keyName != "" {
+            if let _ = preferenceKeys.valuePairs[keyName]!["title"] {
+//                keyTitle = try! preferenceKeys.valuePairs[keyName]!["title"] as! String
+                keyFriendlyName_TextField.stringValue = preferenceKeys.valuePairs[keyName]!["title"] as! String
+            } else {
+                keyFriendlyName_TextField.stringValue = ""
+            }
+
+            if let _ = preferenceKeys.valuePairs[keyName]!["description"] {
+                keyDescription_TextField.string = preferenceKeys.valuePairs[keyName]!["description"] as! String
+            } else {
+                keyDescription_TextField.string = ""
+            }
+
+            if preferenceKeys.valuePairs[keyName]!["valueType"] as! String != "Select Value Type" {
+                keyType_Button.selectItem(withTitle: "\(String(describing: preferenceKeys.valuePairs[keyName]!["valueType"]!))")
+            }
+            
+            if (preferenceKeys.valuePairs[keyName]!["enum_titles"] != nil) {
+                enum_titles_TextView.string = preferenceKeys.valuePairs[keyName]!["enum_titles"]! as! String
+            } else {
+                enum_titles_TextView.string = ""
+            }
+            
+            if (preferenceKeys.valuePairs[keyName]!["enum"] != nil) {
+                enum_TextView.string = preferenceKeys.valuePairs[keyName]!["enum"]! as! String
+            } else {
+                enum_TextView.string = ""
+            }
+        }   // if keyName != ""
+        
     }
 
     @IBAction func save_Action(_ sender: Any) {
@@ -338,14 +391,14 @@ class ViewController: NSViewController {
                     }
                     
                     if let preferenceDomainFileOp = try? FileHandle(forUpdating: exportURL) {
-                         for (key, _) in self.keyValuePairs {
+                         for (key, _) in preferenceKeys.valuePairs {
                             preferenceDomainFileOp.seekToEndOfFile()
                             keysWritten += 1
-                            if keysWritten == self.keyValuePairs.count {
+                            if keysWritten == preferenceKeys.valuePairs.count {
                                 keyDelimiter = "\n"
                             }
-        //                                     let text = "\t{\"id\": \"\(String(describing: keyValuePairs[key]!["id"]!))\", \"name\": \"\(key)\"},\n"
-                            var keyTypeItems = "\(String(describing: self.keyValuePairs[key]!["valueType"]!))"
+        //                                     let text = "\t{\"id\": \"\(String(describing: preferenceKeys.valuePairs[key]!["id"]!))\", \"name\": \"\(key)\"},\n"
+                            var keyTypeItems = "\(String(describing: preferenceKeys.valuePairs[key]!["valueType"]!))"
                             switch keyTypeItems {
                             case "array":
                                 keyTypeItems = """
@@ -355,20 +408,21 @@ class ViewController: NSViewController {
                                                         "title": "Entries"
                                                     }
                                 """
-                            case "integer (from list)":
+                            case "integer (from list)", "array (from list)":
+                                let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"array"
                                 self.enum_titlesString = ""
 //                                self.enumString        = ""
                                 // convert string of enum_titles to array
-                                self.enum_titlesString = (self.keyValuePairs[key]!["enum_titles"]! as! String).replacingOccurrences(of: ", ", with: ",")
+                                self.enum_titlesString = (preferenceKeys.valuePairs[key]!["enum_titles"]! as! String).replacingOccurrences(of: ", ", with: ",")
                                 let enum_titleArray = self.enum_titlesString.split(separator: ",")
                                 // convert string of enum to array
-                                self.enumString = (self.keyValuePairs[key]!["enum"]! as! String)
+                                self.enumString = (preferenceKeys.valuePairs[key]!["enum"]! as! String)
                                 keyTypeItems = """
-                                "integer",
+                                "\(keyTypeItemVar)",
                                                     "options": {
                                                         "enum_titles": \(enum_titleArray)
                                                     },
-                                                    "enum": [\(self.keyValuePairs[key]!["enum"]! as! String)]
+                                                    "enum": [\(preferenceKeys.valuePairs[key]!["enum"]! as! String)]
                                 """
                             default:
                                 keyTypeItems = """
@@ -377,8 +431,8 @@ class ViewController: NSViewController {
                             }
                             let text = """
                                     "\(key)": {
-                                        "title": "\(String(describing: self.keyValuePairs[key]!["title"]!))",
-                                        "description": "\(String(describing: self.keyValuePairs[key]!["description"]!))",
+                                        "title": "\(String(describing: preferenceKeys.valuePairs[key]!["title"]!))",
+                                        "description": "\(String(describing: preferenceKeys.valuePairs[key]!["description"]!))",
                                         "property_order": \(keysWritten*5),
                                         "anyOf": [
                                             {"type": "null", "title": "Not Configured"},
@@ -415,6 +469,7 @@ class ViewController: NSViewController {
             // preference domain required
             print("preference domain required")
             Alert().display(header: "Attention", message: "You must supply a preference domain.")
+            preferenceDomain_TextField.becomeFirstResponder()
 
         }   // if preferenceDomain_TextField != "" - end
     }   // @IBAction func save_Action - end
@@ -440,13 +495,13 @@ class ViewController: NSViewController {
             self.keys_TabView.selectTabViewItem(at: 0)
             cancel_Button.isHidden = false
             save_Button.isHidden = false
-            if let _ = keyValuePairs[keyName]?["enum_titles"] {
-                enum_titles_TextView.string = keyValuePairs[keyName]!["enum_titles"] as! String
+            if let _ = preferenceKeys.valuePairs[keyName]?["enum_titles"] {
+                enum_titles_TextView.string = preferenceKeys.valuePairs[keyName]!["enum_titles"] as! String
             } else {
                 enum_titles_TextView.string = ""
             }
-            if let _ = keyValuePairs[keyName]?["enum"] {
-                enum_TextView.string  = keyValuePairs[keyName]!["enum"] as! String
+            if let _ = preferenceKeys.valuePairs[keyName]?["enum"] {
+                enum_TextView.string  = preferenceKeys.valuePairs[keyName]!["enum"] as! String
             } else {
                 enum_TextView.string = ""
             }
@@ -464,16 +519,16 @@ class ViewController: NSViewController {
         }
     }
     // valueType actions - end
-    
-    
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         keys_TableView.delegate   = self
         keys_TableView.dataSource = self
+        
+        // bring app to foreground
+        NSApplication.shared.activate(ignoringOtherApps: true)
     }
 
     override var representedObject: Any? {
@@ -487,13 +542,13 @@ class ViewController: NSViewController {
     }
     
 
-}
+}   // class ViewController - end
 
 
 extension ViewController: NSTableViewDataSource {
 
   func numberOfRows(in keys_TableView: NSTableView) -> Int {
-    return preferenceKeys_TableArray?.count ?? 0
+    return preferenceKeys.tableArray?.count ?? 0
   }
 }
 
@@ -509,7 +564,7 @@ extension ViewController: NSTableViewDelegate {
         var cellIdentifier: String = ""
     
 //        print("[func tableView] item: \(unusedItems_TableArray?[row] ?? nil)")
-        guard let item = preferenceKeys_TableArray?[row] else {
+        guard let item = preferenceKeys.tableArray?[row] else {
             return nil
         }
         
@@ -523,6 +578,26 @@ extension ViewController: NSTableViewDelegate {
             return cell
         }
         return nil
+    }
+    
+    
+//    override func keyDown(with event: NSEvent) {
+//        switch Int(event.keyCode) {
+//        case 125,126:
+//            print("up/down pressed")
+//        default:
+//            print("other key pressed")
+//        }
+//    }
+    
+    
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        let selectedRow = keys_TableView.selectedRow
+        print("row selected: \(selectedRow)")
+
+        if selectedRow >= 0 && keys_TableView.selectedRowIndexes.count == 1 {
+            ViewController().updateView(rowSelected: selectedRow)
+        }
     }
 
 }
