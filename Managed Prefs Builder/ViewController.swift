@@ -37,6 +37,7 @@ class ViewController: NSViewController {
     
     var enum_titlesString = ""
     var enumString       = ""
+    var enumValues       = ""   // values written to file for enum
     // advanced key tab - end
     
     var keysArray = [String]()
@@ -75,6 +76,7 @@ class ViewController: NSViewController {
                     let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
                     json = try? JSONSerialization.jsonObject(with: data)
                     let manifestJson = json as? [String: Any]
+                    print("manifestJson: \(manifestJson)")
                     
                     self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
                     self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
@@ -232,6 +234,8 @@ class ViewController: NSViewController {
             updateKeyValuePair(whichKey: keyName)
         } else {
             keys_TabView.selectTabViewItem(at: 0)
+            save_Button.isHidden = false
+            cancel_Button.isHidden = false
         }
         
         let rowSelected = keys_TableView.selectedRow
@@ -303,21 +307,21 @@ class ViewController: NSViewController {
     
     func updateView(rowSelected: Int) {
         print("[updateView] selected row: \(rowSelected)")
-//        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
-//
-//        if keyName != "" && currentTab == "main" {
-//            updateKeyValuePair(whichKey: keyName)
-//        } else {
-//            keys_TabView.selectTabViewItem(at: 0)
-//        }
+        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
+
+        if keyName != "" && currentTab == "main" {
+            updateKeyValuePair(whichKey: keyName)
+        } else {
+            keys_TabView.selectTabViewItem(at: 0)
+        }
         
         if rowSelected >= 0 {
             keyName = preferenceKeys.tableArray?[rowSelected] ?? ""
         } else {
             keyName = ""
         }
-        print("selected key: \(keyName)")
-        print("preferenceKeys.valuePairs[\(keyName)]!: \(preferenceKeys.valuePairs[keyName]!["title"] as! String)")
+//        print("selected key: \(keyName)")
+//        print("preferenceKeys.valuePairs[\(keyName)]!: \(preferenceKeys.valuePairs[keyName]!["title"] as! String)")
         
         if keyName != "" {
             if let _ = preferenceKeys.valuePairs[keyName]!["title"] {
@@ -416,13 +420,20 @@ class ViewController: NSViewController {
                                 self.enum_titlesString = (preferenceKeys.valuePairs[key]!["enum_titles"]! as! String).replacingOccurrences(of: ", ", with: ",")
                                 let enum_titleArray = self.enum_titlesString.split(separator: ",")
                                 // convert string of enum to array
-                                self.enumString = (preferenceKeys.valuePairs[key]!["enum"]! as! String)
+                                self.enumString = (preferenceKeys.valuePairs[key]!["enum"]! as! String).replacingOccurrences(of: ", ", with: ",")
+                                
+                                if keyTypeItemVar == "array" {
+                                    let enumValuesArray = self.enumString.split(separator: ",")
+                                    self.enumValues     = "\(enumValuesArray)"
+                                } else {
+                                    self.enumValues = "[\(self.enumString)]"
+                                }
                                 keyTypeItems = """
                                 "\(keyTypeItemVar)",
                                                     "options": {
                                                         "enum_titles": \(enum_titleArray)
                                                     },
-                                                    "enum": [\(preferenceKeys.valuePairs[key]!["enum"]! as! String)]
+                                                    "enum": \(self.enumValues)
                                 """
                             default:
                                 keyTypeItems = """
@@ -591,13 +602,13 @@ extension ViewController: NSTableViewDelegate {
 //    }
     
     
-    func tableViewSelectionDidChange(_ notification: Notification) {
-        let selectedRow = keys_TableView.selectedRow
-        print("row selected: \(selectedRow)")
-
-        if selectedRow >= 0 && keys_TableView.selectedRowIndexes.count == 1 {
-            ViewController().updateView(rowSelected: selectedRow)
-        }
-    }
+//    func tableViewSelectionDidChange(_ notification: Notification) {
+//        let selectedRow = keys_TableView.selectedRow
+//        print("row selected: \(selectedRow)")
+//
+//        if selectedRow >= 0 && keys_TableView.selectedRowIndexes.count == 1 {
+//            ViewController().updateView(rowSelected: selectedRow)
+//        }
+//    }
 
 }
