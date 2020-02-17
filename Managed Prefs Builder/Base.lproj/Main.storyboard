@@ -706,7 +706,7 @@
                                             <tableColumns>
                                                 <tableColumn editable="NO" width="285" minWidth="40" maxWidth="1000" id="xgZ-LF-xuu">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Key Name">
-                                                        <font key="font" metaFont="label" size="11"/>
+                                                        <font key="font" metaFont="menu" size="11"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
@@ -866,8 +866,9 @@
                                 <buttonCell key="cell" type="push" title="Save" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8ze-k3-Ulu">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
-                                    <string key="keyEquivalent">s</string>
-                                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
                                 </buttonCell>
                                 <connections>
                                     <action selector="save_Action:" target="XfG-lQ-9wD" id="C3Q-rG-yH7"/>
@@ -968,9 +969,6 @@
                                                                     </connections>
                                                                 </menuItem>
                                                                 <menuItem title="boolean" id="b9q-22-znC"/>
-                                                                <menuItem title="date" id="lCB-p0-8kz" userLabel="date">
-                                                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                                                </menuItem>
                                                                 <menuItem title="integer" id="08c-Kh-8Fp"/>
                                                                 <menuItem title="integer (from list)" id="xlX-S6-9af">
                                                                     <connections>
@@ -1031,9 +1029,9 @@ DQ
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                 </textField>
-                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m1g-Ge-YTj">
-                                                    <rect key="frame" x="-2" y="308" width="205" height="16"/>
-                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Comma seperated list of options:" id="1av-Tq-xKg">
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m1g-Ge-YTj">
+                                                    <rect key="frame" x="-2" y="308" width="460" height="16"/>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="List of options (use comma or newline as seperator):" id="1av-Tq-xKg">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1070,11 +1068,11 @@ DQ
                                                     </scroller>
                                                 </scrollView>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e33-iD-IQx">
-                                                    <rect key="frame" x="-2" y="156" width="267" height="18"/>
+                                                    <rect key="frame" x="-2" y="156" width="382" height="18"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="18" id="C9v-lQ-hec"/>
                                                     </constraints>
-                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Associated comma seperated list of values:" id="753-zb-sEo">
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Associated list of values (use comma or newline as seperator):" id="753-zb-sEo">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

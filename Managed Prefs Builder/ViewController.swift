@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Foundation
 
 class ViewController: NSViewController {
     
@@ -78,6 +79,11 @@ class ViewController: NSViewController {
                     json = try? JSONSerialization.jsonObject(with: data)
                     let manifestJson = json as? [String: Any]
                     
+                    guard let _ = manifestJson?["title"] else {
+                        Alert().display(header: "Error", message: "Unable to parse JSON, verify the format.")
+                        return
+                    }
+                    
                     self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
                     self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
                     let properties = manifestJson!["properties"] as! [String: [String: Any]]
@@ -94,7 +100,7 @@ class ViewController: NSViewController {
                         if anyOf.count > 1 {
                             let readKeyType = anyOf[1]["type"] as! String
                             preferenceKeys.valuePairs[prefKey]!["valueType"] = readKeyType
-                            if readKeyType == "integer" || readKeyType == "array", anyOf[1]["options"] != nil {
+                            if readKeyType == "integer" || readKeyType == "string", anyOf[1]["options"] != nil {
                                 preferenceKeys.valuePairs[prefKey]!["valueType"] = (anyOf[1]["type"] as! String == "integer") ? "integer (from list)":"array (from list)"
 //                                preferenceKeys.valuePairs[prefKey]!["valueType"] = "integer (from list)"
                                 // get list of choices
@@ -114,7 +120,7 @@ class ViewController: NSViewController {
                                 var readEnum = "\(String(describing: self.readEnumArray))"
                                 readEnum = readEnum.replacingOccurrences(of: "[", with: "")
                                 readEnum = readEnum.replacingOccurrences(of: "]", with: "")
-                                readEnum = readEnumTitles.replacingOccurrences(of: "\"", with: "")
+                                readEnum = readEnum.replacingOccurrences(of: "\"", with: "")
                                 preferenceKeys.valuePairs[prefKey]!["enum"] = readEnum
                             }
                         } else {
@@ -309,57 +315,6 @@ class ViewController: NSViewController {
             preferenceKeys.valuePairs[keyName]!["enum"] = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
         }
     }
-    
-    func updateView(rowSelected: Int) {
-        print("[updateView] selected row: \(rowSelected)")
-        let currentTab = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
-
-        if keyName != "" && currentTab == "main" {
-            updateKeyValuePair(whichKey: keyName)
-        } else {
-            keys_TabView.selectTabViewItem(at: 0)
-        }
-        
-        if rowSelected >= 0 {
-            keyName = preferenceKeys.tableArray?[rowSelected] ?? ""
-        } else {
-            keyName = ""
-        }
-//        print("selected key: \(keyName)")
-//        print("preferenceKeys.valuePairs[\(keyName)]!: \(preferenceKeys.valuePairs[keyName]!["title"] as! String)")
-        
-        if keyName != "" {
-            if let _ = preferenceKeys.valuePairs[keyName]!["title"] {
-//                keyTitle = try! preferenceKeys.valuePairs[keyName]!["title"] as! String
-                keyFriendlyName_TextField.stringValue = preferenceKeys.valuePairs[keyName]!["title"] as! String
-            } else {
-                keyFriendlyName_TextField.stringValue = ""
-            }
-
-            if let _ = preferenceKeys.valuePairs[keyName]!["description"] {
-                keyDescription_TextField.string = preferenceKeys.valuePairs[keyName]!["description"] as! String
-            } else {
-                keyDescription_TextField.string = ""
-            }
-
-            if preferenceKeys.valuePairs[keyName]!["valueType"] as! String != "Select Value Type" {
-                keyType_Button.selectItem(withTitle: "\(String(describing: preferenceKeys.valuePairs[keyName]!["valueType"]!))")
-            }
-            
-            if (preferenceKeys.valuePairs[keyName]!["enum_titles"] != nil) {
-                enum_titles_TextView.string = preferenceKeys.valuePairs[keyName]!["enum_titles"]! as! String
-            } else {
-                enum_titles_TextView.string = ""
-            }
-            
-            if (preferenceKeys.valuePairs[keyName]!["enum"] != nil) {
-                enum_TextView.string = preferenceKeys.valuePairs[keyName]!["enum"]! as! String
-            } else {
-                enum_TextView.string = ""
-            }
-        }   // if keyName != ""
-        
-    }
 
     @IBAction func save_Action(_ sender: Any) {
                 
@@ -418,16 +373,18 @@ class ViewController: NSViewController {
                                                     }
                                 """
                             case "integer (from list)", "array (from list)":
-                                let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"array"
+                                let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"string"
                                 self.enum_titlesString = ""
 //                                self.enumString        = ""
                                 // convert string of enum_titles to array
                                 self.enum_titlesString = (preferenceKeys.valuePairs[key]!["enum_titles"]! as! String).replacingOccurrences(of: ", ", with: ",")
+                                self.enum_titlesString = self.enum_titlesString.replacingOccurrences(of: "\n", with: ",")
                                 let enum_titleArray = self.enum_titlesString.split(separator: ",")
+                                
                                 // convert string of enum to array
                                 self.enumString = (preferenceKeys.valuePairs[key]!["enum"]! as! String).replacingOccurrences(of: ", ", with: ",")
-                                
-                                if keyTypeItemVar == "array" {
+                                self.enumString = self.enumString.replacingOccurrences(of: "\n", with: ",")
+                                if keyTypeItemVar == "string" {
                                     let enumValuesArray = self.enumString.split(separator: ",")
                                     self.enumValues     = "\(enumValuesArray)"
                                 } else {
@@ -524,9 +481,26 @@ class ViewController: NSViewController {
             return
         }
         // verify enum_titles and enum have the same number of values
-        let enum_titlesArray = enum_titles_TextView.string.split(separator: ",")
-        let enumArray        = enum_TextView.string.split(separator: ",")
+        let enum_titlesTmp = enum_titles_TextView.string.replacingOccurrences(of: "\n", with: ",")
+        let enum_titlesArray = enum_titlesTmp.split(separator: ",")
+        let enumTmp          = enum_TextView.string.replacingOccurrences(of: "\n", with: ",")
+        let enumArray        = enumTmp.split(separator: ",")
         if enum_titlesArray.count == enumArray.count {
+//            validate integers
+            if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" {
+                let validateInput       = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
+                let validateInputString = validateInput.replacingOccurrences(of: "\n", with: ",")
+                let validateInputArray  = validateInputString.split(separator: ",")
+                for theValue in validateInputArray {
+                    let intTest = theValue.replacingOccurrences(of: " ", with: "")
+                    if !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: "\(intTest)")) {
+                        Alert().display(header: "Error", message: "Found '\(intTest)' and only integers are allowed.")
+                        return
+                    }
+                }
+            }
+
+            
             self.keys_TabView.selectTabViewItem(at: 0)
             cancel_Button.isHidden = false
             save_Button.isHidden = false
