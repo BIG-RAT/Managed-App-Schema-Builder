@@ -13,6 +13,13 @@ class ViewController: NSViewController {
     
     let fileManager = FileManager.default
     
+    let userDefaults = UserDefaults.standard
+    // determine if we're using dark mode
+    var isDarkMode: Bool {
+        let mode = userDefaults.string(forKey: "AppleInterfaceStyle")
+        return mode == "Dark"
+    }
+    
     @IBOutlet weak var keys_TabView: NSTabView!
     
     @IBOutlet weak var preferenceDomain_TextField: NSTextField!
@@ -520,6 +527,12 @@ class ViewController: NSViewController {
         // bring app to foreground
         NSApplication.shared.activate(ignoringOtherApps: true)
     }
+    
+
+//    override func viewWillAppear() {
+//        view.wantsLayer = true
+//        view.layer?.backgroundColor = CGColor(red: 0x31/255.0, green: 0x4d/255.0, blue: 0x70/255.0, alpha: 1.0)
+//    }
 
     override var representedObject: Any? {
         didSet {
@@ -569,16 +582,6 @@ extension ViewController: NSTableViewDelegate {
         }
         return nil
     }
-    
-    
-//    override func keyDown(with event: NSEvent) {
-//        switch Int(event.keyCode) {
-//        case 125,126:
-//            print("up/down pressed")
-//        default:
-//            print("other key pressed")
-//        }
-//    }
     
     
 //    func tableViewSelectionDidChange(_ notification: Notification) {
