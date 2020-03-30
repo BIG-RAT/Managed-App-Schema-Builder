@@ -5,14 +5,14 @@ Creates JSON file that can be used to set application preferences.
 
 ![alt text](./images/App.png "Managed App Schema Builder")
 
-Starting with Jamf Pro v10.19 you are able to create a custome schema, in the form of a JSON, to create a template for setting application preferences within the Application & Custom Settings payload (Computer Configuration Profiles).
+Starting with Jamf Pro v10.19 you are able to create a custom schema, in the form of a JSON, to create a template for setting application preferences within the Application & Custom Settings payload (Computer Configuration Profiles).
 
 
 #### Usage:
 * Provide a preference domain, something like: com.jamf.JamfRemote
 * Provide (optional) a description for the preference domain.
 * Start by adding a preference key (plus sign towards the bottom left).
-* Modify the Key Fiendly Name if desired.  This is what is displayed for the key within the Jamf Pro GUI.
+* Modify the Key Friendly Name if desired.  This is what is displayed for the key within the Jamf Pro GUI.
 * Provide (optional) a description of what the key does, what it applies to.  Perhaps descript the format of the data entered.
 * Select the key type from the drop down menu.
 * For 'integer (from list)', additional information can be entered.
