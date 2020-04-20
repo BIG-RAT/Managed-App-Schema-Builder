@@ -10,10 +10,6 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-    
-    @IBAction func save(_ sender: Any) {
-        ViewController().save_Action(self)
-    }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application

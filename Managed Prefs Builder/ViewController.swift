@@ -175,8 +175,6 @@ class ViewController: NSViewController {
             dialog.addButton(withTitle: "Cancel")
             
             dialog.accessoryView = newKey
-            newKey.becomeFirstResponder()
-            
             dialog.beginSheetModal(for: self.view.window!){ result in
                 if result == NSApplication.ModalResponse.alertFirstButtonReturn {
 
@@ -334,6 +332,7 @@ class ViewController: NSViewController {
         }
         
         if keyName != "" {
+            print("[save_Action] keyName: \(keyName)")
             updateKeyValuePair(whichKey: keyName)
         }
         
@@ -460,6 +459,8 @@ class ViewController: NSViewController {
         save_Button.isHidden = true
         let advKeyType = keyType_Button.titleOfSelectedItem!
         advKeyName_TextField.stringValue = "Key Type: \(String(describing: advKeyType))"
+        
+        tab.current = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
 //        if advKeyType == "array" {
 //            advIntegerList_Label.isHidden     = true
 //            advIntegerList_TextField.isHidden = true
@@ -485,6 +486,7 @@ class ViewController: NSViewController {
             } else {
                 enum_TextView.string = ""
             }
+            tab.current = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
             return
         }
         // verify enum_titles and enum have the same number of values
@@ -511,6 +513,7 @@ class ViewController: NSViewController {
             self.keys_TabView.selectTabViewItem(at: 0)
             cancel_Button.isHidden = false
             save_Button.isHidden = false
+            tab.current = "\(String(describing: keys_TabView.selectedTabViewItem!.label))"
         } else {
             Alert().display(header: "Attention", message: "Number of items defined in list of options and number of items defined in the value list must be equal.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of values: \(enumArray.count)")
         }
@@ -584,12 +587,17 @@ extension ViewController: NSTableViewDelegate {
     }
     
     
+    // crashes if edit is done and change selection with arrow key
 //    func tableViewSelectionDidChange(_ notification: Notification) {
 //        let selectedRow = keys_TableView.selectedRow
 //        print("row selected: \(selectedRow)")
+//        let name = keysArray[selectedRow]
+//
 //
 //        if selectedRow >= 0 && keys_TableView.selectedRowIndexes.count == 1 {
-//            ViewController().updateView(rowSelected: selectedRow)
+//            keyFriendlyName_TextField.stringValue = preferenceKeys.valuePairs[name]!["title"] as! String
+//            keyDescription_TextField.string = preferenceKeys.valuePairs[name]!["description"] as! String
+//
 //        }
 //    }
 

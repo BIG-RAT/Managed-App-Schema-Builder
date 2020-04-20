@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
         <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -92,7 +92,7 @@
                                         </menuItem>
                                         <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                             <connections>
-                                                <action selector="save:" target="Voe-Tx-rLC" id="3hq-k9-qNR"/>
+                                                <action selector="save_Action:" target="Ady-hI-5gd" id="zFY-Sn-Wqm"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -707,7 +707,7 @@
                                             <tableColumns>
                                                 <tableColumn editable="NO" width="285" minWidth="40" maxWidth="1000" id="xgZ-LF-xuu">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Key Name">
-                                                        <font key="font" metaFont="label" size="11"/>
+                                                        <font key="font" metaFont="message" size="11"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
@@ -1042,15 +1042,15 @@ DQ
                                                 <scrollView borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pbp-Aw-htf">
                                                     <rect key="frame" x="0.0" y="188" width="552" height="116"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BhS-y9-lnJ">
-                                                        <rect key="frame" x="1" y="1" width="550" height="114"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <rect key="frame" x="1" y="1" width="535" height="114"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="YLT-Dq-tK9">
-                                                                <rect key="frame" x="0.0" y="0.0" width="550" height="114"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="535" height="114"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                <size key="minSize" width="550" height="114"/>
+                                                                <size key="minSize" width="535" height="114"/>
                                                                 <size key="maxSize" width="552" height="10000000"/>
                                                                 <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                             </textView>
@@ -1065,7 +1065,7 @@ DQ
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="d8v-C5-OOT">
-                                                        <rect key="frame" x="535" y="1" width="16" height="114"/>
+                                                        <rect key="frame" x="536" y="1" width="15" height="114"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                 </scrollView>
@@ -1096,15 +1096,15 @@ Gw
                                                 <scrollView borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uqA-HK-lNn">
                                                     <rect key="frame" x="0.0" y="38" width="552" height="116"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="opg-lp-XAR">
-                                                        <rect key="frame" x="1" y="1" width="550" height="114"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <rect key="frame" x="1" y="1" width="535" height="114"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="b8y-Va-vci">
-                                                                <rect key="frame" x="0.0" y="0.0" width="550" height="114"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="535" height="114"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                <size key="minSize" width="550" height="114"/>
+                                                                <size key="minSize" width="535" height="114"/>
                                                                 <size key="maxSize" width="552" height="10000000"/>
                                                                 <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                             </textView>
@@ -1120,7 +1120,7 @@ Gw
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="W7Q-iQ-Vtl">
-                                                        <rect key="frame" x="535" y="1" width="16" height="114"/>
+                                                        <rect key="frame" x="536" y="1" width="15" height="114"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                 </scrollView>
