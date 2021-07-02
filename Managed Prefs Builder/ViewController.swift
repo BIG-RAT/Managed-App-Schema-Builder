@@ -378,6 +378,8 @@ class ViewController: NSViewController {
                                                         "title": "Entries"
                                                     }
                                 """
+                            case "base64 encoded string":
+                                keyTypeItems = "\"data\""
                             case "integer (from list)", "array (from list)":
                                 let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"string"
                                 self.enum_titlesString = ""

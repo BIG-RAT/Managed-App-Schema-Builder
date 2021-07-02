@@ -705,7 +705,7 @@
                                             <color key="backgroundColor" name="unemphasizedSelectedContentBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn editable="NO" width="276" minWidth="40" maxWidth="1000" id="xgZ-LF-xuu">
+                                                <tableColumn editable="NO" width="247" minWidth="40" maxWidth="1000" id="xgZ-LF-xuu">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Key Name">
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -718,7 +718,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="NameCell_Id" id="bi1-SN-YI2">
-                                                            <rect key="frame" x="1" y="1" width="285" height="17"/>
+                                                            <rect key="frame" x="11" y="1" width="256" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yIM-V6-8mp">
@@ -952,7 +952,7 @@ DQ
                                                     </textFieldCell>
                                                 </textField>
                                                 <popUpButton identifier="keyType" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9zR-Rc-0pi">
-                                                    <rect key="frame" x="-3" y="6" width="147" height="25"/>
+                                                    <rect key="frame" x="-3" y="6" width="180" height="25"/>
                                                     <popUpButtonCell key="cell" type="push" title="Select Value Type" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="sPj-0b-4Bl" id="OJN-kJ-YaR">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="menu"/>
@@ -968,6 +968,9 @@ DQ
                                                                     <connections>
                                                                         <action selector="showAdvKeyTab:" target="XfG-lQ-9wD" id="dhg-q2-Ufr"/>
                                                                     </connections>
+                                                                </menuItem>
+                                                                <menuItem title="base64 encoded string" id="S3S-pd-oJT">
+                                                                    <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
                                                                 <menuItem title="boolean" id="b9q-22-znC"/>
                                                                 <menuItem title="integer" id="08c-Kh-8Fp"/>
