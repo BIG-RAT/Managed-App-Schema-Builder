@@ -5,13 +5,13 @@ Before wasting time creating something that's already been done see if it's avai
 
 * [https://github.com/ProfileCreator/ProfileManifests](https://github.com/ProfileCreator/ProfileManifests)
 
-* [https://github.com/Jamf-Custom-Profile-Schemas](https://github.com/Jamf-Custom-Profile-Schemas/)
+* [https://github.com/Jamf-Custom-Profile-Schemas/ProfileManifestsMirror](https://github.com/Jamf-Custom-Profile-Schemas/ProfileManifestsMirror)
 
 
 
 
 
-Otherwise use the app to create a JSON file that can be used to set application preferences.
+Otherwise use the app to create a JSON file that can be used to set application preferences.  Then don't be shy, if it's new please share what you have crafted.
 
 ![alt text](./images/App.png "Managed App Schema Builder")
 
