@@ -969,7 +969,7 @@ DQ
                                                                         <action selector="showAdvKeyTab:" target="XfG-lQ-9wD" id="dhg-q2-Ufr"/>
                                                                     </connections>
                                                                 </menuItem>
-                                                                <menuItem title="base64 encoded string" id="S3S-pd-oJT">
+                                                                <menuItem title="base64 encoded string" hidden="YES" enabled="NO" id="S3S-pd-oJT">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
                                                                 <menuItem title="boolean" id="b9q-22-znC"/>

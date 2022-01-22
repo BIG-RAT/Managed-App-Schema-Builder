@@ -1,7 +1,17 @@
 # Managed App Schema Builder
 Download: [Managed App Schema Builder](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/current/Managed.App.Schema.Builder.zip)
 
-Creates JSON file that can be used to set application preferences.
+Before wasting time creating something that's already been done see if it's available:
+
+* [https://github.com/ProfileCreator/ProfileManifests](https://github.com/ProfileCreator/ProfileManifests)
+
+* [https://github.com/Jamf-Custom-Profile-Schemas](https://github.com/Jamf-Custom-Profile-Schemas/)
+
+
+
+
+
+Otherwise use the app to create a JSON file that can be used to set application preferences.
 
 ![alt text](./images/App.png "Managed App Schema Builder")
 
