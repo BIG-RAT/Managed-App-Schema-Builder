@@ -21,11 +21,14 @@ class ViewController: NSViewController {
     }
     
     @IBOutlet weak var keys_TabView: NSTabView!
-    
+    @IBOutlet weak var keyRequired: NSButton!
     @IBOutlet weak var preferenceDomain_TextField: NSTextField!
     @IBOutlet weak var preferenceDomainDescr_TextField: NSTextField!
     @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
+    
+    
     @IBOutlet weak var keyDescription_TextField: NSTextView!
+    @IBOutlet weak var keyInfoText_TextField: NSTextField!
     
     @IBOutlet weak var keyType_Button: NSPopUpButton!
     @IBOutlet weak var save_Button: NSButton!
@@ -49,7 +52,8 @@ class ViewController: NSViewController {
     var readEnumArray    = [Any]()
     // advanced key tab - end
     
-    var keysArray = [String]()
+    var keysArray    = [String]()
+    var requiredKeys = [String]()
     
     var valueType = ""
     var keyName   = ""
@@ -101,8 +105,9 @@ class ViewController: NSViewController {
                         rawKeyValuePairs = properties[prefKey]!
 
                         preferenceKeys.valuePairs[prefKey] = [:]
-                        preferenceKeys.valuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as! String
-                        preferenceKeys.valuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as! String
+                        preferenceKeys.valuePairs[prefKey]!["title"] = rawKeyValuePairs["title"] as? String ?? ""
+                        preferenceKeys.valuePairs[prefKey]!["description"] = rawKeyValuePairs["description"] as? String ?? ""
+                        preferenceKeys.valuePairs[prefKey]!["infoText"] = rawKeyValuePairs["infoText"] as? String ?? ""
                         let anyOf = rawKeyValuePairs["anyOf"] as! [[String: Any]]
                         if anyOf.count > 1 {
                             let readKeyType = anyOf[1]["type"] as! String
@@ -175,38 +180,42 @@ class ViewController: NSViewController {
             dialog.addButton(withTitle: "Cancel")
             
             dialog.accessoryView = newKey
-            dialog.beginSheetModal(for: self.view.window!){ result in
+            dialog.beginSheetModal(for: self.view.window!){ [self] result in
                 if result == NSApplication.ModalResponse.alertFirstButtonReturn {
 
                     print("keyName: \(newKey.stringValue)")
                     if newKey.stringValue != "" {
-                        self.keyName = newKey.stringValue
+                        keyName = newKey.stringValue
                         // see if key already exists - start
-                        if let _ = self.keysArray.firstIndex(of: self.keyName) {
+                        if let _ = keysArray.firstIndex(of: keyName) {
                             Alert().display(header: "Attention", message: "Key already exists.")
-                            self.keyName = ""
+                            keyName = ""
                             return
                         } else {
                             print("new key")
-                            self.keysArray.append(self.keyName)
-                            self.keysArray.sort()
-                            preferenceKeys.tableArray = self.keysArray
+                            keysArray.append(keyName)
+                            keysArray.sort()
+                            preferenceKeys.tableArray = keysArray
                             
-                            self.keys_TableView.reloadData()
-                            preferenceKeys.valuePairs[self.keyName] = [:]
+                            keys_TableView.reloadData()
+                            preferenceKeys.valuePairs[keyName] = [:]
                             // initialize values - start
-                            preferenceKeys.valuePairs[self.keyName]!["title"] = self.keyName
-                            self.keyFriendlyName_TextField.stringValue = self.keyName
-                            preferenceKeys.valuePairs[self.keyName]!["description"] = ""
-                            self.keyDescription_TextField.string = ""
-                            preferenceKeys.valuePairs[self.keyName]!["enum_titles"] = ""
-                            self.enum_titles_TextView.string = ""
-                            preferenceKeys.valuePairs[self.keyName]!["enum"] = ""
-                            self.enum_TextView.string = ""
-                            self.keyType_Button.selectItem(at: 0)
-                            preferenceKeys.valuePairs[self.keyName]!["valueType"] = "Select Value Type"
-                            let keyIndex = preferenceKeys.tableArray?.firstIndex(of: self.keyName)
-                            self.keys_TableView.selectRowIndexes(.init(integer: keyIndex!), byExtendingSelection: false)
+                            preferenceKeys.valuePairs[keyName]!["title"] = keyName
+                            keyFriendlyName_TextField.stringValue = keyName
+                            preferenceKeys.valuePairs[keyName]!["required"] = false
+                            keyRequired.state = .off
+                            preferenceKeys.valuePairs[keyName]!["description"] = ""
+                            keyDescription_TextField.string = ""
+                            preferenceKeys.valuePairs[keyName]!["infoText"] = ""
+                            keyInfoText_TextField.stringValue = ""
+                            preferenceKeys.valuePairs[keyName]!["enum_titles"] = ""
+                            enum_titles_TextView.string = ""
+                            preferenceKeys.valuePairs[keyName]!["enum"] = ""
+                            enum_TextView.string = ""
+                            keyType_Button.selectItem(at: 0)
+                            preferenceKeys.valuePairs[keyName]!["valueType"] = "Select Value Type"
+                            let keyIndex = preferenceKeys.tableArray?.firstIndex(of: keyName)
+                            keys_TableView.selectRowIndexes(.init(integer: keyIndex!), byExtendingSelection: false)
                             // initialize values - end
                         }
                         // see if key already exists - end
@@ -236,6 +245,7 @@ class ViewController: NSViewController {
                 self.keyName = ""
                 self.keyFriendlyName_TextField.stringValue = ""
                 self.keyDescription_TextField.string = ""
+                self.keyInfoText_TextField.stringValue = ""
                 self.keyType_Button.selectItem(at: 0)
             }
         }
@@ -274,6 +284,12 @@ class ViewController: NSViewController {
                     } else {
                         keyDescription_TextField.string = ""
                     }
+                    
+                    if let _ = preferenceKeys.valuePairs[keyName]!["infoText"] {
+                        keyInfoText_TextField.stringValue = preferenceKeys.valuePairs[keyName]!["infoText"] as! String
+                    } else {
+                        keyInfoText_TextField.stringValue = ""
+                    }
 
                     if preferenceKeys.valuePairs[keyName]!["valueType"] as! String != "Select Value Type" {
                         keyType_Button.selectItem(withTitle: "\(String(describing: preferenceKeys.valuePairs[keyName]!["valueType"]!))")
@@ -294,6 +310,10 @@ class ViewController: NSViewController {
                 
     }
     
+    @IBAction func requireKey_Action(_ sender: NSButton) {
+//        if sender.state == .on && requiredKeys.firstIndex(of: <#T##String#>)
+    }
+    
     func updateKeyValuePair(whichKey: String) {
     
         print("updating friendly name (title) for key \(keyName)")
@@ -301,6 +321,9 @@ class ViewController: NSViewController {
     
         print("updating description for key \(keyName)")
         preferenceKeys.valuePairs[keyName]!["description"] = "\(keyDescription_TextField.string)"
+        
+        print("updating info text for key \(keyName)")
+        preferenceKeys.valuePairs[keyName]!["infoText"] = "\(keyInfoText_TextField.stringValue)"
 
         print("updating data type for key \(keyName) with value \(keyType_Button.titleOfSelectedItem!)")
         preferenceKeys.valuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
@@ -417,13 +440,10 @@ class ViewController: NSViewController {
                                         "title": "\(String(describing: preferenceKeys.valuePairs[key]!["title"]!))",
                                         "description": "\(String(describing: preferenceKeys.valuePairs[key]!["description"]!))",
                                         "property_order": \(keysWritten*5),
-                                        "anyOf": [
-                                            {"type": "null", "title": "Not Configured"},
-                                            {
-                                                "title": "Configured",
-                                                "type": \(String(describing: keyTypeItems))
-                                            }
-                                        ]
+                                        "type": \(String(describing: keyTypeItems))
+                                        "options": {
+                                            "infoText": "\(String(describing: preferenceKeys.valuePairs[key]!["infoText"]!))"
+                                        }
                                     }\(keyDelimiter)
                             """
                             preferenceDomainFileOp.write(text.data(using: String.Encoding.utf8)!)
@@ -531,15 +551,25 @@ class ViewController: NSViewController {
         keys_TableView.delegate   = self
         keys_TableView.dataSource = self
         
-        // bring app to foreground
-        NSApplication.shared.activate(ignoringOtherApps: true)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .left
+        keys_TableView.tableColumns.forEach { (column) in
+            if column.title == "Key Name \t\t Required" {
+                column.headerCell.attributedStringValue = NSAttributedString(string: column.title, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 16)])
+            } else {
+                column.headerCell.attributedStringValue = NSAttributedString(string: column.title, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.paragraphStyle: paragraphStyle])
+            }
+        }
+        
     }
     
 
-//    override func viewWillAppear() {
+    override func viewWillAppear() {
+        // bring app to foreground
+        NSApplication.shared.activate(ignoringOtherApps: true)
 //        view.wantsLayer = true
 //        view.layer?.backgroundColor = CGColor(red: 0x31/255.0, green: 0x4d/255.0, blue: 0x70/255.0, alpha: 1.0)
-//    }
+    }
 
     override var representedObject: Any? {
         didSet {
