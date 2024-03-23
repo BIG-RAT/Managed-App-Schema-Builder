@@ -9,6 +9,10 @@
 import Cocoa
 
 class Alert: NSObject {
+    
+    static let shared = Alert()
+    private override init() { }
+    
     func display(header: String, message: String) {
         let dialog: NSAlert = NSAlert()
         dialog.messageText = header

@@ -16,3 +16,10 @@ struct preferenceKeys {
 struct tab {
     static var current = ""
 }
+
+let userDefaults = UserDefaults.standard
+// determine if we're using dark mode
+var isDarkMode: Bool {
+    let mode = userDefaults.string(forKey: "AppleInterfaceStyle")
+    return mode == "Dark"
+}
