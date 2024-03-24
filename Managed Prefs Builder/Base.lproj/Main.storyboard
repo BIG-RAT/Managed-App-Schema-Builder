@@ -1120,7 +1120,7 @@ DQ
                                                     <rect key="frame" x="0.0" y="164" width="555" height="140"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="2wE-oQ-P03">
                                                         <rect key="frame" x="1" y="1" width="553" height="138"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="cId-7b-oeH">
                                                                 <rect key="frame" x="0.0" y="0.0" width="553" height="138"/>
@@ -1158,7 +1158,7 @@ DQ
                                                     <rect key="frame" x="0.0" y="5" width="555" height="121"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="aHu-0e-Hgx">
                                                         <rect key="frame" x="1" y="1" width="553" height="119"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="PAv-9V-H9a">
                                                                 <rect key="frame" x="0.0" y="0.0" width="553" height="119"/>
