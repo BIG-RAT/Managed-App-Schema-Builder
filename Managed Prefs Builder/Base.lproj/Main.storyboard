@@ -62,12 +62,12 @@
                                     <items>
                                         <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
                                             <connections>
-                                                <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
+                                                <action selector="newSchema:" target="Voe-Tx-rLC" id="7e4-XF-2Mt"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
+                                        <menuItem title="Import…" keyEquivalent="i" id="IAo-SY-fd9">
                                             <connections>
-                                                <action selector="openDocument:" target="Ady-hI-5gd" id="bVn-NM-KNZ"/>
+                                                <action selector="importSchema:" target="Voe-Tx-rLC" id="C5e-1U-2pk"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open Recent" id="tXI-mr-wws">
@@ -657,7 +657,7 @@
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="-35" y="-116"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -696,6 +696,8 @@
                                 <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="poN-iM-b5q">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent">a</string>
+                                    <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 </buttonCell>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="21" id="5ah-dW-CQ6"/>
@@ -833,7 +835,7 @@ DQ
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="importFile_Button:" target="XfG-lQ-9wD" id="quR-t5-eVS"/>
+                                    <action selector="importFile_Action:" target="XfG-lQ-9wD" id="zYz-ea-Ren"/>
                                 </connections>
                             </button>
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="XbU-wV-1KH">
@@ -944,11 +946,11 @@ DQ
                     <connections>
                         <outlet property="cancel_Button" destination="ORS-jH-3XI" id="99u-gi-C9P"/>
                         <outlet property="currentSchema_TextView" destination="EIo-MO-8Nc" id="eIi-op-8Va"/>
+                        <outlet property="import_Button" destination="Isk-ba-bh6" id="26P-r7-heB"/>
                         <outlet property="keys_TableView" destination="CA0-Vx-rhz" id="bNf-fP-nfI"/>
                         <outlet property="preferenceDomainDescr_TextField" destination="ICL-nr-Qpl" id="VoU-Ox-A6i"/>
                         <outlet property="preferenceDomain_TextField" destination="CYJ-Pd-oE0" id="thA-33-jb8"/>
                         <outlet property="save_Button" destination="zE1-Vt-mvy" id="hhs-i5-9DE"/>
-                        <outlet property="theKey_AC" destination="KHu-8m-7hh" id="Y6h-4w-Rnb"/>
                         <segue destination="DPF-bR-QTV" kind="modal" identifier="showKey" id="DmR-ck-nSR"/>
                     </connections>
                 </viewController>

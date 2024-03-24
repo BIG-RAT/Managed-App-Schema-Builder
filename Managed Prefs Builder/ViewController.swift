@@ -7,10 +7,12 @@
 //
 
 import Cocoa
+import CryptoKit
 import Foundation
 
 class TheKey: NSObject {
     @objc var id: String
+    @objc var index: Int
     @objc var type: String
     @objc var name: String
     @objc var required: Bool
@@ -21,8 +23,9 @@ class TheKey: NSObject {
     @objc var listOfValues: String
     
     
-    init(id: String, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, listOfOptions: String, listOfValues: String) {
+    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, listOfOptions: String, listOfValues: String) {
         self.id       = id
+        self.index    = index
         self.type     = type
         self.name     = name
         self.required = required
@@ -69,7 +72,9 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     
     @IBOutlet weak var currentSchema_TextView: NSTextView!
     
-    @IBOutlet weak var keyType_Button: NSPopUpButton!
+//    @IBOutlet weak var keyType_Button: NSPopUpButton!
+    
+    @IBOutlet weak var import_Button: NSButton!
     @IBOutlet weak var save_Button: NSButton!
     @IBOutlet weak var cancel_Button: NSButton!
     
@@ -97,9 +102,9 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     var fontColor            = NSColor()
     
     var enum_titlesString = ""
-    var enumString       = ""
-    var enumValues       = ""   // values written to file for enum
-    var readEnumArray    = [Any]()
+    var enumString        = ""
+    var enumValues        = ""   // values written to file for enum
+    var readEnumArray     = [Any]()
     // advanced key tab - end
     
     var currentKeys  = [TheKey]()
@@ -109,23 +114,33 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     var valueType = ""
     var keyName   = ""
     
+    var   savedHash = ""
+    var currentHash = ""
+    
 //    var keyValuePairs = [String:[String:Any]]()
     
         
-    @IBAction func importFile_Button(_ sender: NSButton) {
+    @IBAction func importFile_Action(_ sender: NSButton) {
 
-            var json: Any?
-            // filetypes that are selectable
-            let fileTypeArray: Array = ["json"]
-
-            var importPathUrl = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+        if savedHash != currentHash {
+            let response = Alert.shared.display(header: "", message: "You have unsaved changes, if you continue the changes will be lost.", secondButton: "Cancel")
+            if response == "Cancel" {
+                return
+            }
+        }
         
-            let importDialog: NSOpenPanel        = NSOpenPanel()
-            importDialog.canChooseDirectories    = false
-            importDialog.allowsMultipleSelection = false
-            importDialog.resolvesAliases         = true
-            importDialog.allowedFileTypes        = fileTypeArray
-            importDialog.directoryURL            = importPathUrl
+        var json: Any?
+        // filetypes that are selectable
+        let fileTypeArray: Array = ["json"]
+
+        var importPathUrl = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+    
+        let importDialog: NSOpenPanel        = NSOpenPanel()
+        importDialog.canChooseDirectories    = false
+        importDialog.allowsMultipleSelection = false
+        importDialog.resolvesAliases         = true
+        importDialog.allowedFileTypes        = fileTypeArray
+        importDialog.directoryURL            = importPathUrl
         importDialog.beginSheetModal(for: self.view.window!){ [self] result in
             if result == .OK {
                 importPathUrl = importDialog.url!
@@ -153,21 +168,35 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
                     self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
                     let properties = manifestJson!["properties"] as! [String: [String: Any]]
                     self.currentKeys.removeAll()
-//                    preferenceKeys.valuePairs.removeAll()
+//
+                    var propertyOrder = 0
+                    var enumTitles = [Any]()
+                    var enumList   = [Any]()
                     for (prefKey, keyDetails) in properties {
-                        print("[import] \(prefKey) keyDetails: \(keyDetails)")
+//                        print("[import] \(prefKey) keyDetails: \(keyDetails)")
                         
 //                        existingKey?.name = prefKey
                         let friendlyName = keyDetails["title"] as? String ?? ""
                         let desc = keyDetails["description"] as? String ?? ""
+                        let propertyOrder = keyDetails["property_order"] as? Int ?? 0
                         let required = keyDetails["required"] as? Bool ?? false
-                        let type = keyDetails["type"] as? String ?? ""
+                        var type = keyDetails["type"] as? String ?? ""
                         let name = keyDetails["title"] as? String ?? ""
-                        let infoText = keyDetails["infoText"] as? String ?? ""
-//                        let name = keyDetails["title"] as? String ?? ""
-//                        let name = keyDetails["title"] as? String ?? ""
-//                        let name = keyDetails["title"] as? String ?? ""
-                        self.currentKeys.append(TheKey(id: UUID().uuidString, type: type, name: name, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, listOfOptions: "", listOfValues: ""))
+                        let options = keyDetails["options"] as? [String: Any] ?? [:]
+                        let infoText = options["infoText"] as? String ?? ""
+                        if let items = keyDetails["items"] as? [String: Any], let itemsType = items["type"], let itemsTitle = items["title"] as? String {
+                            type = "\(type) array"
+                        }
+                        
+                        enumList = keyDetails["enum"] as? [Any] ?? []
+                        if enumList.count > 0 {
+                            type = ( type == "string" ) ? "string (from list)":"integer (from list)"
+                            enumTitles = options["enum_titles"] as? [Any] ?? []
+                        } else {
+                            
+                        }
+                        
+                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: name, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
                         
                         
 //                        rawKeyValuePairs = properties[prefKey]!
@@ -210,6 +239,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
                         }
                         */
                     }
+                    currentKeys.sort(by: { $0.index < $1.index})
                     keys_TableView.reloadData()
                     displaySchema()
 //                    self.keysArray.sort()
@@ -269,12 +299,12 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         print("updating info text for key \(keyName)")
         preferenceKeys.valuePairs[keyName]!["infoText"] = "\(keyInfoText_TextField.stringValue)"
 
-        print("updating data type for key \(keyName) with value \(keyType_Button.titleOfSelectedItem!)")
-        preferenceKeys.valuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
+//        print("updating data type for key \(keyName) with value \(keyType_Button.titleOfSelectedItem!)")
+//        preferenceKeys.valuePairs[keyName]!["valueType"] = "\(keyType_Button.titleOfSelectedItem!)"
         
     }
     
-    func displaySchema() {
+    func displaySchema(reorder: Bool = false) {
         let downloadsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
         
         currentSchema_TextView.string = ""
@@ -285,91 +315,101 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
             var preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
             var exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
             
-                    currentSchema_TextView.string = "{\n\t\"title\": \"\(preferenceDomain_TextField.stringValue)\",\n\t\"description\": \"\(preferenceDomainDescr_TextField.stringValue)\",\n\t\"properties\": {\n"
+            currentSchema_TextView.string = "{\n\t\"title\": \"\(preferenceDomain_TextField.stringValue)\",\n\t\"description\": \"\(preferenceDomainDescr_TextField.stringValue)\",\n\t\"properties\": {\n"
 //
-                        var requiredKeys = ""
-                        for theKey in currentKeys {
-                            if theKey.required {
-                                requiredKeys.append("\"\(theKey.name)\",")
-                            }
+            var requiredKeys = ""
+            for theKey in currentKeys {
+                if theKey.required {
+                    requiredKeys.append("\"\(theKey.name)\",")
+                }
 //                                print("[displaySchema] key: \(theKey.type), name: \(theKey.name)")
-                            keysWritten += 1
-                            if keysWritten == currentKeys.count {
-                                keyDelimiter = "\n"
-                            }
-                            var keyTypeItems = theKey.type
-                            switch keyTypeItems {
-                            case "integer array":
-                                keyTypeItems = """
-                                "array",
-                                            "items": {
-                                                "type": "integer",
-                                                "title": "List of integers"
-                                            },
-                                            "options": {
-                                                "infoText": "\(theKey.infoText)"
-                                            }
-                                """
-                            case "string array":
-                                keyTypeItems = """
-                                "array",
-                                            "items": {
-                                                "type": "string",
-                                                "title": "List of strings"
-                                            },
-                                            "options": {
-                                                "infoText": "\(theKey.infoText)"
-                                            }
-                                """
+                currentKeys[keysWritten].index = (keysWritten+1)*5
+                keysWritten += 1
+                if keysWritten == currentKeys.count {
+                    keyDelimiter = "\n"
+                }
+                var keyTypeItems = theKey.type
+                switch keyTypeItems {
+                case "integer array":
+                    keyTypeItems = """
+                    "array",
+                                "items": {
+                                    "type": "integer",
+                                    "title": "List of integers"
+                                },
+                                "options": {
+                                    "infoText": "\(theKey.infoText)"
+                                }
+                    """
+                case "string array":
+                    keyTypeItems = """
+                    "array",
+                                "items": {
+                                    "type": "string",
+                                    "title": "List of strings"
+                                },
+                                "options": {
+                                    "infoText": "\(theKey.infoText)"
+                                }
+                    """
 //
 //                                case "base64 encoded string":
 //                                    keyTypeItems = "\"data\""
-                                
-                            case "integer (from list)", "array (from list)":
-                                let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"string"
-                                enum_titlesString = ""
+                    
+                case "integer (from list)", "string (from list)":
+                    let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"string"
+                    enum_titlesString = ""
 //                                enumString        = ""
-                                // convert string of enum_titles to array
-                                enum_titlesString = (theKey.listOfOptions).replacingOccurrences(of: ", ", with: ",")
-                                enum_titlesString = enum_titlesString.replacingOccurrences(of: "\n", with: ",")
-                                let enum_titleArray = enum_titlesString.split(separator: ",")
-                                
-                                // convert string of enum to array
-                                enumString = (theKey.listOfValues).replacingOccurrences(of: ", ", with: ",")
-                                enumString = enumString.replacingOccurrences(of: "\n", with: ",")
-                                if keyTypeItemVar == "string" {
-                                    let enumValuesArray = enumString.split(separator: ",")
-                                    enumValues     = "\(enumValuesArray)"
-                                } else {
-                                    enumValues = "[\(enumString)]"
+                    // convert string of enum_titles to array
+                    enum_titlesString = (theKey.listOfOptions).replacingOccurrences(of: ", ", with: ",")
+                    enum_titlesString = enum_titlesString.replacingOccurrences(of: "\n", with: ",")
+                    let enum_titleArray = enum_titlesString.split(separator: ",")
+                    
+                    // convert string of enum to array
+                    enumString = (theKey.listOfValues).replacingOccurrences(of: ", ", with: ",")
+                    enumString = enumString.replacingOccurrences(of: "\n", with: ",")
+                    if keyTypeItemVar == "string" {
+                        let enumValuesArray = enumString.split(separator: ",")
+                        enumValues     = "\(enumValuesArray)"
+                    } else {
+                        enumValues = "[\(enumString)]"
+                    }
+                    keyTypeItems = """
+                    "\(keyTypeItemVar)",
+                                "options": {
+                                    "enum_titles": \(enum_titleArray),
+                                    "infoText": "\(theKey.infoText)"
+                                },
+                                "enum": \(enumValues)
+                    """
+                default:
+                    keyTypeItems = """
+                    "\(keyTypeItems)",
+                                "options": {
+                                    "infoText": "\(theKey.infoText)"
                                 }
-                                keyTypeItems = """
-                                "\(keyTypeItemVar)",
-                                            "options": {
-                                                "enum_titles": \(enum_titleArray),
-                                                "infoText": "\(theKey.infoText)"
-                                            },
-                                            "enum": \(enumValues)
-                                """
-                            default:
-                                keyTypeItems = """
-                                "\(keyTypeItems)",
-                                            "options": {
-                                                "infoText": "\(theKey.infoText)"
-                                            }
-                                """
-                            }
-                            let text = """
-                                    "\(theKey.name)": {
-                                        "title": "\(theKey.friendlyName)",
-                                        "description": "\(theKey.desc)",
-                                        "property_order": \(keysWritten*5),
-                                        "type": \(String(describing: keyTypeItems))
-                                    }\(keyDelimiter)
-                            """
-                            currentSchema_TextView.string = currentSchema_TextView.string + text
-                            
-                         }   // for (key, _) in packagesDict - end
+                    """
+                }
+                let text = """
+                        "\(theKey.name)": {
+                            "title": "\(theKey.friendlyName)",
+                            "description": "\(theKey.desc)",
+                            "property_order": \(reorder ? keysWritten*5:theKey.index),
+                            "type": \(String(describing: keyTypeItems))
+                        }\(keyDelimiter)
+                """
+
+//                            let text = """
+//                                    "\(theKey.name)": {
+//                                        "title": "\(theKey.friendlyName)",
+//                                        "description": "\(theKey.desc)",
+//                                        "property_order": \(keysWritten*5),
+//                                        "type": \(String(describing: keyTypeItems))
+//                                    }\(keyDelimiter)
+//                            """
+                currentSchema_TextView.string = currentSchema_TextView.string + text
+                
+             }   // for (key, _) in packagesDict - end
             if requiredKeys == "" {
                 currentSchema_TextView.string = currentSchema_TextView.string + "\t}\n}"
             } else {
@@ -379,6 +419,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
             let attributedText = NSMutableAttributedString(string: currentSchema_TextView.string, attributes: schemaTextAttributes)
             currentSchema_TextView.textStorage?.setAttributedString(attributedText)
             
+            currentHash = currentSchema_TextView.string.hashString
 //                            beginSheetModal - end
         } else {
             // preference domain required
@@ -402,7 +443,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
             let saveDialog = NSSavePanel()
             saveDialog.canCreateDirectories = true
             saveDialog.nameFieldStringValue = preferenceDomainFile
-            saveDialog.beginSheetModal(for: self.view.window!){ result in
+            saveDialog.beginSheetModal(for: self.view.window!){ [self] result in
                 if result == .OK {
                     preferenceDomainFile = saveDialog.nameFieldStringValue
                     exportURL            = saveDialog.url!
@@ -415,6 +456,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
                             print("Error writing to file: \(error)")
                         }
                     }
+                    savedHash = currentSchema_TextView.string.hashString
                 }
             }   // saveDialog.beginSheetModal - end
         } else {
@@ -431,21 +473,46 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         case "loginView":
            break
         default:
-            print("[prepare] sender: \(String(describing: sender))")
+//            print("[prepare] sender: \(String(describing: sender))")
             let keysVC: KeysVC = (segue.destinationController as? KeysVC)!
             keysVC.delegate = self
             if let _ = sender as? TheKey {
                 keysVC.existingKey = sender as? TheKey
                 keysVC.existingKeyId = (sender as? TheKey)?.id ?? ""
+                keysVC.keyIndex = (sender as? TheKey)?.index ?? 0
+            } else {
+                keysVC.keyIndex = (currentKeys.count+1)*5
             }
         }
     }
+    
+    
     
     @objc func viewKey() {
         let keyIndex = keys_TableView.clickedRow
         let theKey = currentKeys[keyIndex]
 //        let theKey = (theKey_AC.arrangedObjects as! [TheKey])[keyIndex]
         performSegue(withIdentifier: "showKey", sender: theKey)
+    }
+    
+    @objc func newSchema(_ notification: Notification) {
+        
+        if savedHash != currentHash {
+            let response = Alert.shared.display(header: "", message: "You have unsaved changes, if you continue the changes will be lost.", secondButton: "Cancel")
+            if response == "Cancel" {
+                return
+            }
+        }
+        
+        preferenceDomain_TextField.stringValue = ""
+        preferenceDomainDescr_TextField.stringValue = ""
+        currentKeys.removeAll()
+        keys_TableView.reloadData()
+        currentSchema_TextView.string = ""
+    }
+    
+    @objc func importSchema(_ notification: Notification) {
+        importFile_Action(import_Button)
     }
 
     override func viewDidLoad() {
@@ -455,6 +522,9 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         keys_TableView.delegate = self
         keys_TableView.dataSource = self
         keys_TableView.registerForDraggedTypes([.string])
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(newSchema(_:)), name: .newSchema, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(importSchema(_:)), name: .importSchema, object: nil)
         
         paragraphStyle.alignment = .left
         keys_TableView.tableColumns.forEach { (column) in
@@ -486,6 +556,8 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     }
     
     @IBAction func quit_Button(_ sender: Any) {
+        
+        
         NSApplication.shared.terminate(self)
     }
     
@@ -538,8 +610,8 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         let pastboard = info.draggingPasteboard
         if let sourceRowString = pastboard.string(forType: .string) {
             let selectionArray = sourceRowString.components(separatedBy: "\n")
-            print("\(selectionArray.count) items selected")
-            print("from \(sourceRowString). dropping row \(row)")
+//            print("\(selectionArray.count) items selected")
+//            print("from \(sourceRowString). dropping row \(row)")
             if ((info.draggingSource as? NSTableView == keys_TableView) && (tableView == keys_TableView)) {
                 var objectsMoved = 0
                 var indexAdjustment = 0
@@ -558,7 +630,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
                     }
                     objectsMoved += 1
                     keys_TableView.reloadData()
-                    displaySchema()
+                    displaySchema(reorder: true)
                 }
                 return true
             } else {
@@ -568,4 +640,36 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         return false
     }
 
+}
+
+extension [Any] {
+    var arrayToString: String {
+        get {
+            var newString = ""
+            if self.count > 0 {
+                for i in 0..<self.count-1 {
+                    newString.append("\(self[i]), ")
+                }
+                newString.append("\(self.last ?? "-unknown-")")
+            }
+            return newString
+        }
+    }
+}
+
+extension String {
+    var hashString: String {
+        get {
+            let digest = SHA256.hash(data: "\(self)".data(using: .utf8) ?? Data())
+            let hashValue = digest
+                .compactMap { String(format: "%02x", $0) }
+                .joined()
+            return hashValue
+        }
+    }
+}
+
+extension Notification.Name {
+    public static let newSchema = Notification.Name("newSchema")
+    public static let importSchema = Notification.Name("importSchema")
 }

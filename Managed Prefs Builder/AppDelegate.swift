@@ -24,6 +24,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     // quit the app if the window is closed - end
+    
+    @IBAction func newSchema(_ sender: Any) {
+        NotificationCenter.default.post(name: .newSchema, object: self)
+    }
+    
+    @IBAction func importSchema(_ sender: Any) {
+        NotificationCenter.default.post(name: .importSchema, object: self)
+    }
 
 
 }

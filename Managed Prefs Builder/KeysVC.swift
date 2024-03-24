@@ -39,17 +39,18 @@ class KeysVC: NSViewController {
     
     var existingKey: TheKey?
     var existingKeyId = ""
+    var keyIndex = 0
     
     @IBAction func selectKeyType_Action(_ sender: NSPopUpButton) {
-        print("[selectKeyType_Action] key type: \(sender.title)")
+//        print("[selectKeyType_Action] key type: \(sender.title)")
         let whichKey = sender.titleOfSelectedItem ?? "unknown"
         switch whichKey {
         case "array (from list)", "integer (from list)":
             add_Button.title = "Set"
             keys_TabView.selectTabViewItem(at: 1)
-            print("updating enum_title for key \(keyName_TextField.stringValue)")
+//            print("updating enum_title for key \(keyName_TextField.stringValue)")
             
-            print("updating enum for key \(keyName_TextField.stringValue)")
+//            print("updating enum for key \(keyName_TextField.stringValue)")
         default:
             add_Button.title = "Add"
             keys_TabView.selectTabViewItem(at: 0)
@@ -91,7 +92,7 @@ class KeysVC: NSViewController {
                 keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
             }
             let keyId = (existingKeyId == "") ? UUID().uuidString:existingKeyId
-            let currentKey = TheKey(id: keyId, type: keyType_Button.titleOfSelectedItem ?? "unknown", name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
+            let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType_Button.titleOfSelectedItem ?? "unknown", name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
             print("[set_Action] whichTab: \(whichTab)")
             delegate?.sendKeyInfo(keyInfo: currentKey)
             dismiss(self)
