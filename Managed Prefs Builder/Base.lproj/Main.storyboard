@@ -841,61 +841,34 @@ DQ
                             </box>
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sHt-ex-NDq">
                                 <rect key="frame" x="20" y="61" width="290" height="598"/>
-                                <clipView key="contentView" ambiguous="YES" id="1xm-Qb-fOV">
+                                <clipView key="contentView" id="1xm-Qb-fOV">
                                     <rect key="frame" x="1" y="1" width="288" height="596"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" alternatingRowBackgroundColors="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" headerView="swt-Az-81J" viewBased="YES" id="CA0-Vx-rhz">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" alternatingRowBackgroundColors="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" headerView="swt-Az-81J" id="CA0-Vx-rhz">
                                             <rect key="frame" x="0.0" y="0.0" width="292" height="568"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="17" height="0.0"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn identifier="name" width="280" minWidth="280" maxWidth="1000" id="8MI-eV-hBX" userLabel="name">
+                                                <tableColumn identifier="keyName" width="280" minWidth="280" maxWidth="1000" id="8MI-eV-hBX" userLabel="name">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Key Name">
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
-                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="Mp2-ie-1ns">
-                                                        <font key="font" metaFont="system"/>
+                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" allowsUndo="NO" title="Text Cell" id="Mp2-ie-1ns">
+                                                        <font key="font" metaFont="system" size="14"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                     <sortDescriptor key="sortDescriptorPrototype" selector="caseInsensitiveCompare:" sortKey="name"/>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    <prototypeCellViews>
-                                                        <tableCellView id="6su-DE-D9w">
-                                                            <rect key="frame" x="8" y="0.0" width="275" height="24"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                            <subviews>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BIX-UF-td9">
-                                                                    <rect key="frame" x="0.0" y="4" width="275" height="16"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="Dac-eo-3LI">
-                                                                        <font key="font" usesAppearanceFont="YES"/>
-                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
-                                                                    <connections>
-                                                                        <binding destination="6su-DE-D9w" name="value" keyPath="objectValue.name" id="xKj-Ng-fZY"/>
-                                                                    </connections>
-                                                                </textField>
-                                                            </subviews>
-                                                            <constraints>
-                                                                <constraint firstItem="BIX-UF-td9" firstAttribute="leading" secondItem="6su-DE-D9w" secondAttribute="leading" constant="2" id="3c1-3m-Igv"/>
-                                                                <constraint firstItem="BIX-UF-td9" firstAttribute="centerX" secondItem="6su-DE-D9w" secondAttribute="centerX" id="PJx-Q8-fF3"/>
-                                                                <constraint firstItem="BIX-UF-td9" firstAttribute="centerY" secondItem="6su-DE-D9w" secondAttribute="centerY" id="YZ7-vI-6EJ"/>
-                                                            </constraints>
-                                                            <connections>
-                                                                <outlet property="textField" destination="BIX-UF-td9" id="Ia1-7z-45G"/>
-                                                            </connections>
-                                                        </tableCellView>
-                                                    </prototypeCellViews>
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
-                                                <binding destination="KHu-8m-7hh" name="content" keyPath="arrangedObjects" id="Gjc-tt-y3Z"/>
-                                                <binding destination="KHu-8m-7hh" name="sortDescriptors" keyPath="sortDescriptors" previousBinding="Gjc-tt-y3Z" id="dGk-F6-5iP"/>
+                                                <outlet property="dataSource" destination="XfG-lQ-9wD" id="hay-Ob-fLL"/>
+                                                <outlet property="delegate" destination="XfG-lQ-9wD" id="kz0-VR-05G"/>
                                             </connections>
                                         </tableView>
                                     </subviews>
@@ -1145,7 +1118,7 @@ DQ
                                                     <rect key="frame" x="0.0" y="164" width="555" height="140"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="2wE-oQ-P03">
                                                         <rect key="frame" x="1" y="1" width="553" height="138"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="cId-7b-oeH">
                                                                 <rect key="frame" x="0.0" y="0.0" width="553" height="138"/>
@@ -1183,7 +1156,7 @@ DQ
                                                     <rect key="frame" x="0.0" y="5" width="555" height="121"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="aHu-0e-Hgx">
                                                         <rect key="frame" x="1" y="1" width="553" height="119"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="PAv-9V-H9a">
                                                                 <rect key="frame" x="0.0" y="0.0" width="553" height="119"/>
@@ -1269,19 +1242,22 @@ DQ
                                         <items>
                                             <menuItem title="Select Key Type" state="on" id="G6R-Jk-eAh"/>
                                             <menuItem isSeparatorItem="YES" id="g79-EH-9Rn"/>
-                                            <menuItem title="array" id="rG8-Pp-EFy">
-                                                <modifierMask key="keyEquivalentModifierMask"/>
-                                            </menuItem>
-                                            <menuItem title="array (from list)" id="fr0-yk-0Fa">
-                                                <modifierMask key="keyEquivalentModifierMask"/>
-                                            </menuItem>
                                             <menuItem title="base64 encoded string" hidden="YES" enabled="NO" id="giv-Pj-Xx7">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                             </menuItem>
                                             <menuItem title="boolean" id="g2I-cU-KRh"/>
                                             <menuItem title="integer" id="Xvg-4f-7cL"/>
                                             <menuItem title="integer (from list)" id="Kz4-VQ-WRG"/>
+                                            <menuItem title="integer array" id="9Sn-93-LKd">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
                                             <menuItem title="string" id="97Z-2a-r84" userLabel="string">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
+                                            <menuItem title="string (from list)" id="fr0-yk-0Fa">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
+                                            <menuItem title="string array" id="rG8-Pp-EFy" userLabel="string array">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                             </menuItem>
                                         </items>

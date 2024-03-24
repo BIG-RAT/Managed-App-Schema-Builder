@@ -38,6 +38,7 @@ class KeysVC: NSViewController {
 //    @IBOutlet weak var enum_TextField: NSTextField!
     
     var existingKey: TheKey?
+    var existingKeyId = ""
     
     @IBAction func selectKeyType_Action(_ sender: NSPopUpButton) {
         print("[selectKeyType_Action] key type: \(sender.title)")
@@ -89,7 +90,8 @@ class KeysVC: NSViewController {
             if keyDescription_TextField.stringValue == "" {
                 keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
             }
-            let currentKey = TheKey(type: keyType_Button.titleOfSelectedItem ?? "unknown", name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
+            let keyId = (existingKeyId == "") ? UUID().uuidString:existingKeyId
+            let currentKey = TheKey(id: keyId, type: keyType_Button.titleOfSelectedItem ?? "unknown", name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
             print("[set_Action] whichTab: \(whichTab)")
             delegate?.sendKeyInfo(keyInfo: currentKey)
             dismiss(self)
