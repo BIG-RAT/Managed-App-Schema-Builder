@@ -74,6 +74,24 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "NO">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "newMajor=&quot;$(date -u +%Y%m%d)&quot;&#10;date24H=$(date -u +%H%M)&#10;tmpMinor=$(printf &quot;%x\n&quot; $(echo $date24H | sed &apos;s/^0*//&apos;))&#10;newMinor=$(echo $tmpMinor | tr &apos;[:lower:]&apos; &apos;[:upper:]&apos;)&#10;newBuildNumber=&quot;$newMajor-$newMinor&quot;&#10;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleVersion $newBuildNumber&quot; &quot;${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Info.plist&quot;&#10;&#10;## remove extended attributes (from added images)&#10;/usr/bin/xattr -cr &quot;${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources&quot;&#10;&#10;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "B5937B9323EE0829002EDC2E"
+                     BuildableName = "Managed App Schema Builder.app"
+                     BlueprintName = "Managed App Schema Builder"
+                     ReferencedContainer = "container:Managed App Schema Builder.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <PostActions>
          <ExecutionAction
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">

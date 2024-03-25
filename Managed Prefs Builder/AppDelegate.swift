@@ -25,6 +25,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     // quit the app if the window is closed - end
     
+    @IBAction func quit(_ sender: Any) {
+        NotificationCenter.default.post(name: .quitNow, object: self)
+    }
+    
     @IBAction func newSchema(_ sender: Any) {
         NotificationCenter.default.post(name: .newSchema, object: self)
     }

@@ -16,9 +16,7 @@ protocol SendingKeyInfoDelegate {
 class KeysVC: NSViewController {
     
     var delegate: SendingKeyInfoDelegate? = nil
-    
-    @IBOutlet weak var keys_TabView: NSTabView!
-    
+        
     @IBOutlet weak var keyRequired_Button: NSButton!
     @IBOutlet weak var keyName_TextField: NSTextField!
     @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
@@ -29,32 +27,38 @@ class KeysVC: NSViewController {
     @IBOutlet weak var keyType_Button: NSPopUpButton!
     @IBOutlet weak var add_Button: NSButton!
     @IBOutlet weak var cancel_Button: NSButton!
+        
+    @IBOutlet weak var listOptions_TextField: NSTextField!
+    @IBOutlet weak var listValues_TextField: NSTextField!
     
-    // advanced key tab - start
-    @IBOutlet weak var advIntegerList_Label: NSTextField!
+    @IBOutlet weak var enum_titles_ScrollView: NSScrollView!
+    @IBOutlet weak var enum_ScrollView: NSScrollView!
     
     @IBOutlet var enum_titles_TextView: NSTextView!
     @IBOutlet var enum_TextView: NSTextView!
-//    @IBOutlet weak var enum_TextField: NSTextField!
     
     var existingKey: TheKey?
     var existingKeyId = ""
-    var keyIndex = 0
+    var keyIndex      = 0
     
     @IBAction func selectKeyType_Action(_ sender: NSPopUpButton) {
 //        print("[selectKeyType_Action] key type: \(sender.title)")
+        var hidden = true
         let whichKey = sender.titleOfSelectedItem ?? "unknown"
         switch whichKey {
-        case "array (from list)", "integer (from list)":
-            add_Button.title = "Set"
-            keys_TabView.selectTabViewItem(at: 1)
+        case "string (from list)", "integer (from list)":
+            hidden = false
+            preferredContentSize = CGSize(width: 651, height: 795)
 //            print("updating enum_title for key \(keyName_TextField.stringValue)")
-            
 //            print("updating enum for key \(keyName_TextField.stringValue)")
         default:
-            add_Button.title = "Add"
-            keys_TabView.selectTabViewItem(at: 0)
+            preferredContentSize = CGSize(width: 651, height: 464)
         }
+        
+        listOptions_TextField.isHidden = hidden
+        listValues_TextField.isHidden = hidden
+        enum_titles_ScrollView.isHidden = hidden
+        enum_ScrollView.isHidden = hidden
 
     }
     
@@ -68,36 +72,30 @@ class KeysVC: NSViewController {
         dismiss(self)
     }
     
-    
     @IBAction func add_Action(_ sender: NSButton) {
-        let whichTab = keys_TabView.selectedTabViewItem?.label ?? "unknown"
         let keyType =  keyType_Button.titleOfSelectedItem ?? "unknown"
         
         if keyName_TextField.stringValue == "" {
-            Alert.shared.display(header: "", message: "A key must be provided")
+            _ = Alert.shared.display(header: "", message: "A key must be provided")
             return
         }
         if keyType == "unknown" || keyType == "Select Key Type" {
-            Alert.shared.display(header: "", message: "A key type must be selected")
+            _ = Alert.shared.display(header: "", message: "A key type must be selected")
             return
         }
         
-        if whichTab == "main" {
-            if keyFriendlyName_TextField.stringValue == "" {
-                keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
-            }
+        if keyFriendlyName_TextField.stringValue == "" {
+            keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
+        }
             
+        if keyDescription_TextField.stringValue == "" {
+            keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
+        }
+        let keyId = (existingKeyId == "") ? UUID().uuidString:existingKeyId
+        let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType_Button.titleOfSelectedItem ?? "unknown", name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
+//            print("[set_Action] whichTab: \(whichTab)")
             
-            if keyDescription_TextField.stringValue == "" {
-                keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
-            }
-            let keyId = (existingKeyId == "") ? UUID().uuidString:existingKeyId
-            let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType_Button.titleOfSelectedItem ?? "unknown", name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
-            print("[set_Action] whichTab: \(whichTab)")
-            delegate?.sendKeyInfo(keyInfo: currentKey)
-            dismiss(self)
-        } else {
-            
+        if ["string (from list)", "integer (from list)"].contains(keyType) {
             // verify enum_titles and enum have the same number of values
             let enum_titlesTmp = enum_titles_TextView.string.replacingOccurrences(of: "\n", with: ",")
             let enum_titlesArray = enum_titlesTmp.split(separator: ",")
@@ -112,25 +110,24 @@ class KeysVC: NSViewController {
                     for theValue in validateInputArray {
                         let intTest = theValue.replacingOccurrences(of: " ", with: "")
                         if !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: "\(intTest)")) {
-                            Alert.shared.display(header: "Error", message: "Found '\(intTest)' and only integers are allowed.")
+                            _ = Alert.shared.display(header: "Error", message: "Found '\(intTest)' and only integers are allowed.")
                             return
                         }
                     }
                 }
-
-                add_Button.title = "Add"
-                self.keys_TabView.selectTabViewItem(at: 0)
-                
             } else {
-                Alert.shared.display(header: "Attention", message: "Number of items defined in list of options and number of items defined in the value list must be equal.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of values: \(enumArray.count)")
+                _ = Alert.shared.display(header: "Attention", message: "Number of items defined in list of options and number of items defined in the value list must be equal.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of values: \(enumArray.count)")
+                return
             }
         }
+        delegate?.sendKeyInfo(keyInfo: currentKey)
+        dismiss(self)
     }
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        preferredContentSize = CGSize(width: 651, height: 464)
 
         enum_titles_TextView.font = NSFont(name: "Courier", size: 14.0)
         enum_titles_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
@@ -139,6 +136,8 @@ class KeysVC: NSViewController {
         
         if existingKey?.name ?? "" != "" {
             keyType_Button.selectItem(withTitle: existingKey?.type ?? "Select Key Type")
+            selectKeyType_Action(keyType_Button)
+            
             keyName_TextField.stringValue = existingKey?.name ?? ""
             keyFriendlyName_TextField.stringValue = existingKey?.friendlyName ?? ""
             keyDescription_TextField.stringValue = existingKey?.desc ?? ""
@@ -149,10 +148,8 @@ class KeysVC: NSViewController {
             
             add_Button.title = "Update"
         }
-        
     }
     
-
     override func viewWillAppear() {
 
     }
