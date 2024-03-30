@@ -1,9 +1,8 @@
 //
 //  Credentials.swift
-//  Object Info
+//  MASB
 //
-//  Created by Leslie Helou on 9/20/19.
-//  Copyright © 2019 jamf. All rights reserved.
+//  Copyright © 2024 jamf. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +12,7 @@ let kSecAttrAccountString          = NSString(format: kSecAttrAccount)
 let kSecValueDataString            = NSString(format: kSecValueData)
 let kSecClassGenericPasswordString = NSString(format: kSecClassGenericPassword)
 let keychainQ                      = DispatchQueue(label: "com.jamf.objectinfo", qos: DispatchQoS.background)
-let prefix                         = "Object Info"
+let prefix                         = "MASB"
 let sharedPrefix                   = "JPMA"
 let accessGroup                    = "PS2F6S478M.jamfie.SharedJPMA"
 

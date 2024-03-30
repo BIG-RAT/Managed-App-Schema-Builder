@@ -19,11 +19,13 @@ class TheKey: NSObject {
     @objc var friendlyName: String
     @objc var desc: String
     @objc var infoText: String
+    @objc var listType: String
+    @objc var listHeader: String
     @objc var listOfOptions: String
     @objc var listOfValues: String
     
     
-    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, listOfOptions: String, listOfValues: String) {
+    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
         self.id       = id
         self.index    = index
         self.type     = type
@@ -32,12 +34,14 @@ class TheKey: NSObject {
         self.friendlyName = friendlyName
         self.desc = desc
         self.infoText = infoText
+        self.listType = listType
+        self.listHeader = listHeader
         self.listOfOptions = listOfOptions
         self.listOfValues = listOfValues
     }
 }
 
-class ViewController: NSViewController, SendingKeyInfoDelegate {
+class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDelegate {
     
     func sendKeyInfo(keyInfo: TheKey) {
         if let existingIndex = currentKeys.firstIndex(where: {$0.id == keyInfo.id}) {
@@ -45,7 +49,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
             currentKeys[existingIndex] = keyInfo
             keys_TableView.reloadData()
             displaySchema()
-        } else if let existingIndex = currentKeys.firstIndex(where: {$0.name == keyInfo.name}) {
+        } else if let _ = currentKeys.firstIndex(where: {$0.name == keyInfo.name}) {
             _ = Alert.shared.display(header: "", message: "Key name already exists")
             performSegue(withIdentifier: "showKey", sender: keyInfo)
         } else {
@@ -58,19 +62,16 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     
     let fileManager = FileManager.default
 
+    @IBOutlet weak var AppTitle_TextField: NSTextField!
     @IBOutlet weak var preferenceDomain_TextField: NSTextField!
     @IBOutlet weak var preferenceDomainDescr_TextField: NSTextField!
-    @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
-    
-    
-    @IBOutlet weak var keyDescription_TextField: NSTextView!
-    @IBOutlet weak var keyInfoText_TextField: NSTextField!
     
     @IBOutlet weak var currentSchema_TextView: NSTextView!
         
     @IBOutlet weak var import_Button: NSButton!
+    
     @IBOutlet weak var save_Button: NSButton!
-    @IBOutlet weak var cancel_Button: NSButton!
+    @IBOutlet weak var quit_Button: NSButton!
     
     @IBOutlet weak var keys_TableView: NSTableView!
     
@@ -110,7 +111,8 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         
         var json: Any?
         // filetypes that are selectable
-        let fileTypeArray: Array = ["json", "plist"]
+//        let fileTypeArray: Array = ["json", "plist"]
+        let fileTypeArray: Array = ["json"]
 
         var importPathUrl = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
     
@@ -123,58 +125,76 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         importDialog.beginSheetModal(for: self.view.window!){ [self] result in
             if result == .OK {
                 importPathUrl = importDialog.url!
-                        
-                var rawKeyValuePairs = [String: Any]()
+                
+                let fileType = importPathUrl.pathExtension
+                   
                 do {
-                    preferenceKeys.valuePairs.removeAll()
-
-                    // Getting data from JSON file using the file URL
-                    let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
-                    json = try? JSONSerialization.jsonObject(with: data)
-                    let manifestJson = json as? [String: Any]
-//                    print("[import] manifestJson: \(manifestJson ?? [:])")
+                    var manifestJson = [String:Any]()
                     
-                    guard let check = manifestJson?["_exported"], "\(check)" == "MASB" else {
+                    if fileType == "plist" {
+                        let data = try Data(contentsOf: importPathUrl)
+                        let dict = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as! [String:Any]
+                        let jsonData = try JSONSerialization.data(withJSONObject: dict , options: .prettyPrinted)
+                        json = try? JSONSerialization.jsonObject(with: jsonData)
+                        manifestJson = json as? [String: Any] ?? [:]
+                        
+                        print("[importFile_Action] imported JSON: \(manifestJson)")
+                    }
+                    
+                    // Getting data from JSON file using the file URL
+                    if fileType == "json" {
+                        let data = try Data(contentsOf: importPathUrl, options: .mappedIfSafe)
+                        json = try? JSONSerialization.jsonObject(with: data)
+                        manifestJson = json as? [String: Any] ?? [:]
+                    }
+                    //                    print("[import] manifestJson: \(manifestJson ?? [:])")
+                    
+                    guard let check = manifestJson["_exported"], "\(check)" == "MASB" else {
                         _ = Alert.shared.display(header: "Error", message: "Unable to parse JSON, verify the format.")
                         return
                     }
                     
-//                    var existingKey: TheKey?
+                    //                    var existingKey: TheKey?
                     
-                    self.preferenceDomain_TextField.stringValue = manifestJson!["title"] as! String
-                    self.preferenceDomainDescr_TextField.stringValue = manifestJson!["description"] as! String
-                    let properties = manifestJson?["properties"] as? [String: [String: Any]] ?? [:]
-                    let required   = manifestJson?["required"] as? [String] ?? []
+                    preferenceDomain_TextField.stringValue = manifestJson["title"] as? String ?? "\(importPathUrl.lastPathComponent.replacingOccurrences(of: ".\(fileType)", with: ""))"
+                    AppTitle_TextField.stringValue = manifestJson["_appTitle"] as? String ?? preferenceDomain_TextField.stringValue
+                    preferenceDomainDescr_TextField.stringValue = manifestJson["description"] as? String ?? ""
+                    let properties = manifestJson["properties"] as? [String: [String: Any]] ?? [:]
+                    let required   = manifestJson["required"] as? [String] ?? []
                     self.currentKeys.removeAll()
-//
-                    var propertyOrder = 0
+                    //
+//                    var propertyOrder = 0
                     var enumTitles = [Any]()
                     var enumList   = [Any]()
                     for (prefKey, keyDetails) in properties {
-//                        print("[import] \(prefKey) keyDetails: \(keyDetails)")
+                        //                        print("[import] \(prefKey) keyDetails: \(keyDetails)")
                         
                         let friendlyName = keyDetails["title"] as? String ?? ""
                         let desc = keyDetails["description"] as? String ?? ""
                         let propertyOrder = keyDetails["property_order"] as? Int ?? 0
                         let required = ( required.contains(prefKey) ) ? true:false
-
+                        
                         var type = keyDetails["type"] as? String ?? ""
-                        let name = keyDetails["title"] as? String ?? ""
+                        var itemsType = ""
+                        var listHeader = ""
+                        
                         let options = keyDetails["options"] as? [String: Any] ?? [:]
                         let infoText = options["infoText"] as? String ?? ""
-                        if let items = keyDetails["items"] as? [String: Any], let itemsType = items["type"], let itemsTitle = items["title"] as? String {
-                            type = "\(type) array"
+                        
+                        if let items = keyDetails["items"] as? [String: Any] {
+                            let itemType = items["type"] as? String ?? ""
+                            itemsType = "\(itemType)"
+                            listHeader = items["title"] as? String ?? ""
                         }
                         
                         enumList = keyDetails["enum"] as? [Any] ?? []
                         if enumList.count > 0 {
                             type = ( type == "string" ) ? "string (from list)":"integer (from list)"
+                            itemsType = "\(itemsType) array"
                             enumTitles = options["enum_titles"] as? [Any] ?? []
-                        } else {
-                            
                         }
                         
-                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: name, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
+                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, listType: itemsType, listHeader: listHeader, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
                     }
                     currentKeys.sort(by: { $0.index < $1.index})
                     keys_TableView.reloadData()
@@ -199,21 +219,9 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     @IBAction func removeKey_Action(_ sender: Any) {
         let theRow = self.keys_TableView.selectedRow
         currentKeys.remove(at: theRow)
+        keys_TableView.reloadData()
         displaySchema()
     }
-    
-//    func updateKeyValuePair(whichKey: String) {
-//    
-//        print("updating friendly name (title) for key \(keyName)")
-//        preferenceKeys.valuePairs[keyName]!["title"] = "\(keyFriendlyName_TextField.stringValue)"
-//    
-//        print("updating description for key \(keyName)")
-//        preferenceKeys.valuePairs[keyName]!["description"] = "\(keyDescription_TextField.string)"
-//        
-//        print("updating info text for key \(keyName)")
-//        preferenceKeys.valuePairs[keyName]!["infoText"] = "\(keyInfoText_TextField.stringValue)"
-//        
-//    }
     
     func displaySchema(reorder: Bool = false) {
         let downloadsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
@@ -223,8 +231,8 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         var keyDelimiter = ",\n"
         
         if preferenceDomain_TextField.stringValue != "" {
-            var preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
-            var exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
+            let preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
+//            var exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
             
             currentSchema_TextView.string = "{\n\t\"title\": \"\(preferenceDomain_TextField.stringValue)\",\n\t\"description\": \"\(preferenceDomainDescr_TextField.stringValue)\",\n\t\"properties\": {\n"
 //
@@ -233,7 +241,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
                 if theKey.required {
                     requiredKeys.append("\"\(theKey.name)\",")
                 }
-//                                print("[displaySchema] key: \(theKey.type), name: \(theKey.name)")
+//                print("[displaySchema] key: \(theKey.type), name: \(theKey.name)")
                 currentKeys[keysWritten].index = (keysWritten+1)*5
                 keysWritten += 1
                 if keysWritten == currentKeys.count {
@@ -241,23 +249,12 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
                 }
                 var keyTypeItems = theKey.type
                 switch keyTypeItems {
-                case "integer array":
+                case "array":
                     keyTypeItems = """
                     "array",
                                 "items": {
-                                    "type": "integer",
-                                    "title": "List of integers"
-                                },
-                                "options": {
-                                    "infoText": "\(theKey.infoText)"
-                                }
-                    """
-                case "string array":
-                    keyTypeItems = """
-                    "array",
-                                "items": {
-                                    "type": "string",
-                                    "title": "List of strings"
+                                    "type": "\(theKey.listType)",
+                                    "title": "\(theKey.listHeader)"
                                 },
                                 "options": {
                                     "infoText": "\(theKey.infoText)"
@@ -331,7 +328,6 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         }
     }
     
-
     @IBAction func save_Action(_ sender: Any) {
 
         let downloadsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
@@ -340,7 +336,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
             var preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
             var exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
             
-            let exportFile = currentSchema_TextView.string.replacingOccurrences(of: "{\n\t\"title\"", with: "{\n\t\"_exported\": \"MASB\",\n\t\"title\"")
+            let exportFile = currentSchema_TextView.string.replacingOccurrences(of: "{\n\t\"title\"", with: "{\n\t\"_appTitle\": \"\(AppTitle_TextField.stringValue)\",\n\t\"_exported\": \"MASB\",\n\t\"title\"")
             let saveDialog = NSSavePanel()
             saveDialog.canCreateDirectories = true
             saveDialog.nameFieldStringValue = preferenceDomainFile
@@ -387,7 +383,24 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         }
     }
     
-    
+    func controlTextDidEndEditing(_ obj: Notification) {
+        var whichField = ""
+        if let textField = obj.object as? NSTextField {
+            if currentSchema_TextView.string != "" {
+                displaySchema()
+            }
+            whichField = textField.identifier!.rawValue
+            if whichField == "preferenceDomain" && AppTitle_TextField.stringValue == "" {
+                AppTitle_TextField.stringValue = "\(preferenceDomain_TextField.stringValue)"
+            }
+        } //else {
+//            whichField = obj.name.rawValue
+//        }
+        //
+//        print("[controlTextDidEndEditing] obj.name.rawValue: \(obj.name.rawValue)")
+        print("[controlTextDidEndEditing]        whichField: \(whichField)")
+
+    }
     
     @objc func viewKey() {
         let keyIndex = keys_TableView.clickedRow
@@ -416,7 +429,8 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
     }
     
     @objc func quitNow(_ notification: Notification) {
-        importFile_Action(import_Button)
+//        importFile_Action(import_Button)
+        quit_Action(quit_Button)
     }
 
     override func viewDidLoad() {
@@ -426,6 +440,9 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         keys_TableView.delegate = self
         keys_TableView.dataSource = self
         keys_TableView.registerForDraggedTypes([.string])
+        
+        preferenceDomain_TextField.delegate      = self
+        preferenceDomainDescr_TextField.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(newSchema(_:)), name: .newSchema, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(importSchema(_:)), name: .importSchema, object: nil)
@@ -460,7 +477,7 @@ class ViewController: NSViewController, SendingKeyInfoDelegate {
         }
     }
     
-    @IBAction func quit_Button(_ sender: Any) {
+    @IBAction func quit_Action(_ sender: NSButton) {
         if savedHash != currentHash {
             let response = Alert.shared.display(header: "", message: "You have unsaved changes, if you continue the changes will be lost.", secondButton: "Cancel")
             if response == "Cancel" {
@@ -565,6 +582,22 @@ extension [Any] {
 }
 
 extension String {
+    var fqdnFromUrl: String {
+        get {
+            var fqdn = ""
+            let nameArray = self.components(separatedBy: "/")
+            if nameArray.count > 2 {
+                fqdn = nameArray[2]
+            } else {
+                fqdn =  self
+            }
+            if fqdn.contains(":") {
+                let fqdnArray = fqdn.components(separatedBy: ":")
+                fqdn = fqdnArray[0]
+            }
+            return fqdn
+        }
+    }
     var hashString: String {
         get {
             let digest = SHA256.hash(data: "\(self)".data(using: .utf8) ?? Data())
@@ -572,6 +605,16 @@ extension String {
                 .compactMap { String(format: "%02x", $0) }
                 .joined()
             return hashValue
+        }
+    }
+    var trimTrailingSlash: String {
+        get {
+            var newString = self
+                
+            while newString.last == "/" {
+                newString = "\(newString.dropLast(1))"
+            }
+            return newString
         }
     }
 }

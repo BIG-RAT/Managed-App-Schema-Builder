@@ -8,18 +8,76 @@
 
 import Foundation
 
-struct preferenceKeys {
-    static var tableArray: [String]?
-    static var valuePairs = [String:[String:Any]]()
-}
-
 struct tab {
     static var current = ""
 }
 
-let userDefaults = UserDefaults.standard
+let defaults = UserDefaults.standard
+var isRunning              = false
+var didRun                 = false
+var saveServers            = true
+var maxServerList          = 40
+var appsGroupId            = "group.PS2F6S478M.jamfie.SharedJPMA"
+let sharedDefaults         = UserDefaults(suiteName: appsGroupId)
+let sharedContainerUrl     = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appsGroupId)
+let sharedSettingsPlistUrl = (sharedContainerUrl?.appendingPathComponent("Library/Preferences/\(appsGroupId).plist"))!
+
+var useApiClient = 0
+
 // determine if we're using dark mode
 var isDarkMode: Bool {
-    let mode = userDefaults.string(forKey: "AppleInterfaceStyle")
+    let mode = defaults.string(forKey: "AppleInterfaceStyle")
     return mode == "Dark"
+}
+
+struct AppInfo {
+    static let dict          = Bundle.main.infoDictionary!
+    static let version       = dict["CFBundleShortVersionString"] as! String
+    static let build         = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
+    static let name          = dict["CFBundleExecutable"] as! String
+    
+    static let appSupport    = NSHomeDirectory() + "/Library/Application Support/"
+
+    static let userAgentHeader = "\(String(describing: name.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!))/\(AppInfo.version)"
+}
+
+struct JamfProServer {
+    static var accessToken  = ""
+    static var authExpires  = 30.0
+    static var currentCred  = ""
+    static var tokenCreated = Date()
+    static var majorVersion = 0
+    static var minorVersion = 0
+    static var patchVersion = 0
+    static var build        = ""
+    static var version      = ""
+    static var authType     = ""
+//    static var destination  = ""
+    static var displayName  = ""
+    static var username     = ""
+    static var password     = ""
+    static var useApiClient = 0
+    static var authCreds    = ""
+    static var base64Creds  = ""        // used if we want to auth with a different account
+    static var validToken   = false
+    static var tokenExpires = ""
+    
+    static var url          = ""
+}
+
+struct Log {
+    static var path: String? = (NSHomeDirectory() + "/Library/Logs/")
+    static var file  = "masb.log"
+    static var maxFiles = 42
+}
+
+public func timeDiff(startTime: Date) -> (Int, Int, Int, Double) {
+    let endTime = Date()
+
+    let components = Calendar.current.dateComponents([
+        .hour, .minute, .second, .nanosecond], from: startTime, to: endTime)
+    var diffInSeconds = Double(components.hour!)*3600 + Double(components.minute!)*60 + Double(components.second!) + Double(components.nanosecond!)/1000000000
+    diffInSeconds = Double(round(diffInSeconds * 1000) / 1000)
+
+    return (Int(components.hour!), Int(components.minute!), Int(components.second!), diffInSeconds)
 }
