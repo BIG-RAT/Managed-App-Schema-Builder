@@ -19,13 +19,14 @@ class TheKey: NSObject {
     @objc var friendlyName: String
     @objc var desc: String
     @objc var infoText: String
+    @objc var moreInfo: String
     @objc var listType: String
-    @objc var listHeader: String
+    @objc var headerOrPlaceholder: String
     @objc var listOfOptions: String
     @objc var listOfValues: String
     
     
-    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
+    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, moreInfo: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
         self.id       = id
         self.index    = index
         self.type     = type
@@ -34,8 +35,9 @@ class TheKey: NSObject {
         self.friendlyName = friendlyName
         self.desc = desc
         self.infoText = infoText
+        self.moreInfo = moreInfo
         self.listType = listType
-        self.listHeader = listHeader
+        self.headerOrPlaceholder = listHeader
         self.listOfOptions = listOfOptions
         self.listOfValues = listOfValues
     }
@@ -62,7 +64,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
     
     let fileManager = FileManager.default
 
-    @IBOutlet weak var AppTitle_TextField: NSTextField!
+    @IBOutlet weak var appTitle_TextField: NSTextField!
     @IBOutlet weak var preferenceDomain_TextField: NSTextField!
     @IBOutlet weak var preferenceDomainDescr_TextField: NSTextField!
     
@@ -151,13 +153,20 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                     
                     guard let check = manifestJson["_exported"], "\(check)" == "MASB" else {
                         _ = Alert.shared.display(header: "Error", message: "Unable to parse JSON, verify the format.")
+                        WriteToLog.shared.message(stringOfText: "Unable to parse JSON, verify the format.")
                         return
+                    }
+                    if #available(macOS 13.0, *) {
+                        WriteToLog.shared.message(stringOfText: "Imported \(importPathUrl.path())")
+                    } else {
+                        // Fallback on earlier versions
+                        WriteToLog.shared.message(stringOfText: "Imported \(importPathUrl.absoluteString)")
                     }
                     
                     //                    var existingKey: TheKey?
                     
                     preferenceDomain_TextField.stringValue = manifestJson["title"] as? String ?? "\(importPathUrl.lastPathComponent.replacingOccurrences(of: ".\(fileType)", with: ""))"
-                    AppTitle_TextField.stringValue = manifestJson["_appTitle"] as? String ?? preferenceDomain_TextField.stringValue
+                    appTitle_TextField.stringValue = manifestJson["_appTitle"] as? String ?? preferenceDomain_TextField.stringValue
                     preferenceDomainDescr_TextField.stringValue = manifestJson["description"] as? String ?? ""
                     let properties = manifestJson["properties"] as? [String: [String: Any]] ?? [:]
                     let required   = manifestJson["required"] as? [String] ?? []
@@ -176,15 +185,20 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                         
                         var type = keyDetails["type"] as? String ?? ""
                         var itemsType = ""
-                        var listHeader = ""
+                        var headerOrPlaceholder = ""
                         
                         let options = keyDetails["options"] as? [String: Any] ?? [:]
                         let infoText = options["infoText"] as? String ?? ""
+                        let inputAttributes = options["inputAttributes"] as? [String: Any] ?? [:]
+                        headerOrPlaceholder = "\(inputAttributes["placeholder"] ?? "")"
+                        
+                        let links = keyDetails["links"] as? [String: String] ?? [:]
+                        var moreInfo = links["href"] ?? ""
                         
                         if let items = keyDetails["items"] as? [String: Any] {
                             let itemType = items["type"] as? String ?? ""
                             itemsType = "\(itemType)"
-                            listHeader = items["title"] as? String ?? ""
+                            headerOrPlaceholder = items["title"] as? String ?? ""
                         }
                         
                         enumList = keyDetails["enum"] as? [Any] ?? []
@@ -194,7 +208,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                             enumTitles = options["enum_titles"] as? [Any] ?? []
                         }
                         
-                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, listType: itemsType, listHeader: listHeader, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
+                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, moreInfo: moreInfo, listType: itemsType, listHeader: headerOrPlaceholder, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
                     }
                     currentKeys.sort(by: { $0.index < $1.index})
                     keys_TableView.reloadData()
@@ -248,13 +262,15 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                     keyDelimiter = "\n"
                 }
                 var keyTypeItems = theKey.type
+                var links = ""
+                
                 switch keyTypeItems {
                 case "array":
                     keyTypeItems = """
                     "array",
                                 "items": {
                                     "type": "\(theKey.listType)",
-                                    "title": "\(theKey.listHeader)"
+                                    "title": "\(theKey.headerOrPlaceholder)"
                                 },
                                 "options": {
                                     "infoText": "\(theKey.infoText)"
@@ -291,19 +307,41 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                                 "enum": \(enumValues)
                     """
                 default:
+                    var placeholder = ""
+                    if theKey.headerOrPlaceholder != "" {
+                        let placyholderValue = (keyTypeItems == "string") ? "\"\(theKey.headerOrPlaceholder)\"":theKey.headerOrPlaceholder
+                        placeholder = """
+                        ,
+                                        "inputAttributes": {
+                                            "placeholder": \(placyholderValue)
+                                        }
+                        """
+                    }
+                    
                     keyTypeItems = """
                     "\(keyTypeItems)",
                                 "options": {
-                                    "infoText": "\(theKey.infoText)"
+                                    "infoText": "\(theKey.infoText)"\(placeholder)
                                 }
                     """
+                }
+                if theKey.moreInfo != "" {
+                    links = """
+                ,
+                            "links": [
+                                {
+                                    "rel": "More Information",
+                                    "href": "\(theKey.moreInfo)"
+                                }
+                            ]
+                """
                 }
                 let text = """
                         "\(theKey.name)": {
                             "title": "\(theKey.friendlyName)",
                             "description": "\(theKey.desc)",
                             "property_order": \(reorder ? keysWritten*5:theKey.index),
-                            "type": \(String(describing: keyTypeItems))
+                            "type": \(String(describing: keyTypeItems))\(links)
                         }\(keyDelimiter)
                 """
                 currentSchema_TextView.string = currentSchema_TextView.string + text
@@ -336,7 +374,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
             var preferenceDomainFile = "\(preferenceDomain_TextField.stringValue).json"
             var exportURL = downloadsDirectory.appendingPathComponent(preferenceDomainFile)
             
-            let exportFile = currentSchema_TextView.string.replacingOccurrences(of: "{\n\t\"title\"", with: "{\n\t\"_appTitle\": \"\(AppTitle_TextField.stringValue)\",\n\t\"_exported\": \"MASB\",\n\t\"title\"")
+            let exportFile = currentSchema_TextView.string.replacingOccurrences(of: "{\n\t\"title\"", with: "{\n\t\"_appTitle\": \"\(appTitle_TextField.stringValue)\",\n\t\"_exported\": \"MASB\",\n\t\"title\"")
             let saveDialog = NSSavePanel()
             saveDialog.canCreateDirectories = true
             saveDialog.nameFieldStringValue = preferenceDomainFile
@@ -349,8 +387,15 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                         do {
                             try data.write(to: exportURL)
                             print("Successfully wrote to file!")
+                            if #available(macOS 13.0, *) {
+                                WriteToLog.shared.message(stringOfText: "Successfully wrote to \(exportURL.path())")
+                            } else {
+                                // Fallback on earlier versions
+                                WriteToLog.shared.message(stringOfText: "Successfully wrote to \(exportURL.absoluteString)")
+                            }
                         } catch {
                             print("Error writing to file: \(error)")
+                            WriteToLog.shared.message(stringOfText: "Error writing to \(exportURL.absoluteString). Error: \(error)")
                         }
                     }
                     savedHash = currentSchema_TextView.string.hashString
@@ -390,15 +435,15 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                 displaySchema()
             }
             whichField = textField.identifier!.rawValue
-            if whichField == "preferenceDomain" && AppTitle_TextField.stringValue == "" {
-                AppTitle_TextField.stringValue = "\(preferenceDomain_TextField.stringValue)"
+            if whichField == "preferenceDomain" && appTitle_TextField.stringValue == "" {
+                appTitle_TextField.stringValue = "\(preferenceDomain_TextField.stringValue)"
             }
         } //else {
 //            whichField = obj.name.rawValue
 //        }
         //
 //        print("[controlTextDidEndEditing] obj.name.rawValue: \(obj.name.rawValue)")
-        print("[controlTextDidEndEditing]        whichField: \(whichField)")
+//        print("[controlTextDidEndEditing]        whichField: \(whichField)")
 
     }
     
@@ -416,7 +461,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                 return
             }
         }
-        
+        appTitle_TextField.stringValue = ""
         preferenceDomain_TextField.stringValue = ""
         preferenceDomainDescr_TextField.stringValue = ""
         currentKeys.removeAll()
@@ -437,6 +482,16 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        //create log file
+        Log.file = getCurrentTime().replacingOccurrences(of: ":", with: "") + "_" + Log.file
+        if !(FileManager.default.fileExists(atPath: Log.path! + Log.file)) {
+            FileManager.default.createFile(atPath: Log.path! + Log.file, contents: nil, attributes: nil)
+        }
+        didRun = true
+        WriteToLog.shared.logCleanup()
+        
+        WriteToLog.shared.message(stringOfText: "[ViewController] Running Managed App Schema Builder v\(AppInfo.version)")
+        
         keys_TableView.delegate = self
         keys_TableView.dataSource = self
         keys_TableView.registerForDraggedTypes([.string])

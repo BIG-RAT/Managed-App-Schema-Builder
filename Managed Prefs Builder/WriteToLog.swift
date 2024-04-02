@@ -6,6 +6,13 @@
 //
 
 import Foundation
+
+struct Log {
+    static var path: String? = (NSHomeDirectory() + "/Library/Logs/")
+    static var file  = "masb.log"
+    static var maxFiles = 42
+}
+
 class WriteToLog {
     
     static let shared = WriteToLog()

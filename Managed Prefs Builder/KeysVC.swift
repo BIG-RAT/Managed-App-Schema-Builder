@@ -16,7 +16,9 @@ protocol SendingKeyInfoDelegate {
 class KeysVC: NSViewController {
     
     var delegate: SendingKeyInfoDelegate? = nil
-        
+    
+    @IBOutlet weak var main_Scrollview: NSScrollView!
+    
     @IBOutlet weak var keyRequired_Button: NSButton!
     @IBOutlet weak var keyName_TextField: NSTextField!
     @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
@@ -24,12 +26,14 @@ class KeysVC: NSViewController {
     @IBOutlet weak var keyDescription_TextField: NSTextField!
     @IBOutlet weak var keyInfoText_TextField: NSTextField!
     
+    @IBOutlet weak var moreInfo_TextField: NSTextField!
+    
     @IBOutlet weak var keyType_Button: NSPopUpButton!
     @IBOutlet weak var add_Button: NSButton!
     @IBOutlet weak var cancel_Button: NSButton!
     
     @IBOutlet weak var listHeaderLabel_TextField: NSTextField!
-    @IBOutlet weak var listHeader_TextField: NSTextField!
+    @IBOutlet weak var headerOrPlaceholder_TextField: NSTextField!
     
     @IBOutlet weak var listOptions_TextField: NSTextField!
     @IBOutlet weak var listValues_TextField: NSTextField!
@@ -43,29 +47,54 @@ class KeysVC: NSViewController {
     var existingKey: TheKey?
     var existingKeyId = ""
     var keyIndex      = 0
+    var whichKeyType  = ""
+    var scrollAdjust: CGFloat = 0.0
+    var windowFrameH: CGFloat = 0.0
+    var scrollFrameH: CGFloat = 0.0
     
     @IBAction func selectKeyType_Action(_ sender: NSPopUpButton) {
 //        print("[selectKeyType_Action] key type: \(sender.title)")
+        var frame = self.view.window?.frame
+        let currentWidth = max(651, frame?.width ?? 651)
+        frame?.size = NSSize(width: currentWidth, height: 525)
         var hidden = true
         let whichKey = sender.titleOfSelectedItem ?? "unknown"
         switch whichKey {
         case "string (from list)", "integer (from list)":
             hidden = false
-            preferredContentSize = CGSize(width: 651, height: 700)
+//            preferredContentSize = CGSize(width: 651, height: 700)
+            frame?.size = NSSize(width: currentWidth, height: 750)
+//            scrollAdjust = windowFrameH-main_Scrollview.contentView.bounds.size.height  //200
             listOptions_TextField.isHidden = false
             listHeaderLabel_TextField.isHidden = true
+            headerOrPlaceholder_TextField.isHidden = true
 //            print("updating enum_title for key \(keyName_TextField.stringValue)")
 //            print("updating enum for key \(keyName_TextField.stringValue)")
         case "string array", "integer array":
-            preferredContentSize = CGSize(width: 651, height: 471)
+//            preferredContentSize = CGSize(width: 651, height: 525)
+            
+//            frame?.size = NSSize(width: 651, height: 525)
+//            scrollAdjust = windowFrameH-main_Scrollview.contentView.bounds.size.height  //142
+            listOptions_TextField.isHidden = true
             listHeaderLabel_TextField.isHidden = false
-            listHeader_TextField.isHidden      = false
+            headerOrPlaceholder_TextField.isHidden = false
+        case "boolean":
+            listOptions_TextField.isHidden = true
+            listHeaderLabel_TextField.isHidden = true
+            headerOrPlaceholder_TextField.isHidden = true
         default:
-            preferredContentSize = CGSize(width: 651, height: 414)
+//            scrollAdjust = windowFrameH-main_Scrollview.contentView.bounds.size.height  //92
             listOptions_TextField.isHidden = hidden
-            listHeaderLabel_TextField.isHidden = hidden
+            listHeaderLabel_TextField.stringValue = "Placeholder:"
+            listHeaderLabel_TextField.isHidden = false
+            headerOrPlaceholder_TextField.isHidden = false
         }
-        
+//        print("[selectKey_Action] keyName_TextField.frame.maxY: \(keyName_TextField.frame.maxY)")
+//        print("[selectKey_Action] windowFrameH: \(windowFrameH)")
+//        print("[selectKey_Action] Scrollview.contentView.bounds.size.height: \(main_Scrollview.contentView.bounds.size.height)")
+        scrollAdjust = (keyName_TextField.frame.maxY+34) - main_Scrollview.contentView.bounds.size.height
+        self.view.window?.setFrame(frame!, display: true)
+        main_Scrollview.contentView.scroll(to: NSPoint(x: 1.0, y: scrollAdjust))
         listValues_TextField.isHidden = hidden
         enum_titles_ScrollView.isHidden = hidden
         enum_ScrollView.isHidden = hidden
@@ -82,6 +111,13 @@ class KeysVC: NSViewController {
     }
     
     @IBAction func add_Action(_ sender: NSButton) {
+        
+        if moreInfo_TextField.stringValue != "" {
+            if !urlValidation() {
+                return
+            }
+        }
+        
         let keyType =  keyType_Button.titleOfSelectedItem ?? "unknown"
         
         if keyName_TextField.stringValue == "" {
@@ -132,15 +168,34 @@ class KeysVC: NSViewController {
                 return
             }
         }
-        let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType, name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, listType: listType, listHeader: listHeader_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
+        let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType, name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, infoText: keyInfoText_TextField.stringValue, moreInfo: moreInfo_TextField.stringValue, listType: listType, listHeader: headerOrPlaceholder_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
         delegate?.sendKeyInfo(keyInfo: currentKey)
         dismiss(self)
     }
     
+    fileprivate func urlValidation() -> Bool {
+        let urlRegex = #"^(http|https)://([\w\.-]+)\.([a-z\.]{2,6})([/\w\.-]*)*/?$"#
+        
+        if let regex = try? NSRegularExpression(pattern: urlRegex, options: .caseInsensitive) {
+            let range = NSRange(location: 0, length: moreInfo_TextField.stringValue.utf16.count)
+            if regex.firstMatch(in: moreInfo_TextField.stringValue, options: [], range: range) == nil {
+                let response = Alert.shared.display(header: "", message: "The URL for More Info appears invalid", secondButton: "Use Anyway")
+                if response != "Use Anyway" {
+                    moreInfo_TextField.becomeFirstResponder()
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+                
+//        preferredContentSize = CGSize(width: 651, height: 464)
         
-        preferredContentSize = CGSize(width: 651, height: 464)
+//        main_Scrollview.verticalScroller?.isHidden = false
+//        main_Scrollview.scrollerStyle = .legacy
 
         enum_titles_TextView.font = NSFont(name: "Courier", size: 14.0)
         enum_titles_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
@@ -148,20 +203,19 @@ class KeysVC: NSViewController {
         enum_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
         
         if existingKey?.name ?? "" != "" {
-            var whichKeyType = existingKey?.type ?? "Select Key Type"
+            whichKeyType = existingKey?.type ?? "Select Key Type"
             let listType = existingKey?.listType ?? ""
             if whichKeyType == "array" {
                 whichKeyType = "\(listType) \(whichKeyType)"
             }
-            keyType_Button.selectItem(withTitle: whichKeyType)
-            selectKeyType_Action(keyType_Button)
             
             keyName_TextField.stringValue = existingKey?.name ?? ""
             keyFriendlyName_TextField.stringValue = existingKey?.friendlyName ?? ""
             keyDescription_TextField.stringValue = existingKey?.desc ?? ""
             keyInfoText_TextField.stringValue = existingKey?.infoText ?? ""
+            moreInfo_TextField.stringValue = existingKey?.moreInfo ?? ""
             keyRequired_Button.state = (existingKey?.required ?? false) ? .on:.off
-            listHeader_TextField.stringValue = existingKey?.listHeader ?? ""
+            headerOrPlaceholder_TextField.stringValue = existingKey?.headerOrPlaceholder ?? ""
             enum_titles_TextView.string = existingKey?.listOfOptions ?? ""
             enum_TextView.string = existingKey?.listOfValues ?? ""
             
@@ -169,8 +223,18 @@ class KeysVC: NSViewController {
         }
     }
     
-    override func viewWillAppear() {
-
+    override func viewDidAppear() {
+        if whichKeyType != "" {
+            keyType_Button.selectItem(withTitle: whichKeyType)
+            selectKeyType_Action(keyType_Button)
+        } else {
+            var frame = self.view.window?.frame
+            frame?.size = NSSize(width: 651, height: 525)
+            self.view.window?.setFrame(frame!, display: true)
+//            windowFrameH = view.window?.frame.height ?? 0.0
+            scrollAdjust = (keyName_TextField.frame.maxY+34) - main_Scrollview.contentView.bounds.size.height
+            main_Scrollview.contentView.scroll(to: NSPoint(x: 1.0, y: scrollAdjust))
+        }
     }
 
     override var representedObject: Any? {

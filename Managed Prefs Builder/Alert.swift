@@ -20,10 +20,10 @@ class Alert: NSObject {
         dialog.messageText = header
         dialog.informativeText = message
         dialog.alertStyle = NSAlert.Style.warning
-        let okButton = dialog.addButton(withTitle: "OK")
+        let okButton = (secondButton == "Use Anyway") ? dialog.addButton(withTitle: "Cancel"):dialog.addButton(withTitle: "OK")
         if secondButton != "" {
             let otherButton = dialog.addButton(withTitle: secondButton)
-            otherButton.keyEquivalent = "v"
+            otherButton.keyEquivalent = "\(secondButton.lowercased().first ?? "c")"
             okButton.keyEquivalent = "\r"
         }
         

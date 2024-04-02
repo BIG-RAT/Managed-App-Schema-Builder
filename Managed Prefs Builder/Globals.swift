@@ -65,12 +65,6 @@ struct JamfProServer {
     static var url          = ""
 }
 
-struct Log {
-    static var path: String? = (NSHomeDirectory() + "/Library/Logs/")
-    static var file  = "masb.log"
-    static var maxFiles = 42
-}
-
 public func timeDiff(startTime: Date) -> (Int, Int, Int, Double) {
     let endTime = Date()
 

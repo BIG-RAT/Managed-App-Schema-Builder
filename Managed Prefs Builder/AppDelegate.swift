@@ -36,6 +36,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func importSchema(_ sender: Any) {
         NotificationCenter.default.post(name: .importSchema, object: self)
     }
+    
+    @IBAction func showLogFolder(_ sender: Any) {
+        if (FileManager.default.fileExists(atPath: Log.path!)) {
+            NSWorkspace.shared.open(URL(fileURLWithPath: Log.path!))
+        } else {
+            _ = Alert.shared.display(header: "Alert", message: "There are currently no log files to display.", secondButton: "")
+        }
+    }
 
 
 }
