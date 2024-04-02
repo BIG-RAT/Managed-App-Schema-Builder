@@ -18,6 +18,7 @@ class TheKey: NSObject {
     @objc var required: Bool
     @objc var friendlyName: String
     @objc var desc: String
+    @objc var defaultValue: String
     @objc var infoText: String
     @objc var moreInfo: String
     @objc var listType: String
@@ -26,7 +27,7 @@ class TheKey: NSObject {
     @objc var listOfValues: String
     
     
-    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, infoText: String, moreInfo: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
+    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, defaultValue: String, infoText: String, moreInfo: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
         self.id       = id
         self.index    = index
         self.type     = type
@@ -34,6 +35,7 @@ class TheKey: NSObject {
         self.required = required
         self.friendlyName = friendlyName
         self.desc = desc
+        self.defaultValue = defaultValue
         self.infoText = infoText
         self.moreInfo = moreInfo
         self.listType = listType
@@ -173,13 +175,17 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                     self.currentKeys.removeAll()
                     //
 //                    var propertyOrder = 0
-                    var enumTitles = [Any]()
-                    var enumList   = [Any]()
+                    
                     for (prefKey, keyDetails) in properties {
                         //                        print("[import] \(prefKey) keyDetails: \(keyDetails)")
+                        var defaultValue = ""
+                        var enumTitles = [Any]()
+                        var enumList   = [Any]()
                         
                         let friendlyName = keyDetails["title"] as? String ?? ""
                         let desc = keyDetails["description"] as? String ?? ""
+                        
+                        
                         let propertyOrder = keyDetails["property_order"] as? Int ?? 0
                         let required = ( required.contains(prefKey) ) ? true:false
                         
@@ -201,6 +207,23 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                             headerOrPlaceholder = items["title"] as? String ?? ""
                         }
                         
+                        switch type {
+                        case "boolean":
+                            if let _ = keyDetails["default"] as? Bool {
+                                defaultValue = "\(keyDetails["default"] as! Bool)"
+                            }
+                        case "integer":
+                            if let _ = keyDetails["default"] as? Int {
+                                defaultValue = "\(keyDetails["default"] as! Int)"
+                            }
+                        case "string", "string (from list)", "integer (from list)":
+                            if let _ = keyDetails["default"] as? String {
+                                defaultValue = "\"\(keyDetails["default"] as! String)\""
+                            }
+                        default:
+                            defaultValue = ""
+                        }
+                        
                         enumList = keyDetails["enum"] as? [Any] ?? []
                         if enumList.count > 0 {
                             type = ( type == "string" ) ? "string (from list)":"integer (from list)"
@@ -208,7 +231,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                             enumTitles = options["enum_titles"] as? [Any] ?? []
                         }
                         
-                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, infoText: infoText, moreInfo: moreInfo, listType: itemsType, listHeader: headerOrPlaceholder, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
+                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, defaultValue: defaultValue, infoText: infoText, moreInfo: moreInfo, listType: itemsType, listHeader: headerOrPlaceholder, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
                     }
                     currentKeys.sort(by: { $0.index < $1.index})
                     keys_TableView.reloadData()
@@ -263,6 +286,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                 }
                 var keyTypeItems = theKey.type
                 var links = ""
+                var defaultValue = ""
                 
                 switch keyTypeItems {
                 case "array":
@@ -325,6 +349,12 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                                 }
                     """
                 }
+                if theKey.defaultValue != "" {
+                    defaultValue = """
+                
+                            "default": \(theKey.defaultValue),
+                """
+                }
                 if theKey.moreInfo != "" {
                     links = """
                 ,
@@ -339,7 +369,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                 let text = """
                         "\(theKey.name)": {
                             "title": "\(theKey.friendlyName)",
-                            "description": "\(theKey.desc)",
+                            "description": "\(theKey.desc)",\(defaultValue)
                             "property_order": \(reorder ? keysWritten*5:theKey.index),
                             "type": \(String(describing: keyTypeItems))\(links)
                         }\(keyDelimiter)

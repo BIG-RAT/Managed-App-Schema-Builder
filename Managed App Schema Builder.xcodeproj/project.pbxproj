@@ -51,6 +51,7 @@
 				B59B104B2BB2FE710028329F /* Notes.md */,
 				B5937B9623EE0829002EDC2E /* Managed Prefs Builder */,
 				B5937B9523EE0829002EDC2E /* Products */,
+				B5B9E3CD2BBBD7FD006A1B69 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,6 +79,13 @@
 				B5937BA123EE082B002EDC2E /* Managed_Prefs_Builder.entitlements */,
 			);
 			path = "Managed Prefs Builder";
+			sourceTree = "<group>";
+		};
+		B5B9E3CD2BBBD7FD006A1B69 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
