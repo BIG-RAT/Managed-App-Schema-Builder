@@ -1213,12 +1213,12 @@ DQ
                                                     </scroller>
                                                 </scrollView>
                                                 <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mSO-Y8-nVG">
-                                                    <rect key="frame" x="40" y="371" width="90" height="19"/>
+                                                    <rect key="frame" x="40" y="371" width="126" height="19"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="80" id="c6g-1B-Kh2"/>
                                                         <constraint firstAttribute="height" constant="19" id="uZB-wh-um5"/>
                                                     </constraints>
-                                                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="List header:" id="ADQ-Q1-UgT">
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Placeholder text:" id="ADQ-Q1-UgT">
                                                         <font key="font" metaFont="system" size="16"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1385,7 +1385,7 @@ DQ
                                     <rect key="frame" x="-100" y="-100" width="649" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.13186813186813184" horizontal="NO" id="NPW-zk-A6n">
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="NPW-zk-A6n">
                                     <rect key="frame" x="635" y="0.0" width="16" height="810"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -1449,7 +1449,8 @@ DQ
                         <outlet property="listOptions_TextField" destination="6hR-wz-8Hn" id="oDl-ud-WGE"/>
                         <outlet property="listValues_TextField" destination="ZEB-Md-XEN" id="KWS-vK-rmM"/>
                         <outlet property="main_Scrollview" destination="hap-Oe-Dpo" id="lAY-QD-oj4"/>
-                        <outlet property="moreInfo_TextField" destination="Zvy-sv-Jnd" id="9O4-ED-HdI"/>
+                        <outlet property="moreInfoText_TextField" destination="2ys-4U-oey" id="PFw-So-5NK"/>
+                        <outlet property="moreInfoUrl_TextField" destination="Zvy-sv-Jnd" id="9O4-ED-HdI"/>
                     </connections>
                 </viewController>
                 <customObject id="WHs-rs-wwi" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

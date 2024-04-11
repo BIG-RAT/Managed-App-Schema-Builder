@@ -20,14 +20,15 @@ class TheKey: NSObject {
     @objc var desc: String
     @objc var defaultValue: String
     @objc var infoText: String
-    @objc var moreInfo: String
+    @objc var moreInfoText: String
+    @objc var moreInfoUrl: String
     @objc var listType: String
     @objc var headerOrPlaceholder: String
     @objc var listOfOptions: String
     @objc var listOfValues: String
     
     
-    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, defaultValue: String, infoText: String, moreInfo: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
+    init(id: String, index: Int, type: String, name: String, required: Bool, friendlyName: String, desc: String, defaultValue: String, infoText: String, moreInfoText: String, moreInfoUrl: String, listType: String, listHeader: String, listOfOptions: String, listOfValues: String) {
         self.id       = id
         self.index    = index
         self.type     = type
@@ -37,7 +38,8 @@ class TheKey: NSObject {
         self.desc = desc
         self.defaultValue = defaultValue
         self.infoText = infoText
-        self.moreInfo = moreInfo
+        self.moreInfoText = moreInfoText
+        self.moreInfoUrl = moreInfoUrl
         self.listType = listType
         self.headerOrPlaceholder = listHeader
         self.listOfOptions = listOfOptions
@@ -177,7 +179,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
 //                    var propertyOrder = 0
                     
                     for (prefKey, keyDetails) in properties {
-                        //                        print("[import] \(prefKey) keyDetails: \(keyDetails)")
+//                        print("[import] \(prefKey) keyDetails[default]: \(String(describing: keyDetails["default"]))")
                         var defaultValue = ""
                         var enumTitles = [Any]()
                         var enumList   = [Any]()
@@ -198,8 +200,15 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                         let inputAttributes = options["inputAttributes"] as? [String: Any] ?? [:]
                         headerOrPlaceholder = "\(inputAttributes["placeholder"] ?? "")"
                         
-                        let links = keyDetails["links"] as? [String: String] ?? [:]
-                        var moreInfo = links["href"] ?? ""
+                        let links = keyDetails["links"] as? [[String: String]] ?? [[:]]
+                        var moreInfoText = ""
+                        var moreInfo     = ""
+                        if let links = keyDetails["links"] as? [[String: String]] {
+                            for linkInfo in links {
+                                moreInfoText = linkInfo["rel"] ?? ""
+                                moreInfo = linkInfo["href"] ?? ""
+                            }
+                        }
                         
                         if let items = keyDetails["items"] as? [String: Any] {
                             let itemType = items["type"] as? String ?? ""
@@ -218,7 +227,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                             }
                         case "string", "string (from list)", "integer (from list)":
                             if let _ = keyDetails["default"] as? String {
-                                defaultValue = "\"\(keyDetails["default"] as! String)\""
+                                defaultValue = "\(keyDetails["default"] as! String)"
                             }
                         default:
                             defaultValue = ""
@@ -231,7 +240,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                             enumTitles = options["enum_titles"] as? [Any] ?? []
                         }
                         
-                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, defaultValue: defaultValue, infoText: infoText, moreInfo: moreInfo, listType: itemsType, listHeader: headerOrPlaceholder, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
+                        self.currentKeys.append(TheKey(id: UUID().uuidString, index: propertyOrder, type: type, name: prefKey, required: required, friendlyName: friendlyName, desc: desc, defaultValue: defaultValue, infoText: infoText, moreInfoText: moreInfoText, moreInfoUrl: moreInfo, listType: itemsType, listHeader: headerOrPlaceholder, listOfOptions: enumTitles.arrayToString, listOfValues: enumList.arrayToString))
                     }
                     currentKeys.sort(by: { $0.index < $1.index})
                     keys_TableView.reloadData()
@@ -287,9 +296,10 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                 var keyTypeItems = theKey.type
                 var links = ""
                 var defaultValue = ""
+                var definedDefaultValue = theKey.defaultValue
                 
                 switch keyTypeItems {
-                case "array":
+                case "array", "string array", "list array":
                     keyTypeItems = """
                     "array",
                                 "items": {
@@ -330,14 +340,16 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                                 },
                                 "enum": \(enumValues)
                     """
+                case "string":
+                    definedDefaultValue = "\"\(definedDefaultValue)\""
                 default:
                     var placeholder = ""
                     if theKey.headerOrPlaceholder != "" {
-                        let placyholderValue = (keyTypeItems == "string") ? "\"\(theKey.headerOrPlaceholder)\"":theKey.headerOrPlaceholder
+                        let placyholderValue = (keyTypeItems == "string") ? "\(theKey.headerOrPlaceholder)":theKey.headerOrPlaceholder
                         placeholder = """
                         ,
                                         "inputAttributes": {
-                                            "placeholder": \(placyholderValue)
+                                            "placeholder": "\(placyholderValue)"
                                         }
                         """
                     }
@@ -352,16 +364,16 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                 if theKey.defaultValue != "" {
                     defaultValue = """
                 
-                            "default": \(theKey.defaultValue),
+                            "default": \(definedDefaultValue),
                 """
                 }
-                if theKey.moreInfo != "" {
+                if theKey.moreInfoUrl != "" {
                     links = """
                 ,
                             "links": [
                                 {
-                                    "rel": "More Information",
-                                    "href": "\(theKey.moreInfo)"
+                                    "rel": "\(theKey.moreInfoText)",
+                                    "href": "\(theKey.moreInfoUrl)"
                                 }
                             ]
                 """
@@ -480,6 +492,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
     @objc func viewKey() {
         let keyIndex = keys_TableView.clickedRow
         let theKey = currentKeys[keyIndex]
+        print("[viewKey] default value: \(theKey.defaultValue)")
         performSegue(withIdentifier: "showKey", sender: theKey)
     }
     
@@ -504,7 +517,6 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
     }
     
     @objc func quitNow(_ notification: Notification) {
-//        importFile_Action(import_Button)
         quit_Action(quit_Button)
     }
 

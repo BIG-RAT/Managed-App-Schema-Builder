@@ -61,7 +61,7 @@ class WriteToLog {
     }
 
     func message(stringOfText: String) {
-        var logString = "\(getCurrentTime(theFormat: "log")) \(stringOfText)\n"
+        let logString = "\(getCurrentTime(theFormat: "log")) \(stringOfText)\n"
 
         self.logFileW?.seekToEndOfFile()
             
