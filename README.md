@@ -1,5 +1,6 @@
 # Managed App Schema Builder
 Download: [Managed App Schema Builder](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/current/Managed.App.Schema.Builder.zip)
+
 Latest Beta: [Beta](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/v1.0.0-b1/Managed.App.Schema.Builder_v1.0.0-b1.zip)
 
 Before wasting time creating something that's already been done see if it's available:
