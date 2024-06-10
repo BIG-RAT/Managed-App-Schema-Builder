@@ -1,4 +1,8 @@
 # Managed App Schema Builder
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/BIG-RAT/Managed-App-Schema-Builder?display_name=tag) ![GitHub all releases](https://img.shields.io/github/downloads/BIG-RAT/Managed-App-Schema-Builder/total) ![GitHub latest release](https://img.shields.io/github/downloads/BIG-RAT/Managed-App-Schema-Builder/latest/total)
+ ![GitHub issues](https://img.shields.io/github/issues-raw/BIG-RAT/Managed-App-Schema-Builder) ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/BIG-RAT/Managed-App-Schema-Builder) ![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/BIG-RAT/Managed-App-Schema-Builder) ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/BIG-RAT/Managed-App-Schema-Builder)
+
 Download: [Managed App Schema Builder](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/current/Managed.App.Schema.Builder.zip)
 
 Latest Beta: [Beta](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/v1.0.0-b1/Managed.App.Schema.Builder_v1.0.0-b1.zip)
