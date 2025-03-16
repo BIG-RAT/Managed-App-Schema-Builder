@@ -6,7 +6,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.PS2F6S478M.jamfie.SharedJPMA</string>
+		<string>PS2F6S478M.jamfie.SharedJPMA</string>
 	</array>
 	<key>com.apple.security.files.downloads.read-write</key>
 	<true/>

@@ -15,14 +15,6 @@ struct tab {
 let defaults = UserDefaults.standard
 var isRunning              = false
 var didRun                 = false
-var saveServers            = true
-var maxServerList          = 40
-var appsGroupId            = "group.PS2F6S478M.jamfie.SharedJPMA"
-let sharedDefaults         = UserDefaults(suiteName: appsGroupId)
-let sharedContainerUrl     = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appsGroupId)
-let sharedSettingsPlistUrl = (sharedContainerUrl?.appendingPathComponent("Library/Preferences/\(appsGroupId).plist"))!
-
-var useApiClient = 0
 
 // determine if we're using dark mode
 var isDarkMode: Bool {
@@ -36,9 +28,7 @@ struct AppInfo {
     static let build         = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
     static let name          = dict["CFBundleExecutable"] as! String
     
-    static let appSupport    = NSHomeDirectory() + "/Library/Application Support/"
-
-    static let userAgentHeader = "\(String(describing: name.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!))/\(AppInfo.version)"
+    static let appSupport    = NSHomeDirectory() + "/Library/Application Support/"    
 }
 
 struct JamfProServer {
