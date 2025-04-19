@@ -14,7 +14,6 @@
 		B5937B9C23EE082B002EDC2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5937B9B23EE082B002EDC2E /* Assets.xcassets */; };
 		B5937B9F23EE082B002EDC2E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5937B9D23EE082B002EDC2E /* Main.storyboard */; };
 		B5937BA823F0842B002EDC2E /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5937BA723F0842B002EDC2E /* Alert.swift */; };
-		B59B10512BB6009A0028329F /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59B10502BB6009A0028329F /* Credentials.swift */; };
 		B59B10532BB605CC0028329F /* WriteToLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59B10522BB605CB0028329F /* WriteToLog.swift */; };
 /* End PBXBuildFile section */
 
@@ -30,7 +29,6 @@
 		B5937BA123EE082B002EDC2E /* Managed_Prefs_Builder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Managed_Prefs_Builder.entitlements; sourceTree = "<group>"; };
 		B5937BA723F0842B002EDC2E /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		B59B104B2BB2FE710028329F /* Notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Notes.md; sourceTree = "<group>"; };
-		B59B10502BB6009A0028329F /* Credentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		B59B10522BB605CB0028329F /* WriteToLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WriteToLog.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -68,7 +66,6 @@
 			children = (
 				B5937BA723F0842B002EDC2E /* Alert.swift */,
 				B5937B9723EE0829002EDC2E /* AppDelegate.swift */,
-				B59B10502BB6009A0028329F /* Credentials.swift */,
 				B588C8E223F99FB200BCE5A1 /* Globals.swift */,
 				B585ED242BACA50900ECA658 /* KeysVC.swift */,
 				B5937B9923EE0829002EDC2E /* ViewController.swift */,
@@ -161,7 +158,6 @@
 			files = (
 				B588C8E323F99FB200BCE5A1 /* Globals.swift in Sources */,
 				B59B10532BB605CC0028329F /* WriteToLog.swift in Sources */,
-				B59B10512BB6009A0028329F /* Credentials.swift in Sources */,
 				B5937BA823F0842B002EDC2E /* Alert.swift in Sources */,
 				B5937B9A23EE0829002EDC2E /* ViewController.swift in Sources */,
 				B585ED252BACA50900ECA658 /* KeysVC.swift in Sources */,
@@ -321,7 +317,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamf.pse.ManagedAppSchemaBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -347,7 +343,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamf.pse.ManagedAppSchemaBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
