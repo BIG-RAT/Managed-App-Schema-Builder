@@ -342,14 +342,15 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
                     """
                 case "string":
                     definedDefaultValue = "\"\(definedDefaultValue)\""
+                    keyTypeItems = "\"string\""
                 default:
                     var placeholder = ""
                     if theKey.headerOrPlaceholder != "" {
-                        let placyholderValue = (keyTypeItems == "string") ? "\(theKey.headerOrPlaceholder)":theKey.headerOrPlaceholder
+                        let placeholderValue = (keyTypeItems == "string") ? "\(theKey.headerOrPlaceholder)":theKey.headerOrPlaceholder
                         placeholder = """
                         ,
                                         "inputAttributes": {
-                                            "placeholder": "\(placyholderValue)"
+                                            "placeholder": "\(placeholderValue)"
                                         }
                         """
                     }

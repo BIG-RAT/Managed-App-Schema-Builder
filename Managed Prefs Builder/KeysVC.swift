@@ -166,12 +166,12 @@ class KeysVC: NSViewController {
             return
         }
         
-        if keyFriendlyName_TextField.stringValue == "" {
+        if keyFriendlyName_TextField.stringValue.isEmpty {
             keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
         }
             
-        if keyDescription_TextField.stringValue == "" {
-            keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
+        if keyDescription_TextField.stringValue.isEmpty {
+            keyDescription_TextField.stringValue = keyName_TextField.stringValue
         }
         let keyId = (existingKeyId == "") ? UUID().uuidString:existingKeyId
         
@@ -233,40 +233,7 @@ class KeysVC: NSViewController {
         default:
             break
         }
-//        if keyType == "boolean" {
-//            if defaultValue_TextField.stringValue != "" {
-//                if !["true", "false"].contains(defaultValue_TextField.stringValue.lowercased()) {
-//                    _ = Alert.shared.display(header: "Invalid value", message: "Default value must be either true, false, or leave tgeh field blank.")
-//                    return
-//                }
-//            }
-//        }
-            
-//        if ["string (from list)", "integer (from list)"].contains(keyType) {
-//            // verify enum_titles and enum have the same number of values
-//            let enum_titlesTmp = enum_titles_TextView.string.replacingOccurrences(of: "\n", with: ",")
-//            let enum_titlesArray = enum_titlesTmp.split(separator: ",")
-//            let enumTmp          = enum_TextView.string.replacingOccurrences(of: "\n", with: ",")
-//            let enumArray        = enumTmp.split(separator: ",")
-//            if enum_titlesArray.count == enumArray.count {
-//    //            validate integers
-//                if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" {
-//                    let validateInput       = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
-//                    let validateInputString = validateInput.replacingOccurrences(of: "\n", with: ",")
-//                    let validateInputArray  = validateInputString.split(separator: ",")
-//                    for theValue in validateInputArray {
-//                        let intTest = theValue.replacingOccurrences(of: " ", with: "")
-//                        if !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: "\(intTest)")) {
-//                            _ = Alert.shared.display(header: "Error", message: "Found '\(intTest)' and only integers are allowed.")
-//                            return
-//                        }
-//                    }
-//                }
-//            } else {
-//                _ = Alert.shared.display(header: "Attention", message: "Number of items defined in list of options and number of items defined in the value list must be equal.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of values: \(enumArray.count)")
-//                return
-//            }
-//        }
+        
         let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType, name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, defaultValue: defaultValue, infoText: keyInfoText_TextField.stringValue, moreInfoText: moreInfoText_TextField.stringValue, moreInfoUrl: moreInfoUrl_TextField.stringValue, listType: listType, listHeader: headerOrPlaceholder_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
         delegate?.sendKeyInfo(keyInfo: currentKey)
         dismiss(self)
