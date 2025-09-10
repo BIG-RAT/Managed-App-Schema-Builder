@@ -89,8 +89,7 @@ class KeysVC: NSViewController {
                 infoTextLabel_TextField.heightAnchor.constraint(equalToConstant: 16)
             ]
             
-//            scrollAdjust = windowFrameH-main_Scrollview.contentView.bounds.size.height  //200
-            defaultValue_TextField.isHidden = true
+//            defaultValue_TextField.isHidden = true
             defaultValueLabel_TextField.isHidden = true
             listOptions_TextField.isHidden = false
             listHeaderLabel_TextField.isHidden = true

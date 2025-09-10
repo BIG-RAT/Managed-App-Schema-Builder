@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -1144,17 +1144,34 @@ DQ
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                 </textField>
-                                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6hR-wz-8Hn">
-                                                    <rect key="frame" x="40" y="371" width="384" height="19"/>
+                                                <scrollView hidden="YES" borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h2S-hD-ZUZ">
+                                                    <rect key="frame" x="42" y="257" width="560" height="110"/>
+                                                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Zip-8l-HJC">
+                                                        <rect key="frame" x="1" y="1" width="558" height="108"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <subviews>
+                                                            <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="qAa-b8-LCM">
+                                                                <rect key="frame" x="0.0" y="0.0" width="558" height="108"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                <size key="minSize" width="558" height="108"/>
+                                                                <size key="maxSize" width="560" height="10000000"/>
+                                                            </textView>
+                                                        </subviews>
+                                                    </clipView>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="19" id="D15-lQ-4gv"/>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="512" id="6IQ-Uy-zsU"/>
+                                                        <constraint firstAttribute="height" constant="110" id="aNZ-8F-FUQ"/>
                                                     </constraints>
-                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="List of options (use comma or newline as separator):" id="0bl-Pf-joT">
-                                                        <font key="font" metaFont="system" size="16"/>
-                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    </textFieldCell>
-                                                </textField>
+                                                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="1F9-k1-0Mc">
+                                                        <rect key="frame" x="-100" y="-100" width="240" height="16"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    </scroller>
+                                                    <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="HGB-AG-TzT">
+                                                        <rect key="frame" x="543" y="1" width="16" height="108"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    </scroller>
+                                                </scrollView>
                                                 <scrollView hidden="YES" borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Mp-UB-ZLV">
                                                     <rect key="frame" x="42" y="113" width="560" height="110"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="lR4-Eo-VJp">
@@ -1184,34 +1201,17 @@ DQ
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                 </scrollView>
-                                                <scrollView hidden="YES" borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h2S-hD-ZUZ">
-                                                    <rect key="frame" x="42" y="257" width="560" height="110"/>
-                                                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Zip-8l-HJC">
-                                                        <rect key="frame" x="1" y="1" width="558" height="108"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <subviews>
-                                                            <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="qAa-b8-LCM">
-                                                                <rect key="frame" x="0.0" y="0.0" width="558" height="108"/>
-                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                <size key="minSize" width="558" height="108"/>
-                                                                <size key="maxSize" width="560" height="10000000"/>
-                                                            </textView>
-                                                        </subviews>
-                                                    </clipView>
+                                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6hR-wz-8Hn">
+                                                    <rect key="frame" x="40" y="371" width="384" height="19"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="512" id="6IQ-Uy-zsU"/>
-                                                        <constraint firstAttribute="height" constant="110" id="aNZ-8F-FUQ"/>
+                                                        <constraint firstAttribute="height" constant="19" id="D15-lQ-4gv"/>
                                                     </constraints>
-                                                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="1F9-k1-0Mc">
-                                                        <rect key="frame" x="-100" y="-100" width="240" height="16"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
-                                                    </scroller>
-                                                    <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="HGB-AG-TzT">
-                                                        <rect key="frame" x="543" y="1" width="16" height="108"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
-                                                    </scroller>
-                                                </scrollView>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="List of options (use comma or newline as separator):" id="0bl-Pf-joT">
+                                                        <font key="font" metaFont="system" size="16"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
                                                 <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mSO-Y8-nVG">
                                                     <rect key="frame" x="40" y="371" width="126" height="19"/>
                                                     <constraints>
@@ -1227,7 +1227,7 @@ DQ
                                                 <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZEB-Md-XEN">
                                                     <rect key="frame" x="40" y="227" width="455" height="19"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="19" id="wSX-wX-kdG"/>
+                                                        <constraint firstAttribute="height" constant="19" id="wSX-wX-kdG"/>
                                                     </constraints>
                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Associated list of values (use comma or newline as separator):" id="OMO-YK-qch">
                                                         <font key="font" metaFont="system" size="16"/>
@@ -1385,7 +1385,7 @@ DQ
                                     <rect key="frame" x="-100" y="-100" width="649" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.74725274725274726" horizontal="NO" id="NPW-zk-A6n">
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="NPW-zk-A6n">
                                     <rect key="frame" x="635" y="0.0" width="16" height="810"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
