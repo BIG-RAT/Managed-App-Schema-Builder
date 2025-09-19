@@ -17,6 +17,8 @@ class KeysVC: NSViewController {
     
     var delegate: SendingKeyInfoDelegate? = nil
     
+    @IBOutlet weak var keyType_TabView: NSTabView!
+    
     @IBOutlet weak var main_Scrollview: NSScrollView!
     
     @IBOutlet weak var keyRequired_Button: NSButton!
@@ -59,9 +61,17 @@ class KeysVC: NSViewController {
     var constraints = [NSLayoutConstraint]()
     
     @IBAction func selectKeyType_Action(_ sender: NSPopUpButton) {
-//        print("[selectKeyType_Action] key type: \(sender.title)")
+        print("[selectKeyType_Action] key type: \(sender.titleOfSelectedItem ?? "Select Key Type")")
         
+        keyType_TabView.selectTabViewItem(withIdentifier: sender.titleOfSelectedItem ?? "select")
         
+        if sender.titleOfSelectedItem == "boolean" {
+            keyType_TabView.isHidden = true
+        } else {
+            keyType_TabView.isHidden = false
+        }
+        
+        /*
         let currentConstraints = infoTextLabel_TextField.constraints
         infoTextLabel_TextField.removeConstraints(currentConstraints)
         constraints = [
@@ -132,6 +142,7 @@ class KeysVC: NSViewController {
         listValues_TextField.isHidden = hidden
         enum_titles_ScrollView.isHidden = hidden
         enum_ScrollView.isHidden = hidden
+        */
     }
     
     @IBAction func cancel_Action(_ sender: Any) {
@@ -256,52 +267,47 @@ class KeysVC: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-//        preferredContentSize = CGSize(width: 651, height: 464)
-        
-//        main_Scrollview.verticalScroller?.isHidden = false
-//        main_Scrollview.scrollerStyle = .legacy
 
-        enum_titles_TextView.font = NSFont(name: "Courier", size: 14.0)
-        enum_titles_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
-        enum_TextView.font = NSFont(name: "Courier", size: 14.0)
-        enum_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
-        
-        if existingKey?.name ?? "" != "" {
-            whichKeyType = existingKey?.type ?? "Select Key Type"
-            let listType = existingKey?.listType ?? ""
-            if whichKeyType == "array" {
-                whichKeyType = "\(listType) \(whichKeyType)"
-            }
-            
-            keyName_TextField.stringValue = existingKey?.name ?? ""
-            keyFriendlyName_TextField.stringValue = existingKey?.friendlyName ?? ""
-            keyDescription_TextField.stringValue = existingKey?.desc ?? ""
-            defaultValue_TextField.stringValue   = existingKey?.defaultValue ?? ""
-            keyInfoText_TextField.stringValue = existingKey?.infoText ?? ""
-            moreInfoText_TextField.stringValue = existingKey?.moreInfoText ?? ""
-            moreInfoUrl_TextField.stringValue = existingKey?.moreInfoUrl ?? ""
-            keyRequired_Button.state = (existingKey?.required ?? false) ? .on:.off
-            headerOrPlaceholder_TextField.stringValue = existingKey?.headerOrPlaceholder ?? ""
-            enum_titles_TextView.string = existingKey?.listOfOptions ?? ""
-            enum_TextView.string = existingKey?.listOfValues ?? ""
-            
-            add_Button.title = "Update"
-        }
+//        enum_titles_TextView.font = NSFont(name: "Courier", size: 14.0)
+//        enum_titles_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
+//        enum_TextView.font = NSFont(name: "Courier", size: 14.0)
+//        enum_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
+//        
+//        if existingKey?.name ?? "" != "" {
+//            whichKeyType = existingKey?.type ?? "Select Key Type"
+//            let listType = existingKey?.listType ?? ""
+//            if whichKeyType == "array" {
+//                whichKeyType = "\(listType) \(whichKeyType)"
+//            }
+//            
+//            keyName_TextField.stringValue = existingKey?.name ?? ""
+//            keyFriendlyName_TextField.stringValue = existingKey?.friendlyName ?? ""
+//            keyDescription_TextField.stringValue = existingKey?.desc ?? ""
+//            defaultValue_TextField.stringValue   = existingKey?.defaultValue ?? ""
+//            keyInfoText_TextField.stringValue = existingKey?.infoText ?? ""
+//            moreInfoText_TextField.stringValue = existingKey?.moreInfoText ?? ""
+//            moreInfoUrl_TextField.stringValue = existingKey?.moreInfoUrl ?? ""
+//            keyRequired_Button.state = (existingKey?.required ?? false) ? .on:.off
+//            headerOrPlaceholder_TextField.stringValue = existingKey?.headerOrPlaceholder ?? ""
+//            enum_titles_TextView.string = existingKey?.listOfOptions ?? ""
+//            enum_TextView.string = existingKey?.listOfValues ?? ""
+//            
+//            add_Button.title = "Update"
+//        }
     }
     
     override func viewDidAppear() {
-        if whichKeyType != "" {
-            keyType_Button.selectItem(withTitle: whichKeyType)
-            selectKeyType_Action(keyType_Button)
-        } else {
-            var frame = self.view.window?.frame
-            frame?.size = NSSize(width: 651, height: 565)
-            self.view.window?.setFrame(frame!, display: true)
-//            windowFrameH = view.window?.frame.height ?? 0.0
-            scrollAdjust = (keyName_TextField.frame.maxY+34) - main_Scrollview.contentView.bounds.size.height
-            main_Scrollview.contentView.scroll(to: NSPoint(x: 1.0, y: scrollAdjust))
-        }
+//        if whichKeyType != "" {
+//            keyType_Button.selectItem(withTitle: whichKeyType)
+//            selectKeyType_Action(keyType_Button)
+//        } else {
+//            var frame = self.view.window?.frame
+//            frame?.size = NSSize(width: 651, height: 565)
+//            self.view.window?.setFrame(frame!, display: true)
+////            windowFrameH = view.window?.frame.height ?? 0.0
+//            scrollAdjust = (keyName_TextField.frame.maxY+34) - main_Scrollview.contentView.bounds.size.height
+//            main_Scrollview.contentView.scroll(to: NSPoint(x: 1.0, y: scrollAdjust))
+//        }
     }
 
     override var representedObject: Any? {
