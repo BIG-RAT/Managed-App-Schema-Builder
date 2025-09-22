@@ -1,319 +1,340 @@
-//
-//  KeysVC.swift
-//  Managed App Schema Builder
-//
-//  Created by Leslie Helou on 2/7/20.
-//  Copyright © 2020 Leslie Helou. All rights reserved.
-//
+import SwiftUI
 
-import Cocoa
-import Foundation
-
-protocol SendingKeyInfoDelegate {
-    func sendKeyInfo(keyInfo: TheKey)
+// MARK: - Key Types
+enum KeyType: String, CaseIterable {
+    case selectKeyType = "Select Key Type"
+    case boolean = "boolean"
+    case integer = "integer"
+    case integerFromList = "integer (from list)"
+    case integerArray = "integer array"
+    case string = "string"
+    case stringFromList = "string (from list)"
+    case stringArray = "string array"
+    
+    var isList: Bool {
+        self == .stringFromList || self == .integerFromList
+    }
+    
+    var isArray: Bool {
+        self == .stringArray || self == .integerArray
+    }
 }
 
-class KeysVC: NSViewController {
+// MARK: - Keys View
+struct KeysView: View {
+    // MARK: - State
+    @State private var selectedKeyType: KeyType = .selectKeyType
+    @State private var isRequired = false
+    @State private var keyName = ""
+    @State private var friendlyName = ""
+    @State private var keyDescription = ""
+    @State private var defaultValue = ""
+    @State private var infoText = ""
+    @State private var moreInfoText = ""
+    @State private var moreInfoUrl = ""
+    @State private var headerOrPlaceholder = ""
+    @State private var enumTitles = ""
+    @State private var enumValues = ""
     
-    var delegate: SendingKeyInfoDelegate? = nil
+    // MARK: - Alerts
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    @State private var showUrlAlert = false
     
-    @IBOutlet weak var keyType_TabView: NSTabView!
+    // MARK: - Dependencies
+    let existingKey: TheKey?
+    let keyIndex: Int
+    let onSave: (TheKey) -> Void
+    let onDismiss: () -> Void
     
-    @IBOutlet weak var main_Scrollview: NSScrollView!
-    
-    @IBOutlet weak var keyRequired_Button: NSButton!
-    @IBOutlet weak var keyName_TextField: NSTextField!
-    @IBOutlet weak var keyFriendlyName_TextField: NSTextField!
-    
-    @IBOutlet weak var keyDescription_TextField: NSTextField!
-    
-    @IBOutlet weak var defaultValueLabel_TextField: NSTextField!
-    @IBOutlet weak var defaultValue_TextField: NSTextField!
-    @IBOutlet weak var infoTextLabel_TextField: NSTextField!
-    @IBOutlet weak var keyInfoText_TextField: NSTextField!
-    @IBOutlet weak var moreInfoText_TextField: NSTextField!
-    @IBOutlet weak var moreInfoUrl_TextField: NSTextField!
-    
-    
-    @IBOutlet weak var keyType_Button: NSPopUpButton!
-    @IBOutlet weak var add_Button: NSButton!
-    @IBOutlet weak var cancel_Button: NSButton!
-    
-    @IBOutlet weak var listHeaderLabel_TextField: NSTextField!
-    @IBOutlet weak var headerOrPlaceholder_TextField: NSTextField!
-    
-    @IBOutlet weak var listOptions_TextField: NSTextField!
-    @IBOutlet weak var listValues_TextField: NSTextField!
-    
-    @IBOutlet weak var enum_titles_ScrollView: NSScrollView!
-    @IBOutlet weak var enum_ScrollView: NSScrollView!
-    
-    @IBOutlet var enum_titles_TextView: NSTextView!
-    @IBOutlet var enum_TextView: NSTextView!
-    
-    var existingKey: TheKey?
-    var existingKeyId = ""
-    var keyIndex      = 0
-    var whichKeyType  = ""
-    var scrollAdjust: CGFloat = 0.0
-    var windowFrameH: CGFloat = 0.0
-    var scrollFrameH: CGFloat = 0.0
-    var constraints = [NSLayoutConstraint]()
-    
-    @IBAction func selectKeyType_Action(_ sender: NSPopUpButton) {
-        print("[selectKeyType_Action] key type: \(sender.titleOfSelectedItem ?? "Select Key Type")")
-        
-        keyType_TabView.selectTabViewItem(withIdentifier: sender.titleOfSelectedItem ?? "select")
-        
-        if sender.titleOfSelectedItem == "boolean" {
-            keyType_TabView.isHidden = true
-        } else {
-            keyType_TabView.isHidden = false
-        }
-        
-        /*
-        let currentConstraints = infoTextLabel_TextField.constraints
-        infoTextLabel_TextField.removeConstraints(currentConstraints)
-        constraints = [
-            infoTextLabel_TextField.leadingAnchor.constraint(equalTo: keyDescription_TextField.leadingAnchor),
-            infoTextLabel_TextField.topAnchor.constraint(equalTo: defaultValue_TextField.bottomAnchor, constant: 11),
-            infoTextLabel_TextField.heightAnchor.constraint(equalToConstant: 16)
-        ]
-        
-        defaultValue_TextField.isHidden = false
-        defaultValueLabel_TextField.isHidden = false
-        
-        var frame = self.view.window?.frame
-        let currentWidth = max(651, frame?.width ?? 651)
-        frame?.size = NSSize(width: currentWidth, height: 565)
-        var hidden = true
-        let whichKey = sender.titleOfSelectedItem ?? "unknown"
-        switch whichKey {
-        case "string (from list)", "integer (from list)":
-            hidden = false
-//            preferredContentSize = CGSize(width: 651, height: 700)
-            frame?.size = NSSize(width: currentWidth, height: 750)
-            constraints = [
-                infoTextLabel_TextField.leadingAnchor.constraint(equalTo: keyDescription_TextField.leadingAnchor),
-                infoTextLabel_TextField.topAnchor.constraint(equalTo: keyDescription_TextField.bottomAnchor, constant: 11),
-                infoTextLabel_TextField.heightAnchor.constraint(equalToConstant: 16)
-            ]
-            
-//            defaultValue_TextField.isHidden = true
-            defaultValueLabel_TextField.isHidden = true
-            listOptions_TextField.isHidden = false
-            listHeaderLabel_TextField.isHidden = true
-            headerOrPlaceholder_TextField.isHidden = true
-//            print("updating enum_title for key \(keyName_TextField.stringValue)")
-//            print("updating enum for key \(keyName_TextField.stringValue)")
-        case "string array", "integer array":
-            
-            frame?.size = NSSize(width: currentWidth, height: 750)
-            constraints = [
-                infoTextLabel_TextField.leadingAnchor.constraint(equalTo: keyDescription_TextField.leadingAnchor),
-                infoTextLabel_TextField.topAnchor.constraint(equalTo: keyDescription_TextField.bottomAnchor, constant: 11),
-                infoTextLabel_TextField.heightAnchor.constraint(equalToConstant: 16)
-            ]
-            
-            defaultValue_TextField.isHidden = true
-            defaultValueLabel_TextField.isHidden = true
-            listOptions_TextField.isHidden = true
-            listHeaderLabel_TextField.isHidden = true
-            headerOrPlaceholder_TextField.isHidden = true
-        case "boolean":
-            listOptions_TextField.isHidden = true
-            listHeaderLabel_TextField.isHidden = true
-            headerOrPlaceholder_TextField.isHidden = true
-        default:
-//            scrollAdjust = windowFrameH-main_Scrollview.contentView.bounds.size.height  //92
-            listOptions_TextField.isHidden = hidden
-            listHeaderLabel_TextField.stringValue = "Placeholder:"
-            listHeaderLabel_TextField.isHidden = false
-            headerOrPlaceholder_TextField.isHidden = false
-        }
-        
-        NSLayoutConstraint.activate(constraints)
-//        print("[selectKey_Action] keyName_TextField.frame.maxY: \(keyName_TextField.frame.maxY)")
-//        print("[selectKey_Action] windowFrameH: \(windowFrameH)")
-//        print("[selectKey_Action] Scrollview.contentView.bounds.size.height: \(main_Scrollview.contentView.bounds.size.height)")
-        scrollAdjust = (keyName_TextField.frame.maxY+34) - main_Scrollview.contentView.bounds.size.height
-        self.view.window?.setFrame(frame!, display: true)
-        main_Scrollview.contentView.scroll(to: NSPoint(x: 1.0, y: scrollAdjust))
-        listValues_TextField.isHidden = hidden
-        enum_titles_ScrollView.isHidden = hidden
-        enum_ScrollView.isHidden = hidden
-        */
+    // MARK: - Initializer
+    init(existingKey: TheKey? = nil,
+         keyIndex: Int = 0,
+         onSave: @escaping (TheKey) -> Void,
+         onDismiss: @escaping () -> Void) {
+        self.existingKey = existingKey
+        self.keyIndex = keyIndex
+        self.onSave = onSave
+        self.onDismiss = onDismiss
     }
     
-    @IBAction func cancel_Action(_ sender: Any) {
-        keyRequired_Button.state = .off
-        keyFriendlyName_TextField.stringValue = ""
-        keyDescription_TextField.stringValue = ""
-        keyInfoText_TextField.stringValue = ""
-        enum_titles_TextView.string = ""
-        enum_TextView.string = ""
-        dismiss(self)
-    }
-    
-    @IBAction func add_Action(_ sender: NSButton) {
-        
-        var listType = ""
-        var defaultValue = ""
-        if moreInfoUrl_TextField.stringValue != "" {
-            if !urlValidation() {
-                return
-            }
-        }
-        
-        var keyType = keyType_Button.titleOfSelectedItem ?? "unknown"
-        
-        if keyName_TextField.stringValue == "" {
-            _ = Alert.shared.display(header: "", message: "A key must be provided")
-            return
-        }
-        if keyType == "unknown" || keyType == "Select Key Type" {
-            _ = Alert.shared.display(header: "", message: "A key type must be selected")
-            return
-        }
-        
-        if keyFriendlyName_TextField.stringValue.isEmpty {
-            keyFriendlyName_TextField.stringValue = keyName_TextField.stringValue
-        }
-            
-        if keyDescription_TextField.stringValue.isEmpty {
-            keyDescription_TextField.stringValue = keyName_TextField.stringValue
-        }
-        let keyId = (existingKeyId == "") ? UUID().uuidString:existingKeyId
-        
-//        if ["integer array", "string array"].contains(keyType_Button.titleOfSelectedItem) {
-//            listType = ( keyType_Button.titleOfSelectedItem == "integer array" ) ? "integer":"string"
-//        }
-//            print("[set_Action] whichTab: \(whichTab)")
-        
-        switch keyType {
-        case  "integer":
-            if defaultValue_TextField.stringValue != "" {
-                guard let _ = Int(defaultValue_TextField.stringValue) else {
-                    _ = Alert.shared.display(header: "Invalid value", message: "Default value must be either true, false, or leave the field blank.")
-                    return
-                }
-                defaultValue = defaultValue_TextField.stringValue
-            }
-        case  "boolean":
-            if defaultValue_TextField.stringValue != "" {
-                if !["true", "false"].contains(defaultValue_TextField.stringValue.lowercased()) {
-                    _ = Alert.shared.display(header: "Invalid value", message: "Default value must be either true, false, or leave the field blank.")
-                    return
-                }
-                defaultValue = defaultValue_TextField.stringValue
-            }
-        case  "string":
-            defaultValue = "\(defaultValue_TextField.stringValue)"
-            
-        case "string (from list)", "integer (from list)":
-            defaultValue = "\"\(defaultValue_TextField.stringValue)\""
-            // verify enum_titles and enum have the same number of values
-            let enum_titlesTmp = enum_titles_TextView.string.replacingOccurrences(of: "\n", with: ",")
-            let enum_titlesArray = enum_titlesTmp.split(separator: ",")
-            let enumTmp          = enum_TextView.string.replacingOccurrences(of: "\n", with: ",")
-            let enumArray        = enumTmp.split(separator: ",")
-            if enum_titlesArray.count == enumArray.count {
-    //            validate integers
-                if "\(keyType_Button.titleOfSelectedItem!)" == "integer (from list)" {
-                    let validateInput       = "\(enum_TextView.string)".replacingOccurrences(of: "\"", with: "")
-                    let validateInputString = validateInput.replacingOccurrences(of: "\n", with: ",")
-                    let validateInputArray  = validateInputString.split(separator: ",")
-                    for theValue in validateInputArray {
-                        let intTest = theValue.replacingOccurrences(of: " ", with: "")
-                        if !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: "\(intTest)")) {
-                            _ = Alert.shared.display(header: "Error", message: "Found '\(intTest)' and only integers are allowed.")
-                            return
-                        }
+    // MARK: - Body
+    var body: some View {
+        VStack(spacing: 20) {
+            HStack(spacing: 0) {
+                Text(existingKey != nil ? "Edit Key" : "Add New Key")
+                    .font(.title2.bold())
+                    .frame(maxWidth: 110, alignment: .leading)
+
+                Spacer().frame(width: 4)
+                
+                Picker("", selection: $selectedKeyType) {
+                    ForEach(KeyType.allCases, id: \.self) { keyType in
+                        Text(keyType.rawValue).tag(keyType)
                     }
                 }
-            } else {
-                _ = Alert.shared.display(header: "Attention", message: "Number of items defined in list of options and number of items defined in the value list must be equal.\n\tCount of options: \(enum_titlesArray.count)\n\tCount of values: \(enumArray.count)")
-                return
+                .pickerStyle(.menu)
+                .frame(width: 200)
+                
+                Spacer()
             }
             
-        case "integer array", "string array":
-            keyType = "array"
-            listType = ( keyType_Button.titleOfSelectedItem == "integer array" ) ? "integer":"string"
+            ScrollView {
+                VStack(spacing: 24) {
+                    
+                    // General Section
+                    section("General") {
+                        
+                        formRow("Required:") {
+                            Toggle("", isOn: $isRequired)
+                                .toggleStyle(.checkbox)
+                            Spacer()
+                        }
+                        
+                        formRow("Key Name:", field: $keyName)
+                    }
+                    
+                    // Details Section
+                    section("Details") {
+                        formRow("Friendly Name:", field: $friendlyName)
+                        editorRow("Description:", text: $keyDescription)
+//                        formRow("Description:", field: $keyDescription)
+                        
+//                        if selectedKeyType != .boolean {
+                        formRow("Default Value:", field: $defaultValue)
+//                        }
+                    }
+                    
+                    // Info Section
+                    section("Info") {
+                        formRow("Info Text:", field: $infoText, hint: "tooltip to display for the key")
+                        formRow("Link Text:", field: $moreInfoText)
+                        formRow("URL:", field: $moreInfoUrl)
+                    }
+                    
+                    // Extras Section
+//                    section("Extras") {
+                        switch selectedKeyType {
+                        case .string, .integer:
+                            section("Extras") {
+                                formRow("Placeholder:", field: $headerOrPlaceholder)
+                            }
+                        case .stringFromList, .integerFromList:
+                            section("List") {
+//                                formRow("List Options:", field: $headerOrPlaceholder)
+                                editorRow("Titles:", text: $enumTitles)
+                                editorRow("Values:", text: $enumValues)
+                            }
+                        default:
+                            Text("")
+//                            Text("No extra fields for this type")
+//                                .foregroundColor(.secondary)
+//                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+//                    }
+                }
+                .padding()
+            }
             
-        default:
-            break
+            // Buttons
+            HStack {
+                Button("Cancel") {
+                    onDismiss()
+                }
+                .buttonStyle(.bordered)
+                .keyboardShortcut(.cancelAction)
+                
+                Spacer()
+                
+                Button(existingKey != nil ? "Update" : "Add") {
+                    saveKey()
+                }
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
+                .disabled(keyName.isEmpty || selectedKeyType == .selectKeyType)
+            }
         }
-        
-        let currentKey = TheKey(id: keyId, index: keyIndex, type: keyType, name: keyName_TextField.stringValue, required: (keyRequired_Button.state == .on) ? true:false, friendlyName: keyFriendlyName_TextField.stringValue, desc: keyDescription_TextField.stringValue, defaultValue: defaultValue, infoText: keyInfoText_TextField.stringValue, moreInfoText: moreInfoText_TextField.stringValue, moreInfoUrl: moreInfoUrl_TextField.stringValue, listType: listType, listHeader: headerOrPlaceholder_TextField.stringValue, listOfOptions: enum_titles_TextView.string, listOfValues: enum_TextView.string)
-        delegate?.sendKeyInfo(keyInfo: currentKey)
-        dismiss(self)
+        .padding()
+        .frame(width: 650, height: 700)
+        .onAppear(perform: loadExistingKey)
+        .alert("Error", isPresented: $showAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(alertMessage)
+        }
+        .alert("Invalid URL", isPresented: $showUrlAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Use Anyway") { performSave() }
+        } message: {
+            Text("The URL for More Info appears invalid")
+        }
     }
     
-    fileprivate func urlValidation() -> Bool {
-        let urlRegex = #"^(http|https)://([\w\.-]+)\.([a-z\.]{2,6})([/\w\.-]*)*/?$"#
+    // MARK: - Section Wrapper
+    private func section<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+            VStack(spacing: 10) {
+                content()
+            }
+            Divider()
+        }
+    }
+    
+    // MARK: - Helpers for Rows
+    private func formRow(_ label: String, field: Binding<String>, hint: String = "") -> some View {
+        formRow(label) {
+            TextField("", text: field)
+                .textFieldStyle(.roundedBorder)
+                .help(hint)
+        }
+    }
+    
+    private func formRow<Content: View>(_ label: String, @ViewBuilder content: () -> Content) -> some View {
+        HStack {
+            Text(label)
+                .frame(width: 140, alignment: .leading)
+            content()
+        }
+    }
+    
+    private func editorRow(_ label: String, text: Binding<String>) -> some View {
+        HStack(alignment: .top) {
+            Text(label)
+                .frame(width: 140, alignment: .leading)
+            TextEditor(text: text)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 100)
+                .border(Color.secondary.opacity(0.3), width: 1)
+        }
+    }
+    
+    // MARK: - Data Handling
+    private func loadExistingKey() {
+        guard let existingKey = existingKey else { return }
         
-        if let regex = try? NSRegularExpression(pattern: urlRegex, options: .caseInsensitive) {
-            let range = NSRange(location: 0, length: moreInfoUrl_TextField.stringValue.utf16.count)
-            if regex.firstMatch(in: moreInfoUrl_TextField.stringValue, options: [], range: range) == nil {
-                let response = Alert.shared.display(header: "", message: "The URL for More Info appears invalid", secondButton: "Use Anyway")
-                if response != "Use Anyway" {
-                    moreInfoUrl_TextField.becomeFirstResponder()
-                    return false
+        if existingKey.type == "array" {
+            selectedKeyType = existingKey.listType == "integer" ? .integerArray : .stringArray
+        } else {
+            selectedKeyType = KeyType(rawValue: existingKey.type) ?? .selectKeyType
+        }
+        
+        keyName = existingKey.name
+        friendlyName = existingKey.friendlyName
+        keyDescription = existingKey.desc
+        defaultValue = existingKey.defaultValue
+        infoText = existingKey.infoText
+        moreInfoText = existingKey.moreInfoText
+        moreInfoUrl = existingKey.moreInfoUrl
+        isRequired = existingKey.required
+        headerOrPlaceholder = existingKey.headerOrPlaceholder
+        enumTitles = existingKey.listOfOptions
+        enumValues = existingKey.listOfValues
+    }
+    
+    private func saveKey() {
+        guard !keyName.isEmpty else {
+            return showError("A key must be provided")
+        }
+        guard selectedKeyType != .selectKeyType else {
+            return showError("A key type must be selected")
+        }
+        if !moreInfoUrl.isEmpty && !isValidURL(moreInfoUrl) {
+            showUrlAlert = true
+            return
+        }
+        performSave()
+    }
+    
+    private func performSave() {
+        let finalFriendlyName = friendlyName.isEmpty ? keyName : friendlyName
+        let finalDescription = keyDescription.isEmpty ? keyName : keyDescription
+        
+        var finalDefaultValue = defaultValue
+        var finalKeyType = selectedKeyType.rawValue
+        var listType = ""
+        
+        switch selectedKeyType {
+        case .integer:
+            if !defaultValue.isEmpty, Int(defaultValue) == nil {
+                return showError("Default value must be a valid integer.")
+            }
+        case .boolean:
+            if !defaultValue.isEmpty, !["true", "false"].contains(defaultValue.lowercased()) {
+                return showError("Default value must be either true, false, or blank.")
+            }
+        case .string:
+            break
+        case .stringFromList, .integerFromList:
+//            finalDefaultValue = "\"\(defaultValue)\""
+            
+            let titleCount = enumTitles.split(separator: "\n").count
+            let valueCount = enumValues.split(separator: "\n").count
+            guard titleCount == valueCount else {
+                return showError("Number of items in options (\(titleCount)) must equal values (\(valueCount)).")
+            }
+            
+            if selectedKeyType == .integerFromList {
+//                let values = enumValues.replacingOccurrences(of: "\"", with: "")
+//                    .split(separator: "\n")
+//                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                let values = enumValues.replacingOccurrences(of: "\"", with: "")
+                    .replacingOccurrences(of: "\n", with: ",")
+                    .split(separator: ",")
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                for value in values where Int(value) == nil {
+                    return showError("Found '\(value)' – only integers are allowed.")
                 }
             }
+        case .stringArray, .integerArray:
+            finalKeyType = "array"
+            listType = selectedKeyType == .integerArray ? "integer" : "string"
+        case .selectKeyType:
+            return
         }
-        return true
+        
+        let keyId = existingKey?.id ?? UUID().uuidString
+        let newKey = TheKey(
+            id: keyId,
+            index: keyIndex,
+            type: finalKeyType,
+            name: keyName,
+            required: isRequired,
+            friendlyName: finalFriendlyName,
+            desc: finalDescription,
+            defaultValue: finalDefaultValue,
+            infoText: infoText,
+            moreInfoText: moreInfoText,
+            moreInfoUrl: moreInfoUrl,
+            listType: listType,
+            listHeader: headerOrPlaceholder,
+            listOfOptions: enumTitles,
+            listOfValues: enumValues
+        )
+        
+        onSave(newKey)
+        onDismiss()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-//        enum_titles_TextView.font = NSFont(name: "Courier", size: 14.0)
-//        enum_titles_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
-//        enum_TextView.font = NSFont(name: "Courier", size: 14.0)
-//        enum_TextView.textColor = isDarkMode ? NSColor.white:NSColor.black
-//        
-//        if existingKey?.name ?? "" != "" {
-//            whichKeyType = existingKey?.type ?? "Select Key Type"
-//            let listType = existingKey?.listType ?? ""
-//            if whichKeyType == "array" {
-//                whichKeyType = "\(listType) \(whichKeyType)"
-//            }
-//            
-//            keyName_TextField.stringValue = existingKey?.name ?? ""
-//            keyFriendlyName_TextField.stringValue = existingKey?.friendlyName ?? ""
-//            keyDescription_TextField.stringValue = existingKey?.desc ?? ""
-//            defaultValue_TextField.stringValue   = existingKey?.defaultValue ?? ""
-//            keyInfoText_TextField.stringValue = existingKey?.infoText ?? ""
-//            moreInfoText_TextField.stringValue = existingKey?.moreInfoText ?? ""
-//            moreInfoUrl_TextField.stringValue = existingKey?.moreInfoUrl ?? ""
-//            keyRequired_Button.state = (existingKey?.required ?? false) ? .on:.off
-//            headerOrPlaceholder_TextField.stringValue = existingKey?.headerOrPlaceholder ?? ""
-//            enum_titles_TextView.string = existingKey?.listOfOptions ?? ""
-//            enum_TextView.string = existingKey?.listOfValues ?? ""
-//            
-//            add_Button.title = "Update"
-//        }
+    private func showError(_ message: String) {
+        alertMessage = message
+        showAlert = true
     }
     
-    override func viewDidAppear() {
-//        if whichKeyType != "" {
-//            keyType_Button.selectItem(withTitle: whichKeyType)
-//            selectKeyType_Action(keyType_Button)
-//        } else {
-//            var frame = self.view.window?.frame
-//            frame?.size = NSSize(width: 651, height: 565)
-//            self.view.window?.setFrame(frame!, display: true)
-////            windowFrameH = view.window?.frame.height ?? 0.0
-//            scrollAdjust = (keyName_TextField.frame.maxY+34) - main_Scrollview.contentView.bounds.size.height
-//            main_Scrollview.contentView.scroll(to: NSPoint(x: 1.0, y: scrollAdjust))
-//        }
+    private func isValidURL(_ urlString: String) -> Bool {
+        let regex = #"^(http|https)://([\w\.-]+)\.([a-z\.]{2,6})([/\w\.-]*)*/?$"#
+        return NSPredicate(format: "SELF MATCHES[c] %@", regex)
+            .evaluate(with: urlString)
     }
+}
 
-    override var representedObject: Any? {
-        didSet {
-        // Update the view, if already loaded.
-        }
+// MARK: - Preview
+struct KeysView_Previews: PreviewProvider {
+    static var previews: some View {
+        KeysView(
+            onSave: { key in print("Saved key: \(key.name)") },
+            onDismiss: { }
+        )
     }
-
 }

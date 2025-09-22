@@ -9,6 +9,7 @@
 import Cocoa
 import CryptoKit
 import Foundation
+import SwiftUI
 
 class TheKey: NSObject {
     @objc var id: String
@@ -47,24 +48,7 @@ class TheKey: NSObject {
     }
 }
 
-class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDelegate {
-    
-    func sendKeyInfo(keyInfo: TheKey) {
-        if let existingIndex = currentKeys.firstIndex(where: {$0.id == keyInfo.id}) {
-            // update existing key
-            currentKeys[existingIndex] = keyInfo
-            keys_TableView.reloadData()
-            displaySchema()
-        } else if let _ = currentKeys.firstIndex(where: {$0.name == keyInfo.name}) {
-            _ = Alert.shared.display(header: "", message: "Key name already exists")
-            performSegue(withIdentifier: "showKey", sender: keyInfo)
-        } else {
-            print("[sendKeyInfo] add \(keyInfo.name) to array")
-            currentKeys.append(keyInfo)
-            keys_TableView.reloadData()
-            displaySchema()
-        }
-    }
+class ViewController: NSViewController, NSTextFieldDelegate {
     
     let fileManager = FileManager.default
 
@@ -80,6 +64,23 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
     @IBOutlet weak var quit_Button: NSButton!
     
     @IBOutlet weak var keys_TableView: NSTableView!
+    
+    @IBAction func clear_Button(_ sender: Any) {
+        let response = Alert.shared.display(header: "", message: "Are you sure you want to remove all keys? This action cannot be undone.", secondButton: "Cancel")
+        if response == "Cancel" {
+            return
+        }
+        currentKeys.removeAll()
+        keysArray.removeAll()
+        requiredKeys.removeAll()
+        keys_TableView.reloadData()
+        currentSchema_TextView.string = ""
+        appTitle_TextField.stringValue = ""
+        preferenceDomain_TextField.stringValue = ""
+        preferenceDomainDescr_TextField.stringValue = ""
+        savedHash = ""
+        currentHash = ""
+    }
     
     @IBAction func copyToClipboard_Action(_ sender: Any) {
         let clipboard = NSPasteboard.general
@@ -255,7 +256,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
 
     @IBAction func addKey_Action(_ sender: Any) {
         if preferenceDomain_TextField.stringValue != "" {
-            performSegue(withIdentifier: "showKey", sender: nil)
+            presentSwiftUIKeysView(existingKey: nil)
         } else {
             _ = Alert.shared.display(header: "", message: "A preference domain must first be defined.")
             preferenceDomain_TextField.becomeFirstResponder()
@@ -315,6 +316,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
 //                                    keyTypeItems = "\"data\""
                     
                 case "integer (from list)", "string (from list)":
+                    definedDefaultValue = "\"\(definedDefaultValue)\""
                     let keyTypeItemVar = (keyTypeItems == "integer (from list)") ? "integer":"string"
                     enum_titlesString = ""
 //                                enumString        = ""
@@ -453,23 +455,23 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
         }   // if preferenceDomain_TextField != "" - end
     }   // @IBAction func save_Action - end
    
-    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case "loginView":
-           break
-        default:
-//            print("[prepare] sender: \(String(describing: sender))")
-            let keysVC: KeysVC = (segue.destinationController as? KeysVC)!
-            keysVC.delegate = self
-            if let _ = sender as? TheKey {
-                keysVC.existingKey = sender as? TheKey
-                keysVC.existingKeyId = (sender as? TheKey)?.id ?? ""
-                keysVC.keyIndex = (sender as? TheKey)?.index ?? 0
-            } else {
-                keysVC.keyIndex = (currentKeys.count+1)*5
-            }
-        }
-    }
+//    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+//        switch segue.identifier {
+//        case "loginView":
+//           break
+//        default:
+////            print("[prepare] sender: \(String(describing: sender))")
+//            let keysVC: KeysVC = (segue.destinationController as? KeysVC)!
+//            keysVC.delegate = self
+//            if let _ = sender as? TheKey {
+//                keysVC.existingKey = sender as? TheKey
+//                keysVC.existingKeyId = (sender as? TheKey)?.id ?? ""
+//                keysVC.keyIndex = (sender as? TheKey)?.index ?? 0
+//            } else {
+//                keysVC.keyIndex = (currentKeys.count+1)*5
+//            }
+//        }
+//    }
     
     func controlTextDidEndEditing(_ obj: Notification) {
         var whichField = ""
@@ -557,7 +559,7 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
         fontColor = isDarkMode ? NSColor.white:NSColor.black
         schemaTextAttributes = [NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.font: NSFont(name: "Courier", size: 14)!, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         
-        keys_TableView.doubleAction = #selector(viewKey)
+        keys_TableView.doubleAction = #selector(viewKey_SwiftUI)
         
     }
     
@@ -586,83 +588,200 @@ class ViewController: NSViewController, NSTextFieldDelegate, SendingKeyInfoDeleg
     }
 }
 
-
 extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
     
-    fileprivate enum CellIdentifiers {
-        static let NameCell    = "keyName"
-    }
-    
     func numberOfRows(in tableView: NSTableView) -> Int {
-//        print("[numberOfRows] \(currentKeys.count)")
         return currentKeys.count
     }
     
+    
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
 //        print("[objectValueFor] \(currentKeys[row].name)")
-        return "\(currentKeys[row].name)"
+//        print("Row: \(row), Column: \(tableColumn?.identifier.rawValue ?? "nil")")
+//        print("Keys count: \(currentKeys.count)")
+//        if row < currentKeys.count {
+//            print("Key name: \(currentKeys[row].name)")
+//        }
+        let keyValues = currentKeys[row]
+//        let requiredText = keyValues.required ? " ✓" : ""
+
+        return "\(keyValues.name)"
     }
     
+//    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+//        print("Row: \(row), Column: \(tableColumn?.identifier.rawValue ?? "nil")")
+//            print("Keys count: \(currentKeys.count)")
+//            if row < currentKeys.count {
+//                print("Key name: \(currentKeys[row].name)")
+//            }
+//        
+//        guard row < currentKeys.count else { return nil }
+//        let key = currentKeys[row]
+//        
+//        if tableColumn?.identifier.rawValue == "KeyColumn" {
+//            let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("KeyCell"), owner: self) as? NSTableCellView
+//            
+//            // Display both key name and required status
+//            let requiredText = key.required ? " ✓" : ""
+//            cell?.textField?.stringValue = "\(key.name)\(requiredText)"
+//            
+//            return cell
+//        }
+//        
+//        if tableColumn?.identifier.rawValue == "TypeColumn" {
+//            let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("TypeCell"), owner: self) as? NSTableCellView
+//            cell?.textField?.stringValue = key.type
+//            return cell
+//        }
+//        
+//        return nil
+//    }
     
-    // dragging rows
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        // Handle selection changes if needed
+    }
+    
+    // MARK: - Drag and Drop Support (if you want to restore this functionality)
+    
     func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
         let pasteboard = NSPasteboardItem()
-            
-        // in this example I'm dragging the row index. Once dropped i'll look up the value that is moving by using this.
-        // remember in viewdidload I registered strings so I must set strings to pasteboard
         pasteboard.setString("\(row)", forType: .string)
         return pasteboard
     }
     
-    
     func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
-        
-        let canDrop = (row >= 0) // in this example you cannot drop on top two rows
-//        print("valid drop \(row)? \(canDrop)")
-        if (canDrop) {
-            return .move //yes, you can drop on this row
-        }
-        else {
-            return [] // an empty array is the equivalent of nil or 'cannot drop'
-        }
+        let canDrop = (row >= 0)
+        return canDrop ? .move : []
     }
-    
     
     func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
         let pastboard = info.draggingPasteboard
-        if let sourceRowString = pastboard.string(forType: .string) {
-            let selectionArray = sourceRowString.components(separatedBy: "\n")
-//            print("\(selectionArray.count) items selected")
-//            print("from \(sourceRowString). dropping row \(row)")
-            if ((info.draggingSource as? NSTableView == keys_TableView) && (tableView == keys_TableView)) {
-                var objectsMoved = 0
-                var indexAdjustment = 0
-                for theKey in selectionArray {
-                    let value:TheKey = currentKeys[Int(theKey)!-indexAdjustment]
-                    
-                    currentKeys.remove(at: Int(theKey)! - indexAdjustment)
-                    if (row > Int(theKey)!)
-                    {
-                        currentKeys.insert(value, at: (row - 1 - objectsMoved + objectsMoved))
-                        indexAdjustment += 1
-                    }
-                    else
-                    {
-                        currentKeys.insert(value, at: (row + objectsMoved))
-                    }
-                    objectsMoved += 1
-                    keys_TableView.reloadData()
-                    displaySchema(reorder: true)
-                }
-                return true
-            } else {
-                return false
-            }
+        guard let sourceRowString = pastboard.string(forType: .string),
+              let sourceRow = Int(sourceRowString),
+              sourceRow < currentKeys.count else { return false }
+        
+        if info.draggingSource as? NSTableView == keys_TableView && tableView == keys_TableView {
+            let movedKey = currentKeys[sourceRow]
+            currentKeys.remove(at: sourceRow)
+            
+            let insertIndex = sourceRow < row ? row - 1 : row
+            currentKeys.insert(movedKey, at: insertIndex)
+            
+            keys_TableView.reloadData()
+            displaySchema(reorder: true)
+            return true
         }
+        
         return false
     }
-
 }
+
+
+//extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
+//    
+//    func numberOfRows(in tableView: NSTableView) -> Int {
+//            return currentKeys.count
+//        }
+//        
+//        func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?,
+//                       row: Int) -> NSView? {
+//            guard row < currentKeys.count else { return nil }
+//            let key = currentKeys[row]
+//            
+//            if tableColumn?.identifier.rawValue == "KeyColumn" {
+//                let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("KeyCell"), owner: self) as? NSTableCellView
+//                cell?.textField?.stringValue = key.name
+//                return cell
+//            }
+//            
+//            if tableColumn?.identifier.rawValue == "TypeColumn" {
+//                let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("TypeCell"), owner: self) as? NSTableCellView
+//                cell?.textField?.stringValue = key.type
+//                return cell
+//            }
+//            
+//            return nil
+//        }
+//        
+//        func tableViewSelectionDidChange(_ notification: Notification) {
+//            // Right-click context menu will call viewKey_SwiftUI()
+//        }
+//    /*
+//    fileprivate enum CellIdentifiers {
+//        static let NameCell    = "keyName"
+//    }
+//    
+//    func numberOfRows(in tableView: NSTableView) -> Int {
+////        print("[numberOfRows] \(currentKeys.count)")
+//        return currentKeys.count
+//    }
+//    
+//    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
+////        print("[objectValueFor] \(currentKeys[row].name)")
+//        return "\(currentKeys[row].name)"
+//    }
+//    
+//    
+//    // dragging rows
+//    func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
+//        let pasteboard = NSPasteboardItem()
+//            
+//        // in this example I'm dragging the row index. Once dropped i'll look up the value that is moving by using this.
+//        // remember in viewdidload I registered strings so I must set strings to pasteboard
+//        pasteboard.setString("\(row)", forType: .string)
+//        return pasteboard
+//    }
+//    
+//    
+//    func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
+//        
+//        let canDrop = (row >= 0) // in this example you cannot drop on top two rows
+////        print("valid drop \(row)? \(canDrop)")
+//        if (canDrop) {
+//            return .move //yes, you can drop on this row
+//        }
+//        else {
+//            return [] // an empty array is the equivalent of nil or 'cannot drop'
+//        }
+//    }
+//    
+//    
+//    func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
+//        let pastboard = info.draggingPasteboard
+//        if let sourceRowString = pastboard.string(forType: .string) {
+//            let selectionArray = sourceRowString.components(separatedBy: "\n")
+////            print("\(selectionArray.count) items selected")
+////            print("from \(sourceRowString). dropping row \(row)")
+//            if ((info.draggingSource as? NSTableView == keys_TableView) && (tableView == keys_TableView)) {
+//                var objectsMoved = 0
+//                var indexAdjustment = 0
+//                for theKey in selectionArray {
+//                    let value:TheKey = currentKeys[Int(theKey)!-indexAdjustment]
+//                    
+//                    currentKeys.remove(at: Int(theKey)! - indexAdjustment)
+//                    if (row > Int(theKey)!)
+//                    {
+//                        currentKeys.insert(value, at: (row - 1 - objectsMoved + objectsMoved))
+//                        indexAdjustment += 1
+//                    }
+//                    else
+//                    {
+//                        currentKeys.insert(value, at: (row + objectsMoved))
+//                    }
+//                    objectsMoved += 1
+//                    keys_TableView.reloadData()
+//                    displaySchema(reorder: true)
+//                }
+//                return true
+//            } else {
+//                return false
+//            }
+//        }
+//        return false
+//    }
+//    */
+//
+//}
 
 extension [Any] {
     var arrayToString: String {
@@ -721,4 +840,64 @@ extension Notification.Name {
     public static let newSchema = Notification.Name("newSchema")
     public static let importSchema = Notification.Name("importSchema")
     public static let quitNow = Notification.Name("quitNow")
+}
+
+extension ViewController {
+    
+    // Updated viewKey method to use SwiftUI
+    @objc func viewKey_SwiftUI() {
+        let keyIndex = keys_TableView.clickedRow
+        guard keyIndex >= 0 && keyIndex < currentKeys.count else { return }
+        let theKey = currentKeys[keyIndex]
+        presentSwiftUIKeysView(existingKey: theKey)
+    }
+    
+    // Method to present SwiftUI view as a sheet
+    func presentSwiftUIKeysView(existingKey: TheKey?) {
+        let index = existingKey != nil
+            ? currentKeys.firstIndex { $0.id == existingKey!.id } ?? 0
+            : currentKeys.count
+        
+        let hostingController = NSHostingController(
+            rootView: KeysView(
+                existingKey: existingKey,
+                keyIndex: index,
+                onSave: { [weak self] newKey in
+                    self?.handleKeyInfo(keyInfo: newKey)
+                },
+                onDismiss: { [weak self] in
+                    // Use dismissSheet instead of dismiss(nil)
+                    self?.dismissSheet()
+                }
+            )
+        )
+        
+        hostingController.view.frame.size = NSSize(width: 650, height: 700)
+        presentAsSheet(hostingController)
+    }
+    
+    // Helper method to properly dismiss sheet
+    private func dismissSheet() {
+        if let sheet = self.presentedViewControllers?.first {
+            self.dismiss(sheet)
+        }
+    }
+    
+    // Handle the key info returned from SwiftUI view
+    private func handleKeyInfo(keyInfo: TheKey) {
+        if let existingIndex = currentKeys.firstIndex(where: {$0.id == keyInfo.id}) {
+            // update existing key
+            currentKeys[existingIndex] = keyInfo
+            keys_TableView.reloadData()
+            displaySchema()
+        } else if let _ = currentKeys.firstIndex(where: {$0.name == keyInfo.name}) {
+            _ = Alert.shared.display(header: "", message: "Key name already exists")
+            presentSwiftUIKeysView(existingKey: keyInfo)
+        } else {
+            print("[handleKeyInfo] add \(keyInfo.name) to array")
+            currentKeys.append(keyInfo)
+            keys_TableView.reloadData()
+            displaySchema()
+        }
+    }
 }
