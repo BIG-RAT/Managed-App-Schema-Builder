@@ -98,40 +98,30 @@ struct KeysView: View {
                     section("Details") {
                         formRow("Friendly Name:", field: $friendlyName)
                         editorRow("Description:", text: $keyDescription)
-//                        formRow("Description:", field: $keyDescription)
-                        
-//                        if selectedKeyType != .boolean {
                         formRow("Default Value:", field: $defaultValue)
-//                        }
                     }
                     
                     // Info Section
                     section("Info") {
-                        formRow("Info Text:", field: $infoText, hint: "tooltip to display for the key")
-                        formRow("Link Text:", field: $moreInfoText)
-                        formRow("URL:", field: $moreInfoUrl)
+                        formRow("Info Text:", field: $infoText, placeholder: "tooltip to display for the key")
+                        formRow("Link Text:", field: $moreInfoText, placeholder: "text to display for the link")
+                        formRow("URL:", field: $moreInfoUrl, placeholder: "URL to view more info")
                     }
                     
                     // Extras Section
-//                    section("Extras") {
                         switch selectedKeyType {
-                        case .string, .integer:
+                        case .string/*, .integer*/: // does not work for integers
                             section("Extras") {
-                                formRow("Placeholder:", field: $headerOrPlaceholder)
+                                formRow("Placeholder:", field: $headerOrPlaceholder, hint: "will be overridden by default value")
                             }
                         case .stringFromList, .integerFromList:
-                            section("List") {
-//                                formRow("List Options:", field: $headerOrPlaceholder)
+                            section("List (use comma or newline as separator):") {
                                 editorRow("Titles:", text: $enumTitles)
                                 editorRow("Values:", text: $enumValues)
                             }
                         default:
                             Text("")
-//                            Text("No extra fields for this type")
-//                                .foregroundColor(.secondary)
-//                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-//                    }
                 }
                 .padding()
             }
@@ -183,9 +173,9 @@ struct KeysView: View {
     }
     
     // MARK: - Helpers for Rows
-    private func formRow(_ label: String, field: Binding<String>, hint: String = "") -> some View {
+    private func formRow(_ label: String, field: Binding<String>, placeholder: String = "", hint: String = "") -> some View {
         formRow(label) {
-            TextField("", text: field)
+            TextField("\(placeholder)", text: field)
                 .textFieldStyle(.roundedBorder)
                 .help(hint)
         }
