@@ -98,7 +98,7 @@ struct KeysView: View {
                     section("Details") {
                         formRow("Friendly Name:", field: $friendlyName)
                         editorRow("Description:", text: $keyDescription)
-                        if !(selectedKeyType == .stringFromList || selectedKeyType == .integerFromList) {
+                        if !(selectedKeyType == .stringArray || selectedKeyType == .integerArray || selectedKeyType == .selectKeyType) {
                             formRow("Default Value:", field: $defaultValue)
                         }
                     }

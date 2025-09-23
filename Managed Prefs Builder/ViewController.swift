@@ -288,7 +288,7 @@ class ViewController: NSViewController, NSTextFieldDelegate {
                 if theKey.required {
                     requiredKeys.append("\"\(theKey.name)\",")
                 }
-                print("[displaySchema] key: \(theKey.type), name: \(theKey.name)")
+//                print("[displaySchema] key: \(theKey.type), name: \(theKey.name)")
                 
                 currentKeys[keysWritten].index = (keysWritten+1)*5
                 keysWritten += 1
@@ -348,7 +348,7 @@ class ViewController: NSViewController, NSTextFieldDelegate {
 //                    keyTypeItems = "\"string\""
                     fallthrough
                 default:
-                    print("[displaySchema] headerOrPlaceholder: \(theKey.headerOrPlaceholder)\n")
+//                    print("[displaySchema] headerOrPlaceholder: \(theKey.headerOrPlaceholder)\n")
                     var placeholder = ""
                     if theKey.headerOrPlaceholder != "" {
                         let placeholderValue = (keyTypeItems == "\"string\"") ? "\(theKey.headerOrPlaceholder)":theKey.headerOrPlaceholder
