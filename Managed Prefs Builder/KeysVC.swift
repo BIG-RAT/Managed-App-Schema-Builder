@@ -112,9 +112,9 @@ struct KeysView: View {
                     
                     // Extras Section
                         switch selectedKeyType {
-                        case .string/*, .integer*/: // does not work for integers
+                        case .string, .stringArray, .integerArray /*, .integer*/: // does not work for integers
                             section("Extras") {
-                                formRow("Placeholder:", field: $headerOrPlaceholder, hint: "will be overridden by default value")
+                                formRow(selectedKeyType == .string ? "Placeholder:": "Entry Title:", field: $headerOrPlaceholder, hint: "will be overridden by default value")
                             }
                         case .stringFromList, .integerFromList:
                             section("List (use comma or newline as separator):") {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24128"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -822,7 +822,7 @@ DQ
                                 </scroller>
                             </scrollView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Isk-ba-bh6">
-                                <rect key="frame" x="832" y="683" width="80" height="34"/>
+                                <rect key="frame" x="832" y="677" width="80" height="40"/>
                                 <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uDj-pq-rQb">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
@@ -900,7 +900,7 @@ DQ
                                 </connections>
                             </button>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="NIQ-5j-C3u">
-                                <rect key="frame" x="344" y="692" width="74" height="19"/>
+                                <rect key="frame" x="344" y="688" width="74" height="19"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="App Title:" id="xvC-G7-qxR">
                                     <font key="font" metaFont="system" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -908,7 +908,7 @@ DQ
                                 </textFieldCell>
                             </textField>
                             <textField toolTip="ex: com.jamf.jamfadmin" focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vhN-aV-K0e">
-                                <rect key="frame" x="421" y="689" width="397" height="22"/>
+                                <rect key="frame" x="421" y="686" width="397" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="22" id="ADE-Wd-O6f"/>
                                 </constraints>
@@ -948,12 +948,12 @@ DQ
                             <constraint firstItem="zE1-Vt-mvy" firstAttribute="leading" secondItem="ORS-jH-3XI" secondAttribute="trailing" constant="11" id="1AQ-dS-Znu"/>
                             <constraint firstItem="6HR-SU-cPn" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="83" id="2H7-K9-ewe"/>
                             <constraint firstItem="CYJ-Pd-oE0" firstAttribute="trailing" secondItem="yIr-bP-4lo" secondAttribute="trailing" id="4X5-0W-3uh"/>
-                            <constraint firstItem="NIQ-5j-C3u" firstAttribute="top" secondItem="sHt-ex-NDq" secondAttribute="top" id="5og-PI-1og"/>
                             <constraint firstItem="qlt-hj-8UJ" firstAttribute="top" secondItem="yIr-bP-4lo" secondAttribute="bottom" constant="5" id="6La-Vy-jua"/>
                             <constraint firstItem="PVh-P7-5PZ" firstAttribute="top" secondItem="sHt-ex-NDq" secondAttribute="bottom" constant="2" id="7Pn-fL-36Q"/>
                             <constraint firstItem="yIr-bP-4lo" firstAttribute="leading" secondItem="sHt-ex-NDq" secondAttribute="trailing" constant="36" id="BC1-O2-pcJ"/>
                             <constraint firstItem="Isk-ba-bh6" firstAttribute="trailing" secondItem="ICL-nr-Qpl" secondAttribute="trailing" id="BP2-kt-OEK"/>
                             <constraint firstItem="eHK-xg-FKb" firstAttribute="top" secondItem="sHt-ex-NDq" secondAttribute="top" constant="36" id="Ckw-TY-Zj2"/>
+                            <constraint firstItem="vhN-aV-K0e" firstAttribute="centerY" secondItem="NIQ-5j-C3u" secondAttribute="centerY" id="EN1-JA-3cK"/>
                             <constraint firstItem="6HR-SU-cPn" firstAttribute="leading" secondItem="ICL-nr-Qpl" secondAttribute="leading" id="I1E-q5-BC2"/>
                             <constraint firstItem="qlt-hj-8UJ" firstAttribute="leading" secondItem="yIr-bP-4lo" secondAttribute="leading" id="KCP-H2-VC1"/>
                             <constraint firstItem="Isk-ba-bh6" firstAttribute="centerY" secondItem="vhN-aV-K0e" secondAttribute="centerY" id="Kg8-En-dyn"/>
@@ -971,7 +971,6 @@ DQ
                             <constraint firstItem="6HR-SU-cPn" firstAttribute="top" secondItem="CYJ-Pd-oE0" secondAttribute="bottom" constant="7" id="c98-cq-qvY"/>
                             <constraint firstItem="6HR-SU-cPn" firstAttribute="leading" secondItem="XbU-wV-1KH" secondAttribute="leading" id="ePr-Kg-Oow"/>
                             <constraint firstItem="CYJ-Pd-oE0" firstAttribute="centerY" secondItem="eHK-xg-FKb" secondAttribute="centerY" id="fJf-Dd-IsI"/>
-                            <constraint firstItem="vhN-aV-K0e" firstAttribute="top" secondItem="NIQ-5j-C3u" secondAttribute="top" id="fUN-vG-VHK"/>
                             <constraint firstItem="sHt-ex-NDq" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="gTg-sO-Vs0"/>
                             <constraint firstItem="CYJ-Pd-oE0" firstAttribute="leading" secondItem="eHK-xg-FKb" secondAttribute="trailing" constant="6" id="h8M-fo-7J2"/>
                             <constraint firstItem="mdy-7b-Q3F" firstAttribute="leading" secondItem="PVh-P7-5PZ" secondAttribute="trailing" constant="3" id="l7v-nV-H0u"/>
