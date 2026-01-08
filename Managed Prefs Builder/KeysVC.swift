@@ -253,8 +253,8 @@ struct KeysView: View {
                 return showError("Default value must be a valid integer.")
             }
         case .boolean:
-            if !defaultValue.isEmpty, !["true", "false"].contains(defaultValue.lowercased()) {
-                return showError("Default value must be either true, false, or blank.")
+            if !defaultValue.isEmpty, !["true", "false"].contains(defaultValue) {
+                return showError("Default value must be either (lowercase) true, false, or blank.")
             }
         case .string:
             break
