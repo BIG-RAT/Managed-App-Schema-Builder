@@ -1,8 +1,5 @@
 //
-//  WriteToLog.swift
-//  MASB
-//
-//  Copyright © 2024 jamf. All rights reserved.
+//  Copyright 2026 Jamf. All rights reserved.
 //
 
 import Foundation

@@ -1,9 +1,5 @@
 //
-//  Alert.swift
-//  Managed App Schema Builder
-//
-//  Created by Leslie Helou on 2/9/20.
-//  Copyright © 2020 Leslie Helou. All rights reserved.
+//  Copyright 2026 Jamf. All rights reserved.
 //
 
 import Cocoa

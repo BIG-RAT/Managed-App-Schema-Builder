@@ -1,9 +1,5 @@
 //
-//  AppDelegate.swift
-//  Managed App Schema Builder
-//
-//  Created by Leslie Helou on 2/7/20.
-//  Copyright © 2020 Leslie Helou. All rights reserved.
+//  Copyright 2026 Jamf. All rights reserved.
 //
 
 import Cocoa

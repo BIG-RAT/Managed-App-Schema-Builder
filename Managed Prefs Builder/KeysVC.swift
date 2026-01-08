@@ -1,3 +1,7 @@
+//
+//  Copyright 2026 Jamf. All rights reserved.
+//
+
 import SwiftUI
 
 // MARK: - Key Types

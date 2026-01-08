@@ -664,10 +664,10 @@
             </objects>
             <point key="canvasLocation" x="-35" y="-116"/>
         </scene>
-        <!--AboutVC-->
+        <!--About-->
         <scene sceneID="6L3-SH-3yb">
             <objects>
-                <viewController showSeguePresentationStyle="single" id="gv8-hQ-UwU" customClass="AboutVC" customModule="Managed_App_Schema_Builder" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="About" showSeguePresentationStyle="single" id="gv8-hQ-UwU" customClass="AboutVC" customModule="Managed_App_Schema_Builder" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="CKG-w2-wKR">
                         <rect key="frame" x="0.0" y="0.0" width="671" height="380"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -760,6 +760,7 @@
                         <outlet property="appName_textfield" destination="hsp-hj-gPF" id="hZY-7X-ZkX"/>
                         <outlet property="license_textfield" destination="XJg-fv-pKT" id="i1J-1k-EbQ"/>
                         <outlet property="optOut_button" destination="PP4-ly-ee5" id="ZcH-Xy-2Sa"/>
+                        <outlet property="version_textfield" destination="gdH-ni-7ir" id="tgt-n0-bus"/>
                     </connections>
                 </viewController>
                 <customObject id="mMh-y6-4xU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

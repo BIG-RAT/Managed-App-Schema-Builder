@@ -321,14 +321,14 @@
 				DEVELOPMENT_TEAM = PS2F6S478M;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Managed Prefs Builder/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Managed App Schema Building";
+				INFOPLIST_KEY_CFBundleDisplayName = "Managed App Schema Builder";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.4;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamf.pse.ManagedAppSchemaBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -347,14 +347,14 @@
 				DEVELOPMENT_TEAM = PS2F6S478M;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Managed Prefs Builder/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Managed App Schema Building";
+				INFOPLIST_KEY_CFBundleDisplayName = "Managed App Schema Builder";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.4;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamf.pse.ManagedAppSchemaBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

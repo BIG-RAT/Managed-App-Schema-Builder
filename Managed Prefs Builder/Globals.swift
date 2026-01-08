@@ -1,9 +1,5 @@
 //
-//  Globals.swift
-//  Managed App Schema Builder
-//
-//  Created by Leslie Helou on 2/16/20.
-//  Copyright © 2020 Leslie Helou. All rights reserved.
+//  Copyright 2026 Jamf. All rights reserved.
 //
 
 import Foundation
@@ -28,7 +24,7 @@ struct AppInfo {
     static let version       = dict["CFBundleShortVersionString"] as? String ?? "0.0.0"
     static let build         = Bundle.main.infoDictionary!["CFBundleVersion"] as? String ?? ""
     static let name          = dict["CFBundleExecutable"] as? String ?? ""
-    static let displayname   = dict["CFBundleDisplayName"] as? String ?? ""
+    static let displayname   = dict["CFBundleDisplayName"] as? String ?? name
     
     static let appSupport    = NSHomeDirectory() + "/Library/Application Support/"    
 }
