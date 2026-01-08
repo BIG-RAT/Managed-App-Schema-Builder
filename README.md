@@ -29,7 +29,3 @@ Consult the [Wiki](https://github.com/BIG-RAT/Managed-App-Schema-Builder/wiki) (
 ___
 
 Thanks @talkingmoose for all the help!
-
-## History
-
-- 2026-01-08 v1.2.0: Minor code cleanup. Add TelemetryDeck integration.
