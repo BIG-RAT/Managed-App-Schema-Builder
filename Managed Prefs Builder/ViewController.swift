@@ -123,7 +123,11 @@ class ViewController: NSViewController, NSTextFieldDelegate {
         importDialog.canChooseDirectories    = false
         importDialog.allowsMultipleSelection = false
         importDialog.resolvesAliases         = true
-        importDialog.allowedFileTypes        = fileTypeArray
+        if #available(macOS 12.0, *) {
+            importDialog.allowedContentTypes = [.json]
+        } else {
+            importDialog.allowedFileTypes = fileTypeArray
+        }
         importDialog.directoryURL            = importPathUrl
         importDialog.beginSheetModal(for: self.view.window!){ [self] result in
             if result == .OK {
@@ -796,3 +800,4 @@ extension ViewController {
         }
     }
 }
+

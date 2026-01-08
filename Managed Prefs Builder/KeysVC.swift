@@ -247,7 +247,7 @@ struct KeysView: View {
         let finalFriendlyName = friendlyName.isEmpty ? keyName : friendlyName
         let finalDescription = keyDescription.isEmpty ? keyName : keyDescription
         
-        var finalDefaultValue = defaultValue
+        let finalDefaultValue = defaultValue
         var finalKeyType = selectedKeyType.rawValue
         var listType = ""
         
