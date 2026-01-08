@@ -12,9 +12,9 @@ struct tab {
     static var current = ""
 }
 
-let defaults = UserDefaults.standard
-var isRunning              = false
-var didRun                 = false
+let defaults  = UserDefaults.standard
+var isRunning = false
+var didRun    = false
 
 // determine if we're using dark mode
 var isDarkMode: Bool {
@@ -23,17 +23,19 @@ var isDarkMode: Bool {
 }
 
 struct AppInfo {
+    static let bundleId      = Bundle.main.bundleIdentifier!
     static let dict          = Bundle.main.infoDictionary!
-    static let version       = dict["CFBundleShortVersionString"] as! String
-    static let build         = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
-    static let name          = dict["CFBundleExecutable"] as! String
+    static let version       = dict["CFBundleShortVersionString"] as? String ?? "0.0.0"
+    static let build         = Bundle.main.infoDictionary!["CFBundleVersion"] as? String ?? ""
+    static let name          = dict["CFBundleExecutable"] as? String ?? ""
+    static let displayname   = dict["CFBundleDisplayName"] as? String ?? ""
     
     static let appSupport    = NSHomeDirectory() + "/Library/Application Support/"    
 }
 
 struct JamfProServer {
     static var accessToken  = ""
-    static var authExpires  = 30.0
+    static var authExpires  = 20.0
     static var currentCred  = ""
     static var tokenCreated = Date()
     static var majorVersion = 0

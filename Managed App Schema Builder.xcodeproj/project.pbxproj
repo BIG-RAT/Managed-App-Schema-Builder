@@ -15,6 +15,9 @@
 		B5937B9F23EE082B002EDC2E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5937B9D23EE082B002EDC2E /* Main.storyboard */; };
 		B5937BA823F0842B002EDC2E /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5937BA723F0842B002EDC2E /* Alert.swift */; };
 		B59B10532BB605CC0028329F /* WriteToLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59B10522BB605CB0028329F /* WriteToLog.swift */; };
+		CE13390B2F0F898B008AF1DA /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13390A2F0F898B008AF1DA /* AboutVC.swift */; };
+		CE13390E2F0F8A60008AF1DA /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = CE13390D2F0F8A60008AF1DA /* TelemetryDeck */; };
+		CE1339102F0F8E48008AF1DA /* TelemetryDeckConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13390F2F0F8E48008AF1DA /* TelemetryDeckConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,8 +31,9 @@
 		B5937BA023EE082B002EDC2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B5937BA123EE082B002EDC2E /* Managed_Prefs_Builder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Managed_Prefs_Builder.entitlements; sourceTree = "<group>"; };
 		B5937BA723F0842B002EDC2E /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
-		B59B104B2BB2FE710028329F /* Notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Notes.md; sourceTree = "<group>"; };
 		B59B10522BB605CB0028329F /* WriteToLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WriteToLog.swift; sourceTree = "<group>"; };
+		CE13390A2F0F898B008AF1DA /* AboutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
+		CE13390F2F0F8E48008AF1DA /* TelemetryDeckConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryDeckConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE13390E2F0F8A60008AF1DA /* TelemetryDeck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,7 +51,6 @@
 		B5937B8B23EE0829002EDC2E = {
 			isa = PBXGroup;
 			children = (
-				B59B104B2BB2FE710028329F /* Notes.md */,
 				B5937B9623EE0829002EDC2E /* Managed Prefs Builder */,
 				B5937B9523EE0829002EDC2E /* Products */,
 				B5B9E3CD2BBBD7FD006A1B69 /* Frameworks */,
@@ -64,10 +68,12 @@
 		B5937B9623EE0829002EDC2E /* Managed Prefs Builder */ = {
 			isa = PBXGroup;
 			children = (
+				CE13390A2F0F898B008AF1DA /* AboutVC.swift */,
 				B5937BA723F0842B002EDC2E /* Alert.swift */,
 				B5937B9723EE0829002EDC2E /* AppDelegate.swift */,
 				B588C8E223F99FB200BCE5A1 /* Globals.swift */,
 				B585ED242BACA50900ECA658 /* KeysVC.swift */,
+				CE13390F2F0F8E48008AF1DA /* TelemetryDeckConfig.swift */,
 				B5937B9923EE0829002EDC2E /* ViewController.swift */,
 				B59B10522BB605CB0028329F /* WriteToLog.swift */,
 				B5937B9B23EE082B002EDC2E /* Assets.xcassets */,
@@ -130,6 +136,9 @@
 				Base,
 			);
 			mainGroup = B5937B8B23EE0829002EDC2E;
+			packageReferences = (
+				CE13390C2F0F8A60008AF1DA /* XCRemoteSwiftPackageReference "SwiftSDK" */,
+			);
 			productRefGroup = B5937B9523EE0829002EDC2E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -156,9 +165,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE13390B2F0F898B008AF1DA /* AboutVC.swift in Sources */,
 				B588C8E323F99FB200BCE5A1 /* Globals.swift in Sources */,
 				B59B10532BB605CC0028329F /* WriteToLog.swift in Sources */,
 				B5937BA823F0842B002EDC2E /* Alert.swift in Sources */,
+				CE1339102F0F8E48008AF1DA /* TelemetryDeckConfig.swift in Sources */,
 				B5937B9A23EE0829002EDC2E /* ViewController.swift in Sources */,
 				B585ED252BACA50900ECA658 /* KeysVC.swift in Sources */,
 				B5937B9823EE0829002EDC2E /* AppDelegate.swift in Sources */,
@@ -372,6 +383,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE13390C2F0F8A60008AF1DA /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE13390D2F0F8A60008AF1DA /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE13390C2F0F8A60008AF1DA /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B5937B8C23EE0829002EDC2E /* Project object */;
 }
