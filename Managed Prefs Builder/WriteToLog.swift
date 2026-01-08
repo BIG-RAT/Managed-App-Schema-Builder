@@ -34,12 +34,13 @@ class WriteToLog {
                 // remove old log files
                 if logCount-1 >= Log.maxFiles {
                     for i in (0..<logCount-Log.maxFiles) {
-                        WriteToLog.shared.message(stringOfText: "Deleting log file: " + logArray[i])
+                        let fileName = URL(fileURLWithPath: logArray[i]).lastPathComponent
+                        WriteToLog.shared.message("Deleting log file: " + fileName)
                         do {
                             try fm.removeItem(atPath: logArray[i])
                         }
                         catch let error as NSError {
-                            WriteToLog.shared.message(stringOfText: "Error deleting log file:\n                " + logArray[i] + "\n                \(error)\n")
+                            WriteToLog.shared.message("Error deleting log file:\n                " + fileName + "\n                \(error)\n")
                         }
                     }
                 }
@@ -52,12 +53,12 @@ class WriteToLog {
                 try fm.removeItem(atPath: Log.path! + Log.file)
             }
             catch let error as NSError {
-                WriteToLog.shared.message(stringOfText: "Error deleting log file:\n                " + Log.path! + Log.file + "\n                \(error)\n")
+                WriteToLog.shared.message("Error deleting log file:\n                " + Log.path! + Log.file + "\n                \(error)\n")
             }
         }
     }
 
-    func message(stringOfText: String) {
+    func message(_ stringOfText: String) {
         let logString = "\(getCurrentTime(theFormat: "log")) \(stringOfText)\n"
 
         self.logFileW?.seekToEndOfFile()

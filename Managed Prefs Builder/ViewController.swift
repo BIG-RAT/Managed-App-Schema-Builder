@@ -154,14 +154,14 @@ class ViewController: NSViewController, NSTextFieldDelegate {
                     
                     guard let check = manifestJson["_exported"], "\(check)" == "MASB" else {
                         _ = Alert.shared.display(header: "Error", message: "Unable to parse JSON, verify the format.")
-                        WriteToLog.shared.message(stringOfText: "Unable to parse JSON, verify the format.")
+                        WriteToLog.shared.message("Unable to parse JSON, verify the format.")
                         return
                     }
                     if #available(macOS 13.0, *) {
-                        WriteToLog.shared.message(stringOfText: "Imported \(importPathUrl.path())")
+                        WriteToLog.shared.message("Imported \(importPathUrl.path())")
                     } else {
                         // Fallback on earlier versions
-                        WriteToLog.shared.message(stringOfText: "Imported \(importPathUrl.absoluteString)")
+                        WriteToLog.shared.message("Imported \(importPathUrl.absoluteString)")
                     }
                     
                     //                    var existingKey: TheKey?
@@ -432,14 +432,14 @@ class ViewController: NSViewController, NSTextFieldDelegate {
                             try data.write(to: exportURL)
                             print("Successfully wrote to file!")
                             if #available(macOS 13.0, *) {
-                                WriteToLog.shared.message(stringOfText: "Successfully wrote to \(exportURL.path())")
+                                WriteToLog.shared.message("Successfully wrote to \(exportURL.path())")
                             } else {
                                 // Fallback on earlier versions
-                                WriteToLog.shared.message(stringOfText: "Successfully wrote to \(exportURL.absoluteString)")
+                                WriteToLog.shared.message("Successfully wrote to \(exportURL.absoluteString)")
                             }
                         } catch {
                             print("Error writing to file: \(error)")
-                            WriteToLog.shared.message(stringOfText: "Error writing to \(exportURL.absoluteString). Error: \(error)")
+                            WriteToLog.shared.message("Error writing to \(exportURL.absoluteString). Error: \(error)")
                         }
                     }
                     savedHash = currentSchema_TextView.string.hashString
@@ -534,7 +534,10 @@ class ViewController: NSViewController, NSTextFieldDelegate {
         didRun = true
         WriteToLog.shared.logCleanup()
         
-        WriteToLog.shared.message(stringOfText: "[ViewController] Running Managed App Schema Builder v\(AppInfo.version)")
+        WriteToLog.shared.message("----------------------------------------------------------------------------")
+        WriteToLog.shared.message("    \(AppInfo.displayname): v\(AppInfo.version) Build: \(AppInfo.build)")
+        WriteToLog.shared.message("----------------------------------------------------------------------------")
+        WriteToLog.shared.message("TelemetryDeck: \(defaults.bool(forKey: "optOut") ? "disabled" : "enabled")")
         
         keys_TableView.delegate = self
         keys_TableView.dataSource = self
@@ -674,113 +677,6 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         return false
     }
 }
-
-
-//extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
-//    
-//    func numberOfRows(in tableView: NSTableView) -> Int {
-//            return currentKeys.count
-//        }
-//        
-//        func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?,
-//                       row: Int) -> NSView? {
-//            guard row < currentKeys.count else { return nil }
-//            let key = currentKeys[row]
-//            
-//            if tableColumn?.identifier.rawValue == "KeyColumn" {
-//                let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("KeyCell"), owner: self) as? NSTableCellView
-//                cell?.textField?.stringValue = key.name
-//                return cell
-//            }
-//            
-//            if tableColumn?.identifier.rawValue == "TypeColumn" {
-//                let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("TypeCell"), owner: self) as? NSTableCellView
-//                cell?.textField?.stringValue = key.type
-//                return cell
-//            }
-//            
-//            return nil
-//        }
-//        
-//        func tableViewSelectionDidChange(_ notification: Notification) {
-//            // Right-click context menu will call viewKey_SwiftUI()
-//        }
-//    /*
-//    fileprivate enum CellIdentifiers {
-//        static let NameCell    = "keyName"
-//    }
-//    
-//    func numberOfRows(in tableView: NSTableView) -> Int {
-////        print("[numberOfRows] \(currentKeys.count)")
-//        return currentKeys.count
-//    }
-//    
-//    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-////        print("[objectValueFor] \(currentKeys[row].name)")
-//        return "\(currentKeys[row].name)"
-//    }
-//    
-//    
-//    // dragging rows
-//    func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
-//        let pasteboard = NSPasteboardItem()
-//            
-//        // in this example I'm dragging the row index. Once dropped i'll look up the value that is moving by using this.
-//        // remember in viewdidload I registered strings so I must set strings to pasteboard
-//        pasteboard.setString("\(row)", forType: .string)
-//        return pasteboard
-//    }
-//    
-//    
-//    func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
-//        
-//        let canDrop = (row >= 0) // in this example you cannot drop on top two rows
-////        print("valid drop \(row)? \(canDrop)")
-//        if (canDrop) {
-//            return .move //yes, you can drop on this row
-//        }
-//        else {
-//            return [] // an empty array is the equivalent of nil or 'cannot drop'
-//        }
-//    }
-//    
-//    
-//    func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
-//        let pastboard = info.draggingPasteboard
-//        if let sourceRowString = pastboard.string(forType: .string) {
-//            let selectionArray = sourceRowString.components(separatedBy: "\n")
-////            print("\(selectionArray.count) items selected")
-////            print("from \(sourceRowString). dropping row \(row)")
-//            if ((info.draggingSource as? NSTableView == keys_TableView) && (tableView == keys_TableView)) {
-//                var objectsMoved = 0
-//                var indexAdjustment = 0
-//                for theKey in selectionArray {
-//                    let value:TheKey = currentKeys[Int(theKey)!-indexAdjustment]
-//                    
-//                    currentKeys.remove(at: Int(theKey)! - indexAdjustment)
-//                    if (row > Int(theKey)!)
-//                    {
-//                        currentKeys.insert(value, at: (row - 1 - objectsMoved + objectsMoved))
-//                        indexAdjustment += 1
-//                    }
-//                    else
-//                    {
-//                        currentKeys.insert(value, at: (row + objectsMoved))
-//                    }
-//                    objectsMoved += 1
-//                    keys_TableView.reloadData()
-//                    displaySchema(reorder: true)
-//                }
-//                return true
-//            } else {
-//                return false
-//            }
-//        }
-//        return false
-//    }
-//    */
-//
-//}
 
 extension [Any] {
     var arrayToString: String {
