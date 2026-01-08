@@ -5,6 +5,8 @@
 
 Download: [Managed App Schema Builder](https://github.com/BIG-RAT/Managed-App-Schema-Builder/releases/download/current/Managed.App.Schema.Builder.zip)
 
+Starting with version 1.2.0 the application will submit basic hardware, OS, and Managed App Schema Builder application usage to [TelemetryDeck](https://telemetrydeck.com). The data is sent anamously and used to aid in the development of the application. To opt out of data the sending of data click 'Opt out of analytics' at the bottom of the 'About Managed App Schema Builder' window.
+
 Before wasting time creating something that's already been done see if it's available:
 
 * [https://github.com/ProfileCreator/ProfileManifests](https://github.com/ProfileCreator/ProfileManifests)
@@ -27,3 +29,7 @@ Consult the [Wiki](https://github.com/BIG-RAT/Managed-App-Schema-Builder/wiki) (
 ___
 
 Thanks @talkingmoose for all the help!
+
+## History
+
+- 2026-01-08 v1.2.0: Minor code cleanup. Add TelemetryDeck integration.
